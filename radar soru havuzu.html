@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radar Sistemleri Vize Hazırlık</title>
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --hover-color: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 15px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress {
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: #dbeafe;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: var(--primary-color);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .menu-btn:hover {
+            color: var(--hover-color);
+        }
+
+        .question-box {
+            min-height: 100px;
+            font-size: 1.15em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            white-space: pre-wrap; 
+        }
+
+        .answer-box {
+            display: none;
+            background-color: #ecfdf5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 1.05em;
+            line-height: 1.6;
+            white-space: pre-wrap; 
+            overflow-x: auto;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid #d1d5db;
+        }
+
+        .btn-outline:hover {
+            background-color: #f3f4f6;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navigation .btn {
+            margin-bottom: 0;
+        }
+
+        /* --- YAN MENÜ (SIDEBAR) STİLLERİ --- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100vh;
+            background-color: var(--card-bg);
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+        }
+
+        .close-btn:hover {
+            color: #111827;
+        }
+
+        .question-list-container {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 5px;
+        }
+
+        .question-list-item {
+            padding: 12px;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .question-list-item:hover {
+            background-color: #e5e7eb;
+        }
+
+        .question-list-item.active {
+            border-left-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .q-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        .q-preview {
+            font-size: 0.9em;
+            color: #4b5563;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            .navigation {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="menuyuKapat()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 style="margin: 0; color: #1f2937;">Tüm Sorular</h3>
+            <button class="close-btn" onclick="menuyuKapat()">&times;</button>
+        </div>
+        <div class="question-list-container" id="question-list-container"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2 style="margin: 0; font-size: 1.4em;">Radar Sistemleri Vize</h2>
+            <div class="header-right">
+                <div class="progress" id="progress-text">1 / 51</div>
+                <button class="menu-btn" onclick="menuyuAc()">&#9776;</button>
+            </div>
+        </div>
+
+        <div class="question-box" id="question-text">Soru yükleniyor...</div>
+        <button class="btn" id="show-answer-btn" onclick="cevabiGoster()">Cevabı Gör</button>
+        <div class="answer-box" id="answer-text">Cevap yükleniyor...</div>
+
+        <div class="navigation">
+            <button class="btn btn-outline" onclick="oncekiSoru()">&#8592; Önceki</button>
+            <button class="btn btn-outline" onclick="sonrakiSoru()">Sonraki &#8594;</button>
+        </div>
+    </div>
+
+    <script>
+        const sorular = [
+            {
+                soru: `RADAR kelimesinin açılımı nedir ve ne anlama gelir?`,
+                cevap: `"Radio Detection and Ranging" kelimelerinin baş harflerinden oluşur. Radyo ile bulma ve uzaklık ölçme anlamına gelir.`
+            },
+            {
+                soru: `Bir radar sisteminin çalışmasında rol oynayan üç temel fizik kanunu nelerdir? Her birini kısaca açıklayınız.`,
+                cevap: `1. EM dalgaların yansıması: Farklı empedanslı ortamla karşılaşınca yansıma olur; hedeften dönen işaret "yankı" (echo) olarak adlandırılır.<br>2. EM dalgaların sabit yayılma hızı: $c\\approx3\\times10^{8}m/s$ olan ışık hızında yayılır; gidiş-dönüş süresi ölçülerek menzil hesaplanır.<br>3. EM dalgaların doğrusal yayılması: Düz yayıldığından hedefin açısal koordinatları (azimut, yükseklik) belirlenir.`
+            },
+            {
+                soru: `Monostatik ve bistatik radar arasındaki farkı açıklayınız.`,
+                cevap: `• Monostatik radar: Gönderici ve alıcı, tek bir ortak anteni zaman-çoklayıcı yöntemle paylaşır.<br>• Bistatik radar: Her biri kendi antenine sahip, aralarında belirli bir mesafe ve azimut açısı bulunan ayrı gönderici ve alıcıdan oluşur.`
+            },
+            {
+                soru: `Parazit yankı (clutter) nedir? Temel tiplerini sıralayınız.`,
+                cevap: `Parazit yankılar, algılanması istenilmeyen fakat radar tarafından algılanan işaretlerdir; gerçek hedeflerin tespitini zorlaştırırlar. Temel tipleri:<br>• Yerden parazit yankılar: Evler, ağaçlar, yer yükseltileri<br>• Denizden parazit yankıları (sea clutter): Rüzgârın yarattığı dalgalar<br>• Meteorolojik parazit yankıları: Bulut, yağmur, kar, sis<br>• Noktasal parazit yankılar: Kuşlar, rüzgâr türbinleri, uzun binalar`
+            },
+            {
+                soru: `Radar teknolojisinde çözünürlük ve doğruluk arasındaki farkı açıklayınız.`,
+                cevap: `• Çözünürlük: Birbirine çok yakın iki cismi ayırt edebilme yeteneği (mesafe, azimut, Doppler boyutlarında).<br>• Doğruluk: Belirli bir hata tanımı için radarın gerçek değeri ölçme yeteneği (hız, mesafe, yön vb.).`
+            },
+            {
+                soru: `Hedef izleme (target tracking) radarı nedir? İzleme öncesi hangi adımlar gerçekleştirilir?`,
+                cevap: `Bir veya daha fazla hedefin yolunu izlemek için kullanılan radardır. İzleme öncesi adımlar:<br>1. Hedef tespiti<br>2. Menzil ölçümü<br>3. Yükseklik ve azimut açılarının bulunması<br>4. Doppler frekans kaymasının hesaplanması`
+            },
+            {
+                soru: `Birincil (PSR) ve İkincil (SSR) Gözetleme Radarları arasındaki farkı açıklayınız.`,
+                cevap: `<strong>PSR (Birincil) | SSR (İkincil)</strong><br>• Prensip: Yansıyan ekoya dayanır | Transponder işbirliği<br>• İşbirliği: Gerekmez | Zorunlu<br>• Güç: Yüksek güç gerekir | Daha düşük güç yeterli<br>• Bilgi: Konum (gerçek) | Konum, irtifa, tanıtma`
+            },
+            {
+                soru: `SAR (Sentetik Açıklıklı Radar) nedir ve geleneksel radara göre avantajı nedir?`,
+                cevap: `Birden fazla küçük radar biriminden toplanan görüntülerin elektronik ortamda birleştirilmesiyle, normalde daha büyük boyutlu tek bir birim tarafından elde edilen görüntüye kıyasla daha yüksek çözünürlük sağlayan radar türüdür. Uçak veya uyduya monte edilerek yüzey görüntüleme ve çevresel gözlemde kullanılır.`
+            },
+            {
+                soru: `HF Ufuk Ötesi Radar neden kullanılır? Mikrodalga radarından farkı nedir?`,
+                cevap: `Mikrodalga radarlarının görüş alanı ufuk hattıyla sınırlıdır (~40 km). HF dalgalar ufuk ötesine ulaşabildiğinden:<br>• Yer dalgaları ile ~500 km,<br>• Gök dalgaları ile binlerce km kapsam sağlanır.<br>Kıyı koruma, kaçakçılık önleme, deniz gözetlemesi gibi uygulamalarda kullanılır.`
+            },
+            {
+                soru: `Menzil tayini formülünü yazınız ve değişkenlerini açıklayınız.`,
+                cevap: `$R=\\frac{c_{0}\\cdot t}{2}$<br>• R: Eğik menzil [m]<br>• $c_{0}\\approx3\\times10^{8}m/s$: Işık hızı<br>• t: Darbenin gidip gelme süresi [s]<br>Dalga hem gidip hem döndüğü için süre 2'ye bölünür.`
+            },
+            {
+                soru: `Hedeften yansıyan eko sinyali 33.2 $\\mu s$ sonra alınmaktadır. Hedefin uzaklığını hesaplayınız.`,
+                cevap: `Her $1~\\mu s$ radar zamanı 150 metre mesafeye karşılık gelir:<br>$R=33.2\\times150=4980~m\\approx4.98~km$`
+            },
+            {
+                soru: `Azimut çözünürlüğü nedir? Formülünü yazınız.`,
+                cevap: `Aynı menzilde fakat farklı açılardaki iki hedefi ayırt edebilmek için gereken minimum açıklıktır. Antenin -3 dB yarım güç hüzme genişliğine ve menzile bağlıdır:<br>$S_{A}\\ge2R\\cdot \\sin\\frac{\\theta}{2}$<br>$\\theta$: Yarım güç hüzme genişliği, R: Menzil`
+            },
+            {
+                soru: `Menzil çözünürlüğü formülünü yazınız. Darbe genişliği $\\tau=4~\\mu s$ için menzil çözünürlüğünü hesaplayınız.`,
+                cevap: `$\\Delta R=\\frac{c\\cdot\\tau}{2}=\\tau\\times150$ ($\\mu s$ cinsinden)<br>$\\Delta R=4\\times150=600~m$`
+            },
+            {
+                soru: `Darbe genişliği $\\tau=2~\\mu s$ olan bir radarın minimum menzilini hesaplayınız.`,
+                cevap: `$R_{min}=\\tau\\times150=2\\times150=300~m$`
+            },
+            {
+                soru: `Darbe diyagramındaki temel terimleri tanımlayınız: $\\tau$, PRI (T), PRF ($f_{r}$), doluluk-boşluk oranı.`,
+                cevap: `• $\\tau$ (Darbe genişliği): Tek bir darbenin süresi.<br>• PRI (T): İki ardışık darbenin başlangıçları arasındaki süre. $T=1/f_{r}$<br>• PRF ($f_{r}$): Saniyedeki darbe sayısı.<br>• Doluluk-Boşluk Oranı (Duty-cycle): $d_{t}=\\frac{\\tau}{T}=\\tau\\cdot f_{r}$`
+            },
+            {
+                soru: `Tepe gücü ($P_{t}$), ortalama güç ($P_{or}$) ve darbe enerjisi ($E_{p}$) arasındaki ilişkiyi formülle gösteriniz.`,
+                cevap: `$P_{or}=P_{t}\\cdot d_{t}=P_{t}\\cdot\\frac{\\tau}{T}$<br>$E_{p}=P_{t}\\cdot\\tau=P_{or}\\cdot T=\\frac{P_{or}}{f_{r}}$`
+            },
+            {
+                soru: `Ayırt edilebilir maksimum menzil $R_{u}$ (unambiguous range) nedir? Formülünü yazınız.`,
+                cevap: `Bir yankının dönmesi için gereken sürede gidilebilecek maksimum mesafedir. PRF arttıkça azalır:<br>$R_{u}=\\frac{c\\cdot T}{2}=\\frac{c}{2\\cdot f_{r}}$`
+            },
+            {
+                soru: `Hesaplamalı: $P_{t}=10~kW$, $f_{r1}=10~kHz$ ve $f_{r2}=30~kHz$. Her iki frekans için ortalama güç 1500 W olacak şekilde darbe genişliklerini ve darbe enerjilerini hesaplayınız.`,
+                cevap: `Ortalama güç sabit, duty-cycle sabittir: $d_{t}=\\frac{P_{or}}{P_{t}}=\\frac{1500}{10000}=0.15$<br>• $f_{r1}=10~kHz$ için: $T_{1}=0.1~ms \\Rightarrow \\tau_{1}=0.15\\times0.1=0.015~ms=15~\\mu s \\Rightarrow E_{p1}=10000\\times15\\times10^{-6}=0.15~J$<br>• $f_{r2}=30~kHz$ için: $T_{2}=0.0\\overline{3}~ms \\Rightarrow \\tau_{2}=5~\\mu s \\Rightarrow E_{p2}=10000\\times5\\times10^{-6}=0.05~J$`
+            },
+            {
+                soru: `Hesaplamalı (L-Band): $P_{t}=500~W$, $R_{u}=100~km$, $\\Delta R=100~m$ verilmiştir.<br>A) Darbe genişliği ve PRF'yi hesaplayınız. B) Ortalama gücü bulunuz.`,
+                cevap: `A) $\\Delta R=\\frac{c\\tau}{2} \\Rightarrow \\tau=\\frac{2\\times100}{3\\times10^{8}}\\approx0.67~\\mu s$<br>$R_{u}=\\frac{c}{2\\cdot PRF} \\Rightarrow PRF=\\frac{3\\times10^{8}}{2\\times10^{5}}=1500~Hz$<br>B) $T=1/1500\\approx0.667~ms$; $d_{t}=0.67\\times10^{-6}/0.667\\times10^{-3}\\approx0.001$<br>$P_{or}=P_{t}\\times d_{t}=500\\times0.001=0.5~W$`
+            },
+            {
+                soru: `Hesaplamalı (C-Band): $P_{t}=1~MW$, $\\tau=1~\\mu s$, $PRF=200~Hz$.<br>A) Ortalama gücü hesaplayınız. B) Bant genişliğini ve menzil çözünürlüğünü bulunuz.`,
+                cevap: `A) $T=5~ms$, $d_{t}=10^{-6}/5\\times10^{-3}=2\\times10^{-4}$<br>$P_{or}=10^{6}\\times2\\times10^{-4}=200~W$<br>B) $B=\\frac{1}{\\tau}=\\frac{1}{10^{-6}}=1~MHz$<br>$\\Delta R=\\frac{c\\tau}{2}=\\frac{3\\times10^{8}\\times10^{-6}}{2}=150~m$`
+            },
+            {
+                soru: `Aydınlatma zamanı ($T_{D}$) ve isabet sayısı ($m$) nedir? Formüllerini yazınız.`,
+                cevap: `Aydınlatma zamanı: Anten demetinin bir hedef üzerinde kaldığı süredir:<br>$T_{D}=\\frac{\\theta_{az}\\cdot60}{360^{\\circ}\\cdot n}$ ($\\theta_{az}$: Azimut yarım güç hüzme genişliği [$^{\\circ}$], n: Dönüş hızı [rpm])<br>İsabet sayısı: Antenin her dönüşünde hedef başına alınan yankı sayısı:<br>$m=\\frac{T_{D}}{PRI}=\\frac{\\theta_{az}\\cdot60}{360^{\\circ}\\cdot n\\cdot PRI}$`
+            },
+            {
+                soru: `Radar Menzil Denklemini türetiniz. Temel formunu yazınız.`,
+                cevap: `İzotropik antenden R mesafede güç yoğunluğu: $P_{D}=P_{t}/4\\pi R^{2}$. Yönlü anten kazancı G ile:<br>$P_{D}=\\frac{P_{t}G}{4\\pi R^{2}}$<br>Hedefin RCS'i $\\sigma$ ise saçılan güç $P_{ry}=P_{D}\\cdot\\sigma$. Radara dönen güç yoğunluğu ve anten etkin yüzeyi $A_{e}=G\\lambda^{2}/4\\pi$ ile yakalanan güç:<br>$P_{r}=\\frac{P_{t}\\cdot G^{2}\\cdot\\lambda^{2}\\cdot\\sigma}{(4\\pi)^{3}\\cdot R^{4}}$`
+            },
+            {
+                soru: `Maksimum menzil formülü nedir? Menzili 2 kat artırmak için tepe gücünü kaç kat artırmak gerekir?`,
+                cevap: `$R_{max}=\\left[\\frac{P_{t}G^{2}\\lambda^{2}\\sigma}{(4\\pi)^{3}\\cdot S_{min}}\\right]^{1/4}$<br>$R_{max}\\propto P_{t}^{1/4}$ olduğundan menzili 2 kat artırmak için:<br>$(2)^{4}=16$ kat tepe gücü artırımı gerekir.`
+            },
+            {
+                soru: `Radar Kesit Alanı (RCS - $\\sigma$) nedir? Nelere bağlıdır?`,
+                cevap: `Bir hedefin radar tarafından görüldüğü şekliyle boyutunun ölçüsüdür [$m^{2}$]. Hedefin gelen enerjiyi saçma yeteneğini ifade eder:<br>$\\sigma=\\frac{P_{ry}}{P_{D}}$<br>Hedefin boyutuna, yönelimine, fiziksel şekline ve malzemesine bağlıdır.`
+            },
+            {
+                soru: `Gürültü gücü formülünü yazınız ve değişkenlerini açıklayınız.`,
+                cevap: `$N=k\\cdot T_{e}\\cdot B$<br>• $k=1.38\\times10^{-23}J/K$: Boltzmann sabiti<br>• $T_{e}$: Etkin gürültü sıcaklığı [K]<br>• $B$: Bant genişliği [Hz]<br>Isıl gürültü her frekansta var olan, sıfır ortalamalı Gauss dağılımlı istenmeyen bir işarettir.`
+            },
+            {
+                soru: `Gürültü katsayısı (Noise Figure, F) nedir? Formülünü yazınız.`,
+                cevap: `$F=\\frac{(SNR)_{i}}{(SNR)_{o}}=\\frac{S_{i}/N_{i}}{S_{o}/N_{o}}$<br>Alıcının girişindeki SNR ile çıkışındaki SNR oranıdır. İdeal alıcıda $F = 1$ ($0~dB$); gerçek alıcılarda $F > 1$'dir.`
+            },
+            {
+                soru: `Gürültünün dahil edildiği radar menzil denklemi nasıl yazılır?`,
+                cevap: `$R_{max}=\\left[\\frac{P_{t}G^{2}\\lambda^{2}\\sigma}{(4\\pi)^{3}\\cdot kT_{e}BF\\cdot(SNR)_{min}\\cdot L}\\right]^{1/4}$<br>L: Toplam sistem kayıpları (paydaya çarpan olarak girer; SNR'yi düşürür).`
+            },
+            {
+                soru: `Hesaplamalı: C-Band radar: $P_{t}=1.5~MW$, $f_{0}=5.6~GHz$, $G=45~dB$, $T_{e}=290~K$, $\\tau=0.2~\\mu s$, $(SNR)_{min}=20~dB$, $\\sigma=0.1~m^{2}$. Maksimum menzili hesaplayınız.`,
+                cevap: `$\\lambda=c/f_{0}=3\\times10^{8}/5.6\\times10^{9}=0.0536~m$<br>$G=10^{4.5}=31623$ ; $(SNR)_{min}=10^{2}=100$<br>$B=1/\\tau=5~MHz$ ; $N=kT_{e}B=1.38\\times10^{-23}\\times290\\times5\\times10^{6}=2\\times10^{-14}~W$<br>$R_{max}=\\left[\\frac{1.5\\times10^{6}\\times31623^{2}\\times0.0536^{2}\\times0.1}{(4\\pi)^{3}\\times2\\times10^{-14}\\times100}\\right]^{1/4}\\approx200-250~km$`
+            },
+            {
+                soru: `Bistatik Radar Denklemini monostatik denklemle kıyaslayarak yazınız.`,
+                cevap: `Verici-hedef mesafesi $R_{T}$, alıcı-hedef mesafesi $R_{R}$, bistatik RCS $\\sigma_{B}$:<br>$P_{r}=\\frac{P_{t}G_{T}G_{R}\\lambda^{2}\\sigma_{B}}{(4\\pi)^{3}R_{T}^{2}R_{R}^{2}\\cdot L_{t}L_{r}L_{p}}$<br>Monostatik denklemde $R_{T}=R_{R}=R$ ve $\\sigma_{B}=\\sigma$ olarak basitleşir. Bistatik açı $180^{\\circ}$'ye yaklaştıkça $\\sigma_{B}$ çok büyür.`
+            },
+            {
+                soru: `Radar kayıplarını kategorilere göre sıralayınız ve kısaca açıklayınız.`,
+                cevap: `1. Verici-Alıcı Kayıpları: Verici-anten ve anten-alıcı arası devre kayıpları (~1-2 dB)<br>2. Anten Patterni ve Tarama Kayıpları: Hedef maksimum kazanç yönünde olmayabilir (~2-4 dB)<br>3. Atmosferik Kayıplar: Frekans, menzil ve yükselme açısına bağlı zayıflama<br>4. Collapsing Loss: Gürültü darbelerinin toplanmasından kaynaklanan SNR düşüşü<br>5. İşlemci Kayıpları: Dedektör, eşik, A/D dönüşümü gibi işlem kayıpları`
+            },
+            {
+                soru: `Sürekli dalga (CW) radarı ile darbe radarı arasındaki temel farkları karşılaştırınız.`,
+                cevap: `<strong>Özellik | Darbe Radarı | CW Radarı</strong><br>• Sinyal: Kesintili darbeler | Sürekli dalga<br>• Anten: Genelde tek (ortak) | Ayrı verici alıcı<br>• Menzil ölçümü: Gidiş-dönüş süresi | FM modülasyonu gerekir<br>• Hız ölçümü: Doppler filtresi ile | Doğrudan Doppler kayması<br>• İşlem uzayı: Zaman düzlemi | Frekans düzlemi`
+            },
+            {
+                soru: `CW radarlarda verici-alıcı izolasyonu neden önemlidir? Hangi devre elemanları bu izolasyonu sağlar?`,
+                cevap: `Vericiden gelen güçlü sinyal alıcıyı bozabilir. Örneğin 1 kW'lık verici için en az 50 dB izolasyon gerekir. İzolasyon yöntemleri:<br>• Magic T, Short-slot coupler, Rat-Race coupler: ~20-30 dB<br>• Circulator, Turnstile Junction: ~20-60 dB<br>• Ayrı antenler: 80 dB ve üzeri (en yüksek değer)`
+            },
+            {
+                soru: `Doppler frekansı formülünü türetiniz. Radara doğru hareket eden hedef için ifadeyi yazınız.`,
+                cevap: `v hızıyla radara yaklaşan hedeften yansıyan darbenin süresi kısalır (darbeler sıkışır). Türetme sonucu:<br>$f_{d}=\\frac{2v}{\\lambda}=\\frac{2v\\cdot f_{0}}{c}$<br>$\\lambda$: Dalga boyu, $f_{0}$: Taşıyıcı frekansı, v: Radyal hız.<br>Hedef uzaklaşıyorsa $f_{d}$ negatif olur.`
+            },
+            {
+                soru: `Hesaplamalı: $f_{0}=10~GHz$, hedef hızı $v=300~m/s$ (radara doğru). Doppler frekansını hesaplayınız.`,
+                cevap: `$\\lambda=\\frac{c}{f_{0}}=\\frac{3\\times10^{8}}{10^{10}}=0.03~m$<br>$f_{d}=\\frac{2v}{\\lambda}=\\frac{2\\times300}{0.03}=20~kHz$`
+            },
+            {
+                soru: `Radyal hızları farklı üç hedef için Doppler frekansını nasıl yorumlarsınız?`,
+                cevap: `• Hedefe dik hareket ($\\theta=90^{\\circ}$): Radyal bileşen sıfır $\\Rightarrow f_{d}=0$<br>• Doğrudan yaklaşma ($\\theta=0^{\\circ}$): $f_{d}=2v/\\lambda$ (maksimum)<br>• Açılı hareket ($\\theta$ açısıyla): $f_{d}=\\frac{2v~\\cos~\\theta}{\\lambda}$ (ara değer)`
+            },
+            {
+                soru: `Basit CW radar blok diyagramını açıklayınız. Vericiden alıcıya sinyal akışını anlatınız.`,
+                cevap: `1. Vericiden $f_{0}$ frekanslı sürekli dalga gönderilir.<br>2. Hareketli hedeften dönen sinyalin frekansı $f_{0}\\pm f_{d}$'dir.<br>3. Dedektörde (mikser): $f_{0}\\pm f_{d}$ ile referans $f_{0}$ karıştırılır, çıkışta $f_{d}$ kalır.<br>4. Beat-frekans amplifikatörü (BPF): Hedeflenen Doppler aralığını geçirir; DC (hareketsiz hedef) sinyallerini bastırır.<br>5. Çıkışta $f_{d}$ ile hedefin radyal hızı hesaplanır.`
+            },
+            {
+                soru: `Lineer FM-CW (LFM) radarı açıklayınız. Hareketsiz hedef için menzil formülünü veriniz.`,
+                cevap: `CW radara üçgen (veya testere dişi) frekans modülasyonu eklenerek hem menzil hem hız ölçülür. Gönderilen ve alınan sinyal arasındaki fark frekansından ($f_{b}$) menzil:<br>$R=\\frac{c\\cdot f_{b}}{2\\cdot\\dot{f}} \\quad , \\quad \\dot{f}=\\frac{\\Delta f}{t_{0}}$<br>$\\Delta f$: Tepe-tepe frekans sapması, $t_{0}$: Yarı modülasyon periyodu`
+            },
+            {
+                soru: `Lineer FM-CW radarda hareketli hedef durumunda ne olur? $f_{bu}$ ve $f_{bd}$ nedir?`,
+                cevap: `Hareketli hedefin Doppler kayması, beat frekansına eklenir/çıkarılır:<br>$f_{bu}=f_{b}-f_{d}$ (yukarı rampa)<br>$f_{bd}=f_{b}+f_{d}$ (aşağı rampa)<br>Bu iki değerden menzil ve hız ayrıştırılır:<br>$f_{b}=\\frac{f_{bu}+f_{bd}}{2} \\quad , \\quad f_{d}=\\frac{f_{bd}-f_{bu}}{2}$`
+            },
+            {
+                soru: `Hesaplamalı (FM-CW): $t_{0}=0.2~ms$, $f_{bu}=21.4~kHz$, $f_{bd}=28.6~kHz$, $\\Delta f=0.3~MHz$, $f_{0}=9~GHz$.<br>a) Hedefin mesafesi b) Hızı c) Doppler frekansı`,
+                cevap: `$\\dot{f}=0.3\\times10^{6}/0.2\\times10^{-3}=1.5\\times10^{9}~Hz/s$<br>a) $f_{b}=\\frac{21.4+28.6}{2}=25~kHz \\Rightarrow R=\\frac{3\\times10^{8}\\times25\\times10^{3}}{2\\times1.5\\times10^{9}}=2500~m$<br>b) $f_{d}=\\frac{28.6-21.4}{2}=3.6~kHz \\Rightarrow \\lambda=\\frac{3\\times10^{8}}{9\\times10^{9}}=0.033~m \\Rightarrow v=\\frac{f_{d}\\cdot\\lambda}{2}=\\frac{3600\\times0.033}{2}=59.4~m/s$<br>c) $f_{d}=3.6~kHz$`
+            },
+            {
+                soru: `Çoklu frekanslı CW radar, tek frekanslı CW radara göre ne avantaj sağlar?`,
+                cevap: `Tek frekanslı CW radarda faz belirsizliğinden maksimum menzil $R_{max}=c/2f_{0}$ ile sınırlıdır. İki frekans ($f_{1}, f_{2}=f_{1}+\\Delta f$) kullanıldığında:<br>$R_{max}=\\frac{c}{2\\Delta f}$<br>$\\Delta f\\ll f_{0}$ olduğundan, menzil çok daha büyük olur.`
+            },
+            {
+                soru: `Radar dedeksiyonunda dört farklı karar durumunu açıklayınız.`,
+                cevap: `1. True Detection (Doğru Dedeksiyon): Hedef Var, Eşik Üstünde $\\Rightarrow$ Karar: Doğru<br>2. Missed Detection (Kaçırma): Hedef Var, Eşik Altında $\\Rightarrow$ Karar: Hatalı<br>3. False Alarm (Yanlış Alarm): Hedef Yok, Eşik Üstünde $\\Rightarrow$ Karar: Hatalı<br>4. No Action: Hedef Yok, Eşik Altında $\\Rightarrow$ Karar: Doğru`
+            },
+            {
+                soru: `Yanlış alarm olasılığı ($P_{fa}$) ve doğru dedeksiyon olasılığı ($P_{d}$) nedir? Eşik gerilimi artırılırsa ne olur?`,
+                cevap: `• $P_{fa}$: Sadece gürültünün eşiği aşma olasılığı (yanlış alarm).<br>• $P_{d}$: Hedef+gürültü toplamının eşiği aşma olasılığı (doğru algılama).<br>Eşik gerilimi ($V_{D}$) artırılırsa: $P_{fa}$ azalır (daha az yanlış alarm), ancak $P_{d}$ de azalır (gerçek hedef kaçırılabilir). İkisi arasında uzlaşım (trade-off) vardır.`
+            },
+            {
+                soru: `SNR için pratik değerleri veriniz.`,
+                cevap: `• Gürültünün süzülüp işaretin alınabilmesi için minimum SNR $\\approx$ 10 dB<br>• Amaca göre istenen SNR 40-50 dB seviyelerine çıkabilir<br>• SNR ve işaret genliği biliniyorsa $\\Rightarrow$ gürültü seviyesi; SNR ve gürültü seviyesi biliniyorsa $\\Rightarrow$ işaret genliği hesaplanır.`
+            },
+            {
+                soru: `Darbe radarı ile Doppler ölçümü kaç yolla yapılabilir? Açıklayınız.`,
+                cevap: `İki yöntem vardır:<br>1. Ardışık menzil ölçümü: $v=\\frac{\\Delta R}{\\Delta t}$<br>2. Doppler filtresi: Ardışık darbeler arasındaki faz değişimi $\\Rightarrow$ Doppler frekansı $\\Rightarrow$ hız. Daha hassas ve yaygın kullanılan yöntemdir.`
+            },
+            {
+                soru: `Menzil ve Doppler belirsizliğini açıklayınız. PRF ile ilişkisini ifade ediniz.`,
+                cevap: `• Menzil belirsizliği: PRF yüksekse birinci yankı dönmeden ikinci darbe gönderilir. Ayırt edilebilir maksimum menzil: $R_{u}=c/2f_{r}$<br>• Doppler belirsizliği: PRF düşükse hedef hızının Doppler frekansı Nyquist sınırını aşar: $v_{max}=\\lambda f_{r}/4$<br>PRF artarsa $v_{max}$ artar (iyi), $R_{u}$ azalır (kötü).<br>PRF azalırsa $R_{u}$ artar (iyi), $v_{max}$ azalır (kötü).`
+            },
+            {
+                soru: `Tablo yorumu: $f_{0}=3~GHz$ için farklı PRF değerlerinde $R_{u}$ ve $v_{max}$'ı hesaplayınız. (PRF = 1 kHz, 10 kHz, 100 kHz)`,
+                cevap: `$\\lambda=c/f_{0}=0.1~m \\quad , \\quad T=1/f_{r} \\quad , \\quad R_{u}=cT/2 \\quad , \\quad v_{max}=\\lambda f_{r}/4$<br>• PRF = 1 kHz: T = 1 ms, $R_{u}$ = 150 km, $v_{max}$ = 25 m/s<br>• PRF = 10 kHz: T = 0.1 ms, $R_{u}$ = 15 km, $v_{max}$ = 250 m/s<br>• PRF = 100 kHz: T = 0.01 ms, $R_{u}$ = 1.5 km, $v_{max}$ = 2500 m/s<br>$R_{u}$ artarken $v_{max}$ azalır. Büyük menzil ve büyük hız için çoklu PRF şarttır.`
+            },
+            {
+                soru: `Çoklu PRF ile menzil belirsizliği nasıl giderilir? Adımları açıklayınız.`,
+                cevap: `Her PRF için olası menzil değerleri listelenir:<br>$t_{gerek}=t_{i}+N_{i}\\cdot T_{i} \\quad , \\quad N_{i}=0, 1, 2, ...$<br>Farklı PRF'lerdeki tüm listeler kesiştirilerek ortak gecikme değeri bulunur. Bu gerçek menzili verir. En az 2 PRF yeterli; doğruluk için 3 kullanılır.`
+            },
+            {
+                soru: `Hesaplamalı (Çoklu PRF): $f_{0}=9~GHz$, $f_{r1}=8~kHz$, $f_{r2}=14~kHz$, $f_{r3}=20~kHz$.<br>Gecikme süreleri $t_{1}=1/12~ms$, $t_{2}=1/21~ms$, $t_{3}=1/30~ms$. Hedefin menzilini bulunuz.`,
+                cevap: `Her PRF için olası gecikmeler:<br>• $f_{r1}$: 1/12, 5/24, 1/3, ... ms<br>• $f_{r2}$: 1/21, ..., 1/3, ... ms<br>• $f_{r3}$: 1/30, ..., 1/3, ... ms<br>Ortak gecikme: $t=1/3~ms$<br>$R=\\frac{c\\cdot t}{2}=\\frac{3\\times10^{8}\\times(1/3)\\times10^{-3}}{2}=50~km$`
+            },
+            {
+                soru: `Bütünleştirici soru: PRF, PRI, T, duty-cycle, $R_{max}$, $\\Delta R$ ve B parametrelerini birbirleriyle ilişkilendiriniz.`,
+                cevap: `$PRI=T=\\frac{1}{PRF}$<br>$d_{t}=\\frac{\\tau}{T}=\\tau\\cdot PRF$<br>$R_{max}=\\frac{c\\cdot T}{2}=\\frac{c}{2\\cdot PRF}$ (menzil belirsizliği)<br>$\\Delta R=\\frac{c\\cdot\\tau}{2}$ (menzil çözünürlüğü)<br>$B=\\frac{1}{\\tau}$ (bant genişliği)<br>Uzlaşım: $\\tau$ azalırsa $\\Delta R$ azalır (iyi çözünürlük) ama B artar. PRF artarsa $R_{max}$ azalır.`
+            },
+            {
+                soru: `Hesaplamalı: Maksimum ayırt edilebilir mesafesi 100 km ve bant genişliği 0.5 MHz olan radar için PRF, PRI, $\\tau$ ve $\\Delta R$'yi hesaplayınız.`,
+                cevap: `$R_{u}=\\frac{c}{2\\cdot PRF} \\Rightarrow PRF=\\frac{3\\times10^{8}}{2\\times10^{5}}=1500~Hz$<br>$PRI=\\frac{1}{1500}\\approx0.667~ms$<br>$B=\\frac{1}{\\tau} \\Rightarrow \\tau=\\frac{1}{0.5\\times10^{6}}=2~\\mu s$<br>$\\Delta R=\\frac{c\\tau}{2}=\\frac{3\\times10^{8}\\times2\\times10^{-6}}{2}=300~m$`
+            },
+            {
+                soru: `(Bonus) Hesaplamalı (Düşük PRF): C-Band radar 6 GHz'de çalışmaktadır.<br>Çanak anten çapı $D=1.89~m$, $P_{t}=1~MW$, $\\tau=2~\\mu s$, $PRF=250~Hz$, eşdeğer gürültü sıcaklığı $T_{e}=600~K$, sistem kayıpları L=20 dB, $\\sigma=10~m^{2}$.<br>A) Maksimum ayırt edilebilir mesafe<br>B) S/N dikkate alınarak menzil<br>C) Hedef $R_{u}/2$'de iken S/N oranı`,
+                cevap: `A) $R_{u}=\\frac{c}{2\\cdot PRF}=\\frac{3\\times10^{8}}{2\\times250}=600~km$<br>B) Çanak anten etkin yüzeyi: $A_{e}=\\pi D^{2}/4=\\pi(1.89)^{2}/4\\approx2.81~m^{2}$<br>$\\lambda=c/f=3\\times10^{8}/6\\times10^{9}=0.05~m \\quad ; \\quad G=4\\pi A_{e}/\\lambda^{2}\\approx14130 (\\approx41.5~dB)$<br>$B=1/\\tau=500~kHz$<br>$N=kT_{e}B=1.38\\times10^{-23}\\times600\\times5\\times10^{5}\\approx4.14\\times10^{-15}~W$<br>$L=10^{2}=100$<br>$R_{max}=\\left[\\frac{P_{t}G^{2}\\lambda^{2}\\sigma}{(4\\pi)^{3}NL\\cdot(SNR)_{min}}\\right]^{1/4}$<br>($(SNR)_{min}=1$ ($0~dB$) kabul edilerek adımsal hesap yapılır.)<br>C) $R=R_{u}/2$ için radar denkleminden $SNR\\propto1/R^{4}$ kullanılarak S/N oranı, B şıkkındaki değere göre $2^{4}=16$ kat ($\\approx12~dB$) artmış olarak bulunur.`
+            }
+        ];
+
+        let aktifSoruIndex = 0;
+
+        const questionTextElement = document.getElementById('question-text');
+        const answerTextElement = document.getElementById('answer-text');
+        const progressTextElement = document.getElementById('progress-text');
+        const showAnswerBtn = document.getElementById('show-answer-btn');
+        const listContainer = document.getElementById('question-list-container');
+
+        function menuyuOlustur() {
+            listContainer.innerHTML = ''; 
+            
+            sorular.forEach((soruObjesi, index) => {
+                const item = document.createElement('div');
+                item.className = 'question-list-item';
+                item.onclick = () => {
+                    soruyaGit(index);
+                    menuyuKapat();
+                };
+                
+                const title = document.createElement('div');
+                title.className = 'q-title';
+                title.innerText = `SORU ${index + 1}`;
+                
+                const preview = document.createElement('div');
+                preview.className = 'q-preview';
+                preview.innerHTML = soruObjesi.soru; 
+                
+                item.appendChild(title);
+                item.appendChild(preview);
+                listContainer.appendChild(item);
+            });
+        }
+
+        function ekraniGuncelle() {
+            questionTextElement.innerHTML = sorular[aktifSoruIndex].soru;
+            answerTextElement.innerHTML = sorular[aktifSoruIndex].cevap;
+            progressTextElement.innerHTML = `${aktifSoruIndex + 1} / ${sorular.length}`;
+            
+            answerTextElement.style.display = 'none';
+            showAnswerBtn.style.display = 'block';
+
+            const listeElemanlari = document.querySelectorAll('.question-list-item');
+            listeElemanlari.forEach((item, index) => {
+                if (index === aktifSoruIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            if (window.MathJax) {
+                MathJax.typesetPromise([questionTextElement, answerTextElement]).catch(function (err) {
+                    console.error(err.message);
+                });
+            }
+        }
+
+        function cevabiGoster() {
+            answerTextElement.style.display = 'block';
+            showAnswerBtn.style.display = 'none'; 
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise([answerTextElement]);
+            }
+        }
+
+        function sonrakiSoru() {
+            if (aktifSoruIndex < sorular.length - 1) {
+                aktifSoruIndex++;
+                ekraniGuncelle();
+            } else {
+                alert("Son soruya ulaştınız! Başa dönülüyor.");
+                aktifSoruIndex = 0;
+                ekraniGuncelle();
+            }
+        }
+
+        function oncekiSoru() {
+            if (aktifSoruIndex > 0) {
+                aktifSoruIndex--;
+                ekraniGuncelle();
+            }
+        }
+
+        function soruyaGit(index) {
+            aktifSoruIndex = index;
+            ekraniGuncelle();
+        }
+
+        function menuyuAc() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function menuyuKapat() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        window.onload = () => {
+            menuyuOlustur();
+            ekraniGuncelle();
+        };
+
+    </script>
+</body>
+</html>

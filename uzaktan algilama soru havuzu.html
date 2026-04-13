@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uzaktan Algılama Sınav Hazırlık Testi</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --hover-color: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 15px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress {
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: #dbeafe;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: var(--primary-color);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .menu-btn:hover {
+            color: var(--hover-color);
+        }
+
+        .question-box {
+            min-height: 100px;
+            font-size: 1.15em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Satır atlamalarını korumak için */
+        }
+
+        .answer-box {
+            display: none;
+            background-color: #ecfdf5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 1.05em;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Satır atlamalarını korumak için */
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid #d1d5db;
+        }
+
+        .btn-outline:hover {
+            background-color: #f3f4f6;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navigation .btn {
+            margin-bottom: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100vh;
+            background-color: var(--card-bg);
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+        }
+
+        .close-btn:hover {
+            color: #111827;
+        }
+
+        .question-list-container {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 5px;
+        }
+
+        .question-list-item {
+            padding: 12px;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .question-list-item:hover {
+            background-color: #e5e7eb;
+        }
+
+        .question-list-item.active {
+            border-left-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .q-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        .q-preview {
+            font-size: 0.9em;
+            color: #4b5563;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            .navigation {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="menuyuKapat()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 style="margin: 0; color: #1f2937;">Tüm Sorular</h3>
+            <button class="close-btn" onclick="menuyuKapat()">&times;</button>
+        </div>
+        <div class="question-list-container" id="question-list-container"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2 style="margin: 0; font-size: 1.4em;">Uzaktan Algılama Testi</h2>
+            <div class="header-right">
+                <div class="progress" id="progress-text">1 / 50</div>
+                <button class="menu-btn" onclick="menuyuAc()">&#9776;</button>
+            </div>
+        </div>
+
+        <div class="question-box" id="question-text">Soru metni...</div>
+        <button class="btn" id="show-answer-btn" onclick="cevabiGoster()">Cevabı Gör</button>
+        <div class="answer-box" id="answer-text">Cevap metni...</div>
+
+        <div class="navigation">
+            <button class="btn btn-outline" onclick="oncekiSoru()">&#8592; Önceki</button>
+            <button class="btn btn-outline" onclick="sonrakiSoru()">Sonraki &#8594;</button>
+        </div>
+    </div>
+
+    <script>
+        const sorular = [
+            {
+                soru: `Uzaktan algılama nedir? Temel çalışma adımlarını (A'dan G'ye) kısaca açıklayınız.`,
+                cevap: `Uzaktan algılama, fiziksel temasa geçmeden elektromanyetik dalgaların ölçümüyle fiziksel dünyadan veri oluşturma, analiz etme ve anlamlandırma sürecidir. Adımlar: A) Enerji kaynağı (pasif için güneş, aktif için kendi kaynağı), B) Işınım atmosferle etkileşime girer, C) Enerji hedef ile etkileşir, D) Alıcı yansıyan/yayılan enerjiyi kaydeder, E) Veri iletilir ve işlenir, F) Görüntü yorumlanır ve analiz edilir, G) Bilgi ve anlam çıkarılır (uygulama).`
+            },
+            {
+                soru: `Stefan-Boltzman kanunu nedir ve uzaktan algılama açısından önemi nedir?`,
+                cevap: `Stefan-Boltzman kanunu: M = σT^4. Bir nesnenin yüzeyinden yayılan enerji miktarı, nesnenin mutlak sıcaklığının dördüncü kuvvetiyle orantılıdır. Önemi: Sıcak nesneler soğuk nesnelere göre çok daha fazla enerji yayar. Güneş (≈5800 K) yüksek enerji yayarak pasif alıcılar için enerji kaynağı görevi görür.`
+            },
+            {
+                soru: `Atmosfer ile enerji etkileşiminin dört türünü tanımlayınız.`,
+                cevap: `Soğurum (Absorption): Işıma madde tarafından alınır, ısı enerjisine dönüşür. İletim (Transmission): Işıma ölçülebilir azalmayla maddeden geçer. Saçılım (Scatter): Işıma parçacıklar tarafından öngörülemeyen oranlarda her yöne dağıtılır. Yansıma (Reflectance): Işıma malzemenin yüzeyinden seker/yansır.`
+            },
+            {
+                soru: `Rayleigh saçılımı ile Mie saçılımı arasındaki farkları açıklayınız.`,
+                cevap: `Rayleigh saçılımı: Parçacık boyutları dalgaboyundan çok küçüktür (örn. aerosol). Saçılım miktarı dalgaboyunun dördüncü kuvveti ile ters orantılıdır; mavi ışık kızılötesine göre 16 kat daha fazla Rayleigh saçılımına uğrar. Gökyüzünün mavi görünmesinin sebebidir.\nMie saçılımı: Parçacık boyutları dalgaboyu ile benzer büyüklüktedir (duman, toz, su buharı). Kısa dalgaboylarını daha çok etkiler ancak fark Rayleigh'deki kadar büyük değildir.`
+            },
+            {
+                soru: `Spektral imza nedir? Bitki örtüsünün spektral imzasının temel özelliklerini açıklayınız.`,
+                cevap: `Spektral imza, bir materyalin dalgaboyuna bağlı yansıma/ışıma miktarındaki değişimdir. Malzemenin kimyasal veya fiziksel yapısına bağlı olup tanıma/tespit amacıyla kullanılır.\nBitki imzası: Klorofil nedeniyle görünür aralıkta (özellikle 0.4-0.5 µm ve 0.6-0.7 µm) yüksek soğurum vardır. NIR bölgesinde (0.7-1.1 µm) yüksek yansıma vardır.\nSağlıklı bitki: NIR yüksek + kırmızı düşük.\nSağlıksız bitki (kuruma vb.): NIR düşük + kırmızı yüksek.`
+            },
+            {
+                soru: `Dört çözünürlük türünü tanımlayınız ve her biri için kısa açıklama yapınız.`,
+                cevap: `1) Uzamsal çözünürlük: Görüntüde mekânsal detayları ayırt etme yeteneği; piksel boyutunun gerçek dünyada kapladığı alanla ters ilişkilidir.\n2) Spektral çözünürlük: Dalgaboyu farklarını ayırt edebilme yeteneği (Δλ); dar bantlar daha yüksek spektral çözünürlük demektir.\n3) Radyometrik çözünürlük: Verinin dijital kuantalama seviyeleri sayısı; daha fazla seviye daha yüksek radyometrik çözünürlüktür.\n4) Zamansal çözünürlük: Alıcının aynı konumu ne sıklıkla görüntülediğiyle ilişkilidir; süre azaldıkça çözünürlük artar.`
+            },
+            {
+                soru: `Pasif alıcılar ve aktif alıcıların avantaj ve dezavantajlarını karşılaştırınız.`,
+                cevap: `Pasif alıcılar:\nAvantaj: Kendi enerji kaynağına ihtiyaç yok (ucuz, küçük, düşük enerji), karşı taraftan algılanmaları güç.\nDezavantaj: Dış enerji kaynağındaki değişimlerden etkilenir, düşük ışık koşullarında verimleri düşer.\n\nAktif alıcılar:\nAvantaj: Hava/güneş ışığından bağımsız (gece-gündüz çalışır), güneşin düşük olduğu dalgaboylarında görüntüleme imkânı sağlar.\nDezavantaj: Genel olarak daha yüksek maliyet ve karmaşık yapı; karşı taraftan algılanabilirler.`
+            },
+            {
+                soru: `Pankromatik, multispektral ve hiperspektral alıcılar arasındaki temel farkları açıklayınız.`,
+                cevap: `Pankromatik: Tek kanallı, görünür ışıktaki yansımayı tek değerle ifade eder, spektral/renk bilgisi yoktur.\nMultispektral: Birkaç kanallı (tipik olarak 3-10 bant), mavi/yeşil/kırmızı/NIR gibi belirli aralıklara hassas, kısıtlı spektral bilgi sağlar.\nHiperspektral: Genellikle yüzlerce dar bant içerir (50+), yüksek spektral bilgi sağlar ancak genel olarak uzamsal çözünürlüğü daha düşüktür. Landsat, Sentinel-2 multispektral; AVIRIS ve Hyperion hiperspektral örnektir.`
+            },
+            {
+                soru: `Radyometrik düzeltme adımlarını sırasıyla açıklayınız.`,
+                cevap: `1. Adım: Alıcının ölçtüğü dijital değerler, kalibrasyon katsayıları (gain ve offset) kullanılarak ışınıma (radiance) dönüştürülür.\n2. Adım: Işınım, Dünya-Güneş mesafesi (d) ve Güneş zenit açısı (θSZ) bilgileri kullanılarak atmosfer üstü yansımaya (TOA reflectance) dönüştürülür. Formül: Reflectance = (π × Radiance × d^2) / (ESUN × cos(θSZ)).\n3. Adım: Atmosferik düzeltme uygulanarak TOA yansıması yeryüzü yansımasına dönüştürülür.`
+            },
+            {
+                soru: `Atmosferik düzeltme neden yapılır ve hangi yöntemler kullanılabilir?`,
+                cevap: `Atmosferin saçılım ve soğurum etkileri nedeniyle alıcıdaki ölçüm, gerçek yüzey yansımasından farklıdır. Bu etkileri gidermek için atmosferik düzeltme yapılır. Yöntemler: göz ardı etmek; biyofiziksel parametre ölçümleriyle kalibrasyon; atmosferik model ve meteorolojik veri kullanımı; ışınım transferi denklemleri ve hazır yazılımlar (MODTRAN, FLAASH, QUAC, ATCORR); siyah nesneleri / gölgeleri kullanmak.`
+            },
+            {
+                soru: `Geometrik düzeltme kapsamındaki coğrafik referanslama ve ortorektifikasyon işlemlerini açıklayınız.`,
+                cevap: `Coğrafik referanslama (georeferencing): Verinin koordinat sistemine göre hizalanmasıdır. Yer kontrol noktaları (GCP) kullanılarak verideki noktalar ile gerçek koordinatlar arasında afin veya polinomsal dönüşüm uygulanır.\nOrtorektifikasyon: Her pikselin doğrudan yukarıdan görünecek şekilde topografik etkilerin giderilmesidir; DEM (Dijital Yükseklik Modeli) kullanılır.\nAyrıca veri çakıştırma (registration), iki görüntünün piksellerinin aynı konumlara karşılık gelmesi için hizalanmasıdır.`
+            },
+            {
+                soru: `Topografik düzeltme ne amaçla yapılır ve hangi verilere ihtiyaç duyulur?`,
+                cevap: `Topografik düzeltme; arazinin yarattığı aydınlatma ve gölge etkilerini hesaba katarak radyometrik (yansıma) değerlerinin düzeltilmesi işlemidir. Aynı yüzey türü, eğime ve yönelime bağlı olarak farklı yansıma değerleri verebilir. Bunun için yükseklik, eğim ve yönelim bilgileri gerekmektedir; bu bilgiler veriden kestirilebilir veya DEM haritaları gibi ek kaynaklardan elde edilebilir.`
+            },
+            {
+                soru: `Türkiye'nin uzaktan algılama uydularını (BİLSAT, RASAT, GÖKTÜRK-1, GÖKTÜRK-2, İMECE) temel özellikleriyle sıralayınız.`,
+                cevap: `BİLSAT (2003): İlk uzaktan algılama uydumuz; 4m PAN, 26.7m 4 bantlı multispektral.\nRASAT (2011): Tamamen yerli tasarım; 7.5m PAN, 15m RGB.\nGÖKTÜRK-2 (2012): İlk yüksek çözünürlüklü; 2.5m PAN, 5m multispektral.\nGÖKTÜRK-1 (2016): 0.5m PAN, 2m multispektral, 12 bit radyometrik çözünürlük, ~90dk zamansal çözünürlük.\nİMECE (2023): 0.99m PAN, 3.96m multispektral (R,G,B,NIR), <40m hiperspektral kapasitesi.`
+            },
+            {
+                soru: `SAR (Sentetik Açıklıklı Radar) sistemleri, konvansiyonel RADAR'a göre azimut çözünürlüğü açısından nasıl üstünlük sağlar?`,
+                cevap: `Konvansiyonel RADAR'da azimut çözünürlüğü anten boyutuyla sınırlıdır; yüksek çözünürlük için fiziksel olarak çok büyük anten gerekir (700 km mesafede 10 mrad ışın genişliğiyle ~7 km çözünürlük).\nSAR'da ise platform hareketi boyunca birden fazla atım gönderilir ve dönen yansımalar (echo) depolanır. Doppler-kaymalı frekanslar referansla karşılaştırılarak birçok işaret tek noktaya odaklanır. Böylece anten boyutu (açıklık) sentetik olarak artırılır. SAR azimut çözünürlüğü: δA ≈ L/2 olup fiziksel anten uzunluğu (L) ile belirlenir.`
+            },
+            {
+                soru: `RADAR görüntülerinde geri-saçılımın (backscatter) ne anlama geldiğini ve yüzey türlerine göre nasıl değiştiğini açıklayınız.`,
+                cevap: `Her piksel o alan için radar geri-saçılımını temsil eder. Parlak piksel = yüksek geri-saçılım.\nDüz alanlar (yollar): düşük saçılım karanlık görünür.\nPürüzlü yüzeyler / bitki örtüsü: yüksek/orta saçılım aydınlık/gri görünür.\nRadar yönüne dönük yüzeyler: daha aydınlık.\nRadarın ulaşamadığı alanlar (bina/dağ arkası): karanlık.\nMetal, deniz suyu ve ıslak yüzeyler yüksek iletkenlik nedeniyle çok güçlü geri-saçılım verir.`
+            },
+            {
+                soru: `LiDAR'ın çalışma prensibini ve mesafe hesaplama formülünü açıklayınız.`,
+                cevap: `LiDAR, belirli bir dalgaboyunda lazer ışığı göndererek yansımanın geri alınmasına dayanır (UV, VIS, NIR, SWIR; 250 nm – 10 µm).\nMesafe formülü: Mesafe = c × t / 2 (c: ışık hızı ≈ 3×10^8 m/s, t: gönderilen işaretin geri gelme süresi).\nUçak platformunda uçağın irtifa bilgisinden mesafe çıkarılarak yer örtüsü yüksekliği hesaplanır ve DEM haritası üretilir. 30 cm'ye kadar uzamsal çözünürlük elde edilebilir.`
+            },
+            {
+                soru: `SONAR sistemlerinde çözünürlüğü etkileyen faktörler nelerdir? Aşağı bakan SONAR için yatay ve dikey çözünürlük formüllerini yazınız.`,
+                cevap: `Frekans (dalgaboyu): Yüksek frekans daha iyi çözünürlük sağlar ancak mesafe azalır; düşük frekans daha uzağa gider.\nYatay çözünürlük: δx = βH (β: açısal açıklık, H: derinlik). Örn. 10° açıklık, 100m derinlikte ~17m çözünürlük.\nDikey çözünürlük: δz = cT/2 (c: ses hızı, T: darbe genişliği). Tipik 0.075-0.75m arası.\nYan taramalı SONAR'da rota doğrultusunda: δx = Rβ, rotaya dik: δy = cT / (2 sin θ).`
+            },
+            {
+                soru: `NDVI nedir, nasıl hesaplanır ve ne için kullanılır?`,
+                cevap: `NDVI (Normalized Difference Vegetation Index): Normalize Edilmiş Fark Bitki İndeksi. Bitki yapraklarındaki klorofil görünür kırmızı ışığı yüksek oranda soğururken, hücre yapısı NIR ışımayı yüksek oranda yansıtır. Bu özellik kullanılarak:\nNDVI = (NIR - Red) / (NIR + Red)\nSentinel-2 için: (B8 - B4) / (B8 + B4).\nDeğer aralığı: -1 ile +1 arasında. Bitki tespiti ve sağlığının izlenmesinde kullanılır; sağlıklı bitkide yüksek NDVI değeri elde edilir.`
+            },
+            {
+                soru: `Aşağıdaki indislerin formüllerini ve kullanım amaçlarını yazınız: GNDVI, SAVI, NDWI, BSI.`,
+                cevap: `• GNDVI (Green NDVI) = (NIR - Green) / (NIR + Green) -> Klorofil içeriği tespiti\n• SAVI (Soil Adjusted VI) = [(NIR - Red) / (NIR + Red + 0.428)] × 1.428 -> Toprak etkisini azaltarak bitki tespiti\n• NDWI (Normalized Difference Water Index) = (Green - NIR) / (Green + NIR) -> Su kütlelerinin tespiti\n• BSI (Bare Soil Index) = [(SWIR + Red) - (NIR + Blue)] / [(SWIR + Red) + (NIR + Blue)] -> Çıplak toprak tespiti`
+            },
+            {
+                soru: `Pankeskinleştirme (pan-sharpening) nedir ve temel amacı nedir?`,
+                cevap: `Pankeskinleştirme, multispektral (MS) görüntü ile pankromatik (PAN) görüntünün kaynaştırılmasıdır. Pankromatik görüntü yüksek uzamsal çözünürlüğe, multispektral görüntü ise yüksek spektral bilgiye sahiptir. Pankeskinleştirme ile multispektral görüntünün uzamsal çözünürlüğü artırılır; böylece hem yüksek uzamsal hem yüksek spektral bilgi aynı görüntüde elde edilir.`
+            },
+            {
+                soru: `Pankeskinleştirmede kullanılan CS (Component Substitution) yaklaşımının genel çalışma mantığını açıklayınız.`,
+                cevap: `CS grubu yaklaşımlarda:\n1) MS veri uzamsal bilginin spektral bilgiden ayrıştırılması için başka bir "uzaya" taşınır/dönüştürülür.\n2) PAN görüntü, bu uzamsal bileşenle yer değiştirilir (öncesinde histogram eşleme ile ortalama ve standart sapma eşleştirilir).\n3) Ters dönüşüm uygulanarak pankeskinleştirilmiş görüntü elde edilir.\nGenel formül: MS_k_yeni = MS_k + g_k(P - I_L). Hızlı ve basit uygulanabilir ancak spektral bozunuma yol açabilir. Örnekler: IHS, PCA, Gram-Schmidt.`
+            },
+            {
+                soru: `Pankeskinleştirmede MRA (Multi-Resolution Analysis) yaklaşımı CS yaklaşımından nasıl farklıdır?`,
+                cevap: `CS yaklaşımı MS veriden bir bileşen çıkararak PAN ile yer değiştirir ve spektral bozunuma yol açabilir. MRA yaklaşımı ise MS veriden bileşen çıkarmak yerine PAN görüntünün uzamsal yüksek frekans bilgisini MS veriye ekler.\nFormül: S_k = MS_k + g_k(P - P_L), burada (P - P_L) PAN'ın yüksek frekans detaylarıdır. MRA yöntemleri genellikle daha az spektral bozunuma yol açar. Örnekler: HPF, SFIM, Wavelet, MTF-GLP.`
+            },
+            {
+                soru: `Wald Protokolü nedir ve neden kullanılır?`,
+                cevap: `Pankeskinleştirme yöntemlerinin başarımını değerlendirmek için referans görüntü gerekmektedir. Ancak gerçek verilerle pankeskinleştirme yapıldığında karşılaştırılacak referans yoktur. Bu nedenle Wald protokolü kullanılır: Orijinal MS ve PAN görüntüler alıcı PSF'si (nokta yayılım fonksiyonu) kullanılarak kötüleştirilip düşük çözünürlüklü (sentetik) MS ve PAN elde edilir. Bu sentetik görüntüler pankeskinleştirmeye girer. Sonuç, orijinal MS veri ile karşılaştırılarak başarım ölçülür.`
+            },
+            {
+                soru: `Pankeskinleştirme başarım kriterlerinden SAM, RMSE ve ERGAS'ı açıklayınız.`,
+                cevap: `SAM (Spectral Angle Mapper): İki piksel vektörü arasındaki açıyı ölçer: SAM(v1,v2) = arccos((v1,v2) / (|v1| |v2|)). Spektral fark ölçütüdür; optimal değer sıfırdır.\nRMSE: Kareköklü ortalama karesel hata; uzamsal-radyometrik fark ölçütüdür; optimal değer sıfırdır.\nERGAS: Göreli boyutsuz global hata; bantlar arası normalize RMSE'nin ortalamasıdır; optimal değer sıfırdır.`
+            },
+            {
+                soru: `Görünür bölge dalgaboyu aralığı nedir? Elektromanyetik spektrumun uzaktan algılamada kullanılan diğer bölgelerini sıralayınız.`,
+                cevap: `Görünür bölge: 0.4-0.7 µm (400 nm - 700 nm).\nDiğer bölgeler:\nMorötesi (UV): 10-400 nm\nYakın kızılötesi (NIR): 0.7-1.3 µm\nKısa dalga kızılötesi (SWIR): 1.3-3 µm\nOrta dalga kızılötesi (MWIR): 3-8 µm\nUzun dalga kızılötesi / Termal (LWIR/TIR): 8-15 µm\nMikrodalga: 1 mm - 1 m\nRadyo dalgaları: > 1 m.`
+            },
+            {
+                soru: `Hiperspektral veriler multispektral verilere göre hangi avantajı sağlar? Bu avantajın dezavantajı nedir?`,
+                cevap: `Avantaj: Hiperspektral veriler yüzlerce dar bant içerdiğinden çok yüksek spektral çözünürlük sağlar. Bu sayede malzemelerin spektral imzaları çok daha ayrıntılı elde edilebilir; benzer görünen yüzeyler ayrıştırılabilir.\nDezavantaj: Bant sayısı arttıkça veri boyutu büyür. Genel olarak uzamsal çözünürlük daha düşük kalır. Ayrıca "boyutun laneti" (curse of dimensionality) nedeniyle bazı makine öğrenmesi yöntemlerinin uygulanması zorlaşır.`
+            },
+            {
+                soru: `SAR sisteminin geometrik bozunumlarından ikisini açıklayınız.`,
+                cevap: `SAR yan bakışlı bir sistemdir ve bu nedenle çeşitli geometrik bozunumlar oluşur.\nForeshortening (kısalma): Eğimli arazi yüzeyinin radardan görünen tarafı gerçekte olduğundan daha kısa görünür.\nLayover (devrilme): Dik yamaçlarda tepenin üst kısmının alt kısmından önce algılanması durumudur; nesne adeta devrilmiş gibi görünür.\nShadow (gölge): Radarın ulaşamadığı alanlarda bilgi alınamaz, görüntüde karanlık bölgeler oluşur.`
+            },
+            {
+                soru: `SONAR teknolojisinin tarihsel gelişimini kısaca özetleyiniz.`,
+                cevap: `1490 - Leonardo da Vinci: Suya sokulan tüple uzak gemilerin varlığını tespiti mümkün olduğunu keşfetti.\n1914 - Titanik'in batışının ardından buzdağı tespiti amacıyla ilk aktif SONAR geliştirildi.\nI. Dünya Savaşı'nda geliştirildi, II. Dünya Savaşı'nda yaygınlaştı. 1960'larda yan taramalı SONAR'lar geliştirildi. Not: SONAR, echolocation'dan öğrenilmeden (1940 öncesi) geliştirilmiş olsa da iki sistem benzer çözümleri bağımsızca keşfetti.`
+            },
+            {
+                soru: `RADAR bantlarını (P'den W'ye) frekans ve dalgaboyu açısından sıralayınız ve uzaktan algılamadaki kullanım farklarını kısaca açıklayınız.`,
+                cevap: `Sıralama: P (0.225-0.39 GHz, ~1m), L (0.39-1.55 GHz, 77-19 cm), S, C, X, Ku, K, Ka, Q, V, W (56-100 GHz, ~3mm).\nDalgaboyu uzadıkça (frekans azaldıkça) girişkenlik artar. Uzun dalgaboylu bantlar (L, P) bitki örtüsü altına nüfuz ederek zemin bilgisi sağlar. Kısa dalgaboylu bantlar (X, Ka) kentsel alanlarda yüksek çözünürlük sağlar. L-bant bitki örtüsü altı ve toprak çalışmaları için; C-bant bitkisel örtü izleme için yaygın kullanılır.`
+            },
+            {
+                soru: `LIDAR sisteminde yersel çözünürlük ve menzil çözünürlüğü nasıl hesaplanır?`,
+                cevap: `Yersel çözünürlük (demet çapı): Demet açılması: γ >= 2.44 λ/D. Yerdeki çap: D_I ≈ hγ (h: yükseklik). Örnek: γ = 1 mrad, h = 1 km -> D_I ≈ 1 m.\nMenzil çözünürlüğü: ΔR = c * Δt_travel / 2. Darbe uzunluğu yarısından daha uzak mesafeli nesneler ayrık dönüşler oluşturur. Örnek: 10 ns darbe uzunluğu (3 m) minimum ayrıştırılabilir nesne mesafesi 1.5 m.`
+            },
+            {
+                soru: `Veri kaynaştırma (data fusion) nedir? Pankeskinleştirmenin veri kaynaştırma kapsamındaki yerini açıklayınız.`,
+                cevap: `Veri kaynaştırma, birden fazla alıcıdan gelen verilerin birleştirilmesidir. Amaç: kaynakların birbirinin eksikliklerini kapatması, farklı kiplerin getirdiği bilgilerin birleştirilmesi ve sınıflandırma vb. işlevlerde başarımın artırılması.\nPankeskinleştirme, veri kaynaştırmanın özel bir alt dalıdır: yüksek uzamsal çözünürlüklü PAN verisi ile düşük uzamsal / yüksek spektral çözünürlüklü MS verisi birleştirilir; her iki özelliği barındıran görüntü elde edilir.`
+            },
+            {
+                soru: `Karışıklık matrisinden Overall Accuracy (OA) ve Average Accuracy (AA) nasıl hesaplanır? Aşağıdaki matris için hesaplayınız:\n\nGerçek \\ Tahmin | Bitki | Yerleşim | Su\nBitki            | 80    | 10       | 10\nYerleşim         | 20    | 60       | 20\nSu               | 10    | 20       | 70`,
+                cevap: `Toplam piksel sayısı: (80+10+10) + (20+60+20) + (10+20+70) = 100 + 100 + 100 = 300\nDoğru sınıflandırılan: 80 + 60 + 70 = 210\nOA = 210 / 300 = 0.70 (%70)\n\nHer sınıfın bireysel doğruluğu:\nBitki: 80 / 100 = 0.80\nYerleşim: 60 / 100 = 0.60\nSu: 70 / 100 = 0.70\nAA = (0.80 + 0.60 + 0.70) / 3 = 2.10 / 3 = 0.70 (%70)`
+            },
+            {
+                soru: `IHS tabanlı pankeskinleştirmenin güncel yaklaşımdaki adımlarını sıralayınız.`,
+                cevap: `1) MS görüntünün bantları üst-örneklenerek PAN görüntünün boyutuna getirilir (ara değerleme).\n2) MS görüntüden bant ortalaması alınarak I (intensity/parlaklık) bileşeni elde edilir.\n3) MS görüntünün her bandından I bileşeni çıkarılır.\n4) Histogramı I bileşeni ile eşleştirilen PAN görüntü eklenir.\n5) Sonuç pankeskinleştirilmiş görüntü olarak elde edilir.`
+            },
+            {
+                soru: `Gram-Schmidt (GS) ile pankeskinleştirme nasıl çalışır? İlk vektör seçimi için kaç farklı mod vardır?`,
+                cevap: `1) MS bantları üst-örnekleme ile PAN boyutuna getirilir.\n2) MS veriye Gram-Schmidt ayrıştırma uygulanır.\nİlk vektör seçimi 3 modda yapılabilir: Mod-1: Bant ortalaması, Mod-2: PAN görüntünün alçak geçiren süzgeçlenmesi, Mod-3: MS bantlarından regresyon analizi.\n3) PAN görüntü (histogram eşleme sonrası) ilk bileşenin yerine formülle konulur: MS_k_yeni = MS_k + [cov(MS_k, I_L) / var(I_L)] × (P - I_L).\n4) Pankeskinleştirilmiş görüntü elde edilir.`
+            },
+            {
+                soru: `Echolocation ile SONAR arasındaki benzerlikleri açıklayınız. Geri dönen darbe gücünün neden düşük olduğunu ve bunun nasıl aşıldığını açıklayınız.`,
+                cevap: `Echolocation (yarasalar) ve SONAR gönderilen işaretin yansımasının alınması prensibine dayanır. Her ikisinde de: gönderilen işaret yüksek güçlü ve odaklanmış olmalıdır; hassas alıcı gerekmektedir; yüksek çözünürlük için yüksek frekans kullanılır.\nGeri dönen darbe gücü, gidip gelen mesafenin dördüncü kuvveti ile orantılı azalır. Çözüm:\n1) Gönderilen darbenin gücü çok yüksek tutulur\n2) İşaret belirli bir yöne odaklanarak gönderilir\n3) CHIRP (frekans modülasyonu) kullanılır\n4) Darbe süresi uzatılarak enerji artırılır, zaman çözünürlüğü korunur.`
+            },
+            {
+                soru: `Görünür bölgedeki Rayleigh saçılımı nedeniyle mavi ışık neden kırmızı ışıktan daha fazla saçılır? Gün batımında gökyüzünün neden kırmızı göründüğünü bu bağlamda açıklayınız.`,
+                cevap: `Rayleigh saçılımı miktarı dalgaboyunun dördüncü kuvveti ile ters orantılıdır. Mavi ışık ~0.4 µm, kırmızı ışık ~0.7 µm dolayısıyla mavi ışık kırmızıya göre (0.7/0.4)^4 ≈ 9.4 kat daha fazla saçılır.\nGün batımında güneş ışığı atmosferde çok daha uzun yol alır. Bu uzun yolda mavi ışığın büyük bölümü saçılarak ortamdan ayrılır; yalnızca kırmızı ve turuncu tonlar gözlemciye ulaşır. Mars'ta atmosfer çok seyrektir; bu nedenle Rayleigh saçılımı çok azdır ve gün batımı mavi/mor tonlarda görünür.`
+            },
+            {
+                soru: `NDWI ve MNDWI formüllerini yazınız ve aralarındaki farkı açıklayınız.`,
+                cevap: `NDWI = (Green - NIR) / (Green + NIR). Sentinel-2: (B3 - B8) / (B3 + B8). Su kütlelerinin tespiti için kullanılır; bitkiyi baskılar.\nMNDWI (Modified NDWI) = (Green - SWIR) / (Green + SWIR). Sentinel-2: (B3 - B11) / (B3 + B11). SWIR kullanımı, kentsel alanların su olarak yanlış sınıflandırılmasını azaltır; kentsel ortamlarda su tespitinde daha başarılıdır.`
+            },
+            {
+                soru: `Enhanced Vegetation Index (EVI) NDVI'dan nasıl farklıdır? Formülünü yazınız.`,
+                cevap: `EVI Formülü: 2.5 × (NIR - Red) / (NIR + 6 × Red - 7.5 × Blue + 1).\nSentinel-2: 2.5 × (B8 - B4) / (B8 + 6 × B4 - 7.5 × B2 + 1).\nNDVI sadece NIR ve Red kullanır; yüksek biyokütle bölgelerinde doygunluğa uğrar ve toprak etkisine duyarlıdır. EVI mavi bandı da dahil ederek atmosferik etkiyi azaltır, toprak arka planından bağımsızdır ve doygunluk sorununa karşı daha gürbüzdür.`
+            },
+            {
+                soru: `Aktif alıcı türleri olan RADAR, SONAR ve LiDAR'ı kullandıkları işaret türü, çalışma ortamı ve tipik uygulama alanları açısından karşılaştırınız.`,
+                cevap: `RADAR:\nİşaret: Radyo dalgaları | Ortam: Hava/uzay | Dalgaboyu: cm - m | Uygulama: Uçak/araç tespiti, hava durumu, jeoloji.\n\nSONAR:\nİşaret: Ses dalgaları | Ortam: Su | Dalgaboyu: mm - m (ses) | Uygulama: Balık/denizaltı tespiti, su altı haritalama.\n\nLiDAR:\nİşaret: Lazer ışığı | Ortam: Hava/uzay | Dalgaboyu: 250 nm – 10 µm | Uygulama: Orman, şehir haritalama, otonom araç.\n\n(Not: SONAR sudan başka ortamda çok az verimli çalışır; RADAR sis/bulut/gece koşullarına dayanıklıdır; LiDAR yüksek uzamsal çözünürlük sağlar ama hava koşullarından daha fazla etkilenir).`
+            },
+            {
+                soru: `Uzaktan algılamada "değişim tespiti" (change detection) ne amaçla kullanılır? Polar koordinat gösteriminde merkeze olan uzaklık ve x-ekseni ile yapılan açı ne anlama gelir?`,
+                cevap: `Değişim tespiti, aynı sahnenin farklı zamanlarda alınan görüntülerinin karşılaştırılmasıyla yüzeyde meydana gelen değişikliklerin belirlenmesidir. Uygulama alanları: kentsel büyüme izleme, doğal afet hasarı, ormansızlaşma vb.\nPolar koordinat gösteriminde: Merkeze olan uzaklık değişimin büyüklüğünü/önemini temsil eder. X-ekseni ile yapılan açı değişimin türünü veya grubunu temsil eder. Böylece hem değişim büyüklüğü hem de türü tek bir görselleştirmede ifade edilebilir.`
+            },
+            {
+                soru: `Multispektral görüntülemede MSI (Moisture Stress Index) hangi bantları kullanır ve ne ölçer?`,
+                cevap: `MSI = SWIR / NIR. Sentinel-2 için: B11 / B8. MSI bitkilerdeki su stresini ölçer. NIR bölgesinde yüksek yansıma sağlıklı bitkiyi gösterirken, SWIR bölgesi nem/su içeriğiyle ilişkilidir. SWIR/NIR oranı arttıkça bitki su stresine girmiş demektir. Değer yükseldikçe nem stresi artar; düşük değerler iyi su içeriğini işaret eder.`
+            },
+            {
+                soru: `Veri düzeltme adımlarını sıralayınız ve her birinin amacını kısaca belirtiniz.`,
+                cevap: `1) Radyometrik düzeltme: Dijital değerleri fiziksel birimlere (ışınım/yansıma) dönüştürür; alıcı kalibrasyon hatalarını giderir.\n2) Atmosferik düzeltme: Atmosferin saçılım ve soğurum etkilerini gidererek yeryüzü yansıması elde eder.\n3) Topografik düzeltme: Arazinin yarattığı aydınlatma ve gölge etkilerini giderir.\n4) Geometrik düzeltme: Panoramik bozunum, platform hareketi, Dünya'nın dönüşü vb. nedeniyle oluşan konum hatalarını düzeltir (georeferencing, ortorektifikasyon ve registration içerir).`
+            },
+            {
+                soru: `UIQI (Q-index) pankeskinleştirme başarım kriteri nedir? Optimal değeri nedir ve neden özeldir?`,
+                cevap: `UIQI (Universal Image Quality Index) üç bileşeni vardır: korelasyon kaybı, parlaklık bozunumu ve kontrast bozunumu. Optimal değer 1'dir. Q-index "referanssız başarım ölçütü" olarak da kullanılabilmesi açısından özeldir; yani ideal referans görüntü olmadan da görüntü kalitesi hakkında bilgi verebilir.`
+            },
+            {
+                soru: `Hiperspektral görüntülemede "boyutun laneti" (curse of dimensionality) ne anlama gelir ve bu sorunun üstesinden gelmek için hangi genel yaklaşımlar uygulanabilir?`,
+                cevap: `Boyutun laneti: bant sayısı arttıkça eğitim için ihtiyaç duyulan örnek sayısı geometrik olarak artar; sabit örnek sayısıyla boyut arttıkça sınıflandırıcı başarımı düşer (Hughes fenomeni). Bu nedenle derin öğrenme gibi büyük veri gerektiren yaklaşımlar önerilmez.\nÜstesinden gelmek için: Bant seçimi (en bilgi taşıyan bantların seçilmesi), Öznitelik çıkarımı (PCA gibi boyut azaltma), Bant çıkarımı (ilgisiz bantları atmak), Kümeleme (etiket veriyi azaltmak).`
+            },
+            {
+                soru: `Türkiye'nin ilk SAR (Sentetik Açıklıklı Radar) uydusu hangidir ve hangi aşamadadır?`,
+                cevap: `GÖKTÜRK-3 Türkiye'nin ilk SAR uydusudur. Üretim: TUSAŞ, ASELSAN, TÜBİTAK-UZAY. Proje başlangıcı Mayıs 2013 olarak belirlenmiş, fırlatma tarihi defalarca ertelenmiş (2019 -> 2025 -> 2028?). Henüz fırlatılmamış, geliştirme aşamasındadır.`
+            },
+            {
+                soru: `PSNR (Peak Signal-to-Noise Ratio) pankeskinleştirme başarım kriterini açıklayınız ve formülünü yazınız.`,
+                cevap: `PSNR iki görüntü arasındaki kalite farkını ölçer: PSNR(I,J) = 10 * log10(MAX_I^2 / MSE). MAX_I olası en büyük piksel değeridir; MSE veriler arasındaki ortalama karesel hatadır. Yüksek PSNR değeri daha az bozunuma işaret eder. Değer dB cinsinden ifade edilir. RMSE ile doğrudan ilişkilidir (RMSE küçükse PSNR büyük).`
+            },
+            {
+                soru: `Aşağı bakan SONAR ve yan taramalı SONAR arasındaki temel farkları açıklayınız.`,
+                cevap: `Aşağı bakan SONAR: Doğrudan aşağı yöne bakar; nokta ya da küçük alan ölçümü yapar. Yatay çözünürlük δx = βH (derinlikle artar). Dikey çözünürlük δz = cT/2.\nYan taramalı SONAR: Platforma yan açıyla bakar; çok daha geniş alanı tek geçişte tarar. Rota doğrultusunda δx = Rβ, rotaya dik δy = cT / (2 sin θ). İki alt türü vardır (arkadan çekilen ve gövdeye takılı). Geniş alan haritalama, boru hattı ve batık tespiti için uygundur.`
+            },
+            {
+                soru: `Veri çakıştırma (registration) ne anlama gelir ve hangi durumlarda geometrik düzeltme kritik öneme sahiptir?`,
+                cevap: `Veri çakıştırma (registration): Bir görüntünün aynı bölgenin başka bir görüntüsü ile piksel düzeyinde hizalanmasıdır; işlem sonucunda iki görüntünün pikselleri aynı coğrafi konumlara karşılık gelir.\nKritik olduğu durumlar: Veri harita/CBS verileriyle karşılaştırılacaksa; iki farklı veri kaynaştırılacaksa (örn. pankeskinleştirme); farklı zamanlardaki veriler değişim tespiti için karşılaştırılacaksa; alan veya mesafe hesabı yapılacaksa.`
+            },
+            {
+                soru: `Doppler kaymasını açıklayınız. SAR ve polis radarı bu prensibi nasıl kullanır?`,
+                cevap: `Doppler kayması: Bir işaretin kaynağı ile alıcı arasındaki mesafe değiştikçe frekans değişimine denir. Mesafe azaldıkça frekans artar, arttıkça azalır.\nSAR'da: Platform hareketi boyunca hedef önce yaklaşır sonra uzaklaşır; her konumdan gönderilen darbenin Doppler kayması hesaplanır. Farklı Doppler-kaymalı işaretler odaklanarak azimut çözünürlüğü artırılır.\nPolis radarında: Araç yaklaşırken frekans artar, uzaklaşırken azalır; frekans kaymasından araç hızı hesaplanır.`
+            },
+            {
+                soru: `Görüntü işlemede tespit (detection), tanıma (recognition), kümeleme (clustering) ve sınıflandırma (classification) kavramları arasındaki farkları uzaktan algılama bağlamında açıklayınız.`,
+                cevap: `Tespit: Sahnede ilgilenilen nesne/hedefin var olup olmadığının belirlenmesi (örn. uydu görüntüsünde gemi var mı?).\nTanıma: Tespit edilen nesnenin ne olduğunun belirlenmesi (örn. bu gemi hangi tür?).\nKümeleme: Etiket bilgisi olmadan pikselleri benzerliklerine göre gruplama (denetimsiz öğrenme); arazi sınıfları otomatik oluşturulur.\nSınıflandırma: Eğitim verisiyle öğrenilmiş sınıflara piksellerin atanması (denetimli öğrenme); her piksele bitki örtüsü, yerleşim alanı, su vb. gibi etiket verilir.`
+            }
+        ];
+
+        let aktifSoruIndex = 0;
+
+        const questionTextElement = document.getElementById('question-text');
+        const answerTextElement = document.getElementById('answer-text');
+        const progressTextElement = document.getElementById('progress-text');
+        const showAnswerBtn = document.getElementById('show-answer-btn');
+        const listContainer = document.getElementById('question-list-container');
+
+        function menuyuOlustur() {
+            listContainer.innerHTML = ''; 
+            
+            sorular.forEach((soruObjesi, index) => {
+                const item = document.createElement('div');
+                item.className = 'question-list-item';
+                item.onclick = () => {
+                    soruyaGit(index);
+                    menuyuKapat();
+                };
+                
+                const title = document.createElement('div');
+                title.className = 'q-title';
+                title.innerText = `SORU ${index + 1}`;
+                
+                const preview = document.createElement('div');
+                preview.className = 'q-preview';
+                preview.innerText = soruObjesi.soru; 
+                
+                item.appendChild(title);
+                item.appendChild(preview);
+                listContainer.appendChild(item);
+            });
+        }
+
+        function ekraniGuncelle() {
+            questionTextElement.innerText = sorular[aktifSoruIndex].soru;
+            answerTextElement.innerText = sorular[aktifSoruIndex].cevap;
+            progressTextElement.innerText = `${aktifSoruIndex + 1} / ${sorular.length}`;
+            
+            answerTextElement.style.display = 'none';
+            showAnswerBtn.style.display = 'block';
+
+            const listeElemanlari = document.querySelectorAll('.question-list-item');
+            listeElemanlari.forEach((item, index) => {
+                if (index === aktifSoruIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function cevabiGoster() {
+            answerTextElement.style.display = 'block';
+            showAnswerBtn.style.display = 'none'; 
+        }
+
+        function sonrakiSoru() {
+            if (aktifSoruIndex < sorular.length - 1) {
+                aktifSoruIndex++;
+                ekraniGuncelle();
+            } else {
+                alert("Son soruya ulaştınız! Başa dönülüyor.");
+                aktifSoruIndex = 0;
+                ekraniGuncelle();
+            }
+        }
+
+        function oncekiSoru() {
+            if (aktifSoruIndex > 0) {
+                aktifSoruIndex--;
+                ekraniGuncelle();
+            }
+        }
+
+        function soruyaGit(index) {
+            aktifSoruIndex = index;
+            ekraniGuncelle();
+        }
+
+        function menuyuAc() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function menuyuKapat() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        window.onload = () => {
+            menuyuOlustur();
+            ekraniGuncelle();
+        };
+
+    </script>
+</body>
+</html>

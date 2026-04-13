@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Kontrol Sistemleri Soru Havuzu</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+      /* Tarayıcının varsayılan kenar boşluklarını sıfırlayalım ki tam ekran görünsün */
+      body { margin: 0; padding: 0; background-color: #0d1117; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+// ==========================================
+// REACT BAĞLANTILARI
+// ==========================================
+// "import { useState } from 'react';" yerine HTML'de bu yöntemi kullanıyoruz:
+const { useState } = React;
+
+// ==========================================
+// CLAUDE'UN YAZDIĞI KOD (DÜZENLENMİŞ)
+// ==========================================
+
+const TOPICS = [
+  { id: "all", label: "Tümü" },
+  { id: "blok", label: "Blok Diyagram" },
+  { id: "mason", label: "Mason / SFG" },
+  { id: "laplace", label: "Laplace" },
+  { id: "lineer", label: "Doğrusallaştırma" },
+  { id: "durum", label: "Durum Uzayı" },
+  { id: "motor", label: "DC Motor" },
+  { id: "duyar", label: "Duyarlılık" },
+  { id: "matlab", label: "MATLAB" },
+];
+
+// ── SVG helpers ──────────────────────────────────────────────────────────────
+const ArrowMarker = () => (
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#a0c4ff" />
+    </marker>
+  </defs>
+);
+
+function SvgSeries() {
+  return (
+    <svg viewBox="0 0 380 70" width="380" height="70" style={{ display: "block", margin: "10px 0" }}>
+      <ArrowMarker />
+      {/* R */}
+      <text x="8" y="38" fill="#a0c4ff" fontSize="13" fontFamily="monospace">R(s)</text>
+      <line x1="42" y1="35" x2="68" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* G1 block */}
+      <rect x="70" y="22" width="60" height="26" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="100" y="39" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">G₁(s)</text>
+      <line x1="130" y1="35" x2="156" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* G2 block */}
+      <rect x="158" y="22" width="60" height="26" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="188" y="39" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">G₂(s)</text>
+      <line x1="218" y1="35" x2="244" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* = */}
+      <text x="248" y="39" fill="#94a3b8" fontSize="13">≡</text>
+      <line x1="264" y1="35" x2="278" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* Equivalent block */}
+      <rect x="280" y="22" width="72" height="26" rx="3" fill="none" stroke="#7dd3fc" strokeWidth="1.5" />
+      <text x="316" y="39" fill="#7dd3fc" fontSize="11" fontFamily="monospace" textAnchor="middle">G₁(s)G₂(s)</text>
+      <line x1="352" y1="35" x2="372" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <text x="373" y="39" fill="#a0c4ff" fontSize="13" fontFamily="monospace">Y</text>
+    </svg>
+  );
+}
+
+function SvgParallel() {
+  return (
+    <svg viewBox="0 0 380 100" width="380" height="100" style={{ display: "block", margin: "10px 0" }}>
+      <ArrowMarker />
+      <text x="4" y="53" fill="#a0c4ff" fontSize="13" fontFamily="monospace">R(s)</text>
+      {/* branch point */}
+      <line x1="42" y1="50" x2="70" y2="50" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <circle cx="70" cy="50" r="3" fill="#a0c4ff" />
+      {/* upper branch */}
+      <line x1="70" y1="50" x2="70" y2="22" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="70" y1="22" x2="90" y2="22" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <rect x="92" y="10" width="60" height="24" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="122" y="26" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">G₁(s)</text>
+      <line x1="152" y1="22" x2="188" y2="22" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="188" y1="22" x2="188" y2="44" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* lower branch */}
+      <line x1="70" y1="50" x2="70" y2="78" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="70" y1="78" x2="90" y2="78" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <rect x="92" y="66" width="60" height="24" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="122" y="82" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">G₂(s)</text>
+      <line x1="152" y1="78" x2="188" y2="78" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="188" y1="78" x2="188" y2="56" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* sum junction */}
+      <circle cx="192" cy="50" r="9" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="192" y="54" fill="#a0c4ff" fontSize="12" textAnchor="middle">+</text>
+      <line x1="201" y1="50" x2="220" y2="50" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <text x="226" y="54" fill="#94a3b8" fontSize="13">≡</text>
+      <line x1="240" y1="50" x2="254" y2="50" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <rect x="256" y="36" width="88" height="28" rx="3" fill="none" stroke="#7dd3fc" strokeWidth="1.5" />
+      <text x="300" y="53" fill="#7dd3fc" fontSize="11" fontFamily="monospace" textAnchor="middle">G₁(s)+G₂(s)</text>
+      <line x1="344" y1="50" x2="364" y2="50" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <text x="366" y="54" fill="#a0c4ff" fontSize="13" fontFamily="monospace">Y</text>
+    </svg>
+  );
+}
+
+function SvgFeedback() {
+  return (
+    <svg viewBox="0 0 380 100" width="380" height="100" style={{ display: "block", margin: "10px 0" }}>
+      <ArrowMarker />
+      <text x="2" y="38" fill="#a0c4ff" fontSize="13" fontFamily="monospace">R(s)</text>
+      <line x1="38" y1="35" x2="55" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* sum */}
+      <circle cx="64" cy="35" r="10" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="58" y="30" fill="#a0c4ff" fontSize="10">+</text>
+      <text x="58" y="46" fill="#f87171" fontSize="10">−</text>
+      <line x1="74" y1="35" x2="90" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* G */}
+      <rect x="92" y="22" width="60" height="26" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="122" y="39" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">G(s)</text>
+      <line x1="152" y1="35" x2="186" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* branch */}
+      <circle cx="186" cy="35" r="3" fill="#a0c4ff" />
+      <line x1="186" y1="35" x2="210" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <text x="212" y="39" fill="#a0c4ff" fontSize="13" fontFamily="monospace">Y(s)</text>
+      {/* feedback path */}
+      <line x1="186" y1="35" x2="186" y2="75" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="186" y1="75" x2="110" y2="75" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <rect x="80" y="63" width="55" height="24" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="107" y="79" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">H(s)</text>
+      <line x1="80" y1="75" x2="64" y2="75" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="64" y1="75" x2="64" y2="46" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* result */}
+      <text x="248" y="28" fill="#94a3b8" fontSize="12">≡</text>
+      <line x1="260" y1="35" x2="272" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <rect x="274" y="20" width="92" height="30" rx="3" fill="none" stroke="#7dd3fc" strokeWidth="1.5" />
+      <text x="320" y="33" fill="#7dd3fc" fontSize="11" fontFamily="monospace" textAnchor="middle">G(s)</text>
+      <text x="320" y="46" fill="#7dd3fc" fontSize="11" fontFamily="monospace" textAnchor="middle">1+G(s)H(s)</text>
+    </svg>
+  );
+}
+
+function SvgInnerOuter() {
+  return (
+    <svg viewBox="0 0 420 120" width="420" height="120" style={{ display: "block", margin: "10px 0" }}>
+      <ArrowMarker />
+      <text x="2" y="38" fill="#a0c4ff" fontSize="12" fontFamily="monospace">R(s)</text>
+      {/* outer sum */}
+      <line x1="36" y1="35" x2="50" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <circle cx="58" cy="35" r="8" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="52" y="30" fill="#a0c4ff" fontSize="9">+</text>
+      <text x="52" y="44" fill="#f87171" fontSize="9">−</text>
+      <line x1="66" y1="35" x2="78" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* G1 */}
+      <rect x="80" y="23" width="50" height="24" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="105" y="38" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">G₁</text>
+      <line x1="130" y1="35" x2="148" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* inner sum */}
+      <circle cx="156" cy="35" r="8" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="150" y="30" fill="#a0c4ff" fontSize="9">+</text>
+      <text x="150" y="44" fill="#f87171" fontSize="9">−</text>
+      <line x1="164" y1="35" x2="176" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* G2 */}
+      <rect x="178" y="23" width="50" height="24" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="203" y="38" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">G₂</text>
+      <line x1="228" y1="35" x2="252" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <circle cx="252" cy="35" r="3" fill="#a0c4ff" />
+      <text x="258" y="39" fill="#a0c4ff" fontSize="12" fontFamily="monospace">Y(s)</text>
+      {/* H1 inner feedback */}
+      <line x1="252" y1="35" x2="252" y2="65" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="252" y1="65" x2="190" y2="65" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <rect x="168" y="57" width="38" height="18" rx="2" fill="none" stroke="#fbbf24" strokeWidth="1.5" />
+      <text x="187" y="70" fill="#fbbf24" fontSize="10" textAnchor="middle">H₁</text>
+      <line x1="168" y1="65" x2="156" y2="65" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="156" y1="65" x2="156" y2="44" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* H2 outer feedback */}
+      <line x1="252" y1="35" x2="252" y2="95" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="252" y1="95" x2="90" y2="95" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <rect x="68" y="87" width="38" height="18" rx="2" fill="none" stroke="#34d399" strokeWidth="1.5" />
+      <text x="87" y="100" fill="#34d399" fontSize="10" textAnchor="middle">H₂</text>
+      <line x1="68" y1="95" x2="58" y2="95" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="58" y1="95" x2="58" y2="44" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+    </svg>
+  );
+}
+
+function SvgSFG1() {
+  return (
+    <svg viewBox="0 0 400 100" width="400" height="100" style={{ display: "block", margin: "10px 0" }}>
+      <ArrowMarker />
+      {/* nodes */}
+      {[40, 130, 220, 310, 370].map((x, i) => (
+        <circle key={i} cx={x} cy={40} r={6} fill="none" stroke="#a0c4ff" strokeWidth={1.5} />
+      ))}
+      {/* labels */}
+      {["R", "x₁", "x₂", "x₃", "Y"].map((lbl, i) => (
+        <text key={i} x={[40, 130, 220, 310, 370][i]} y={25} fill="#a0c4ff" fontSize="12" fontFamily="monospace" textAnchor="middle">{lbl}</text>
+      ))}
+      {/* forward arrows */}
+      <line x1="46" y1="40" x2="118" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <line x1="136" y1="40" x2="208" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <line x1="226" y1="40" x2="298" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <line x1="316" y1="40" x2="358" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* branch gains */}
+      <text x="82" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">G₁</text>
+      <text x="172" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">G₂</text>
+      <text x="262" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">G₃</text>
+      <text x="342" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">1</text>
+      {/* -H1 feedback: x3 back to x1 */}
+      <path d="M 310,46 Q 220,80 130,46" stroke="#fbbf24" strokeWidth="1.5" fill="none" markerEnd="url(#arr)" />
+      <text x="220" y="80" fill="#fbbf24" fontSize="10" textAnchor="middle">−H₁</text>
+      {/* -H2 feedback: x3 back to R */}
+      <path d="M 310,46 Q 175,100 40,46" stroke="#f87171" strokeWidth="1.5" fill="none" markerEnd="url(#arr)" />
+      <text x="175" y="100" fill="#f87171" fontSize="10" textAnchor="middle">−H₂</text>
+    </svg>
+  );
+}
+
+function SvgSFGSS() {
+  return (
+    <svg viewBox="0 0 480 110" width="480" height="110" style={{ display: "block", margin: "10px 0" }}>
+      <ArrowMarker />
+      {[30, 100, 160, 230, 290, 360, 430].map((x, i) => (
+        <circle key={i} cx={x} cy={40} r={5} fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      ))}
+      {["U", "ẋ₁", "x₁", "ẋ₂", "x₂", "x₂", "Y"].map((lbl, i) => (
+        <text key={i} x={[30, 100, 160, 230, 290, 360, 430][i]} y={24} fill="#a0c4ff" fontSize="11" fontFamily="monospace" textAnchor="middle">{lbl}</text>
+      ))}
+      <line x1="35" y1="40" x2="89" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <line x1="105" y1="40" x2="149" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <line x1="165" y1="40" x2="219" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <line x1="235" y1="40" x2="279" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <line x1="295" y1="40" x2="349" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <line x1="365" y1="40" x2="419" y2="40" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <text x="62" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">1/C</text>
+      <text x="130" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">s⁻¹</text>
+      <text x="194" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">1/L</text>
+      <text x="256" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">s⁻¹</text>
+      <text x="322" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">1</text>
+      <text x="393" y="34" fill="#7dd3fc" fontSize="10" textAnchor="middle">R</text>
+      {/* −1/C: x1 → ẋ1 */}
+      <path d="M 160,45 Q 130,75 100,45" stroke="#fbbf24" strokeWidth="1.5" fill="none" markerEnd="url(#arr)" />
+      <text x="130" y="78" fill="#fbbf24" fontSize="10" textAnchor="middle">−1/C</text>
+      {/* −R/L: x2 → ẋ2 */}
+      <path d="M 290,45 Q 260,85 230,45" stroke="#f87171" strokeWidth="1.5" fill="none" markerEnd="url(#arr)" />
+      <text x="260" y="88" fill="#f87171" fontSize="10" textAnchor="middle">−R/L</text>
+    </svg>
+  );
+}
+
+function SvgRLC() {
+  return (
+    <svg viewBox="0 0 280 130" width="280" height="130" style={{ display: "block", margin: "10px 0" }}>
+      {/* Current source */}
+      <circle cx="30" cy="65" r="18" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="30" y="69" fill="#a0c4ff" fontSize="11" textAnchor="middle">u(t)</text>
+      {/* top wire */}
+      <line x1="30" y1="47" x2="30" y2="20" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="30" y1="20" x2="240" y2="20" stroke="#a0c4ff" strokeWidth="1.5" />
+      {/* bottom wire */}
+      <line x1="30" y1="83" x2="30" y2="110" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="30" y1="110" x2="240" y2="110" stroke="#a0c4ff" strokeWidth="1.5" />
+      {/* C branch */}
+      <line x1="80" y1="20" x2="80" y2="45" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="65" y1="48" x2="95" y2="48" stroke="#a0c4ff" strokeWidth="2.5" />
+      <line x1="65" y1="53" x2="95" y2="53" stroke="#a0c4ff" strokeWidth="2.5" />
+      <line x1="80" y1="56" x2="80" y2="110" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="98" y="68" fill="#7dd3fc" fontSize="11">C</text>
+      <text x="55" y="40" fill="#94a3b8" fontSize="10">+</text>
+      <text x="55" y="60" fill="#94a3b8" fontSize="10">vc</text>
+      <text x="55" y="55" fill="#94a3b8" fontSize="10">−</text>
+      {/* L branch */}
+      <line x1="160" y1="20" x2="160" y2="38" stroke="#a0c4ff" strokeWidth="1.5" />
+      {[42, 50, 58, 66, 74].map((y, i) => (
+        <path key={i} d={`M 152,${y} Q 160,${y - 4} 168,${y} Q 160,${y + 4} 152,${y + 8}`} fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      ))}
+      <line x1="160" y1="82" x2="160" y2="110" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="172" y="65" fill="#7dd3fc" fontSize="11">L</text>
+      {/* R branch */}
+      <line x1="240" y1="20" x2="240" y2="40" stroke="#a0c4ff" strokeWidth="1.5" />
+      <rect x="228" y="40" width="24" height="30" rx="2" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="240" y="59" fill="#7dd3fc" fontSize="11" textAnchor="middle">R</text>
+      <line x1="240" y1="70" x2="240" y2="110" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="218" y="57" fill="#94a3b8" fontSize="10">v₀</text>
+    </svg>
+  );
+}
+
+function SvgDCMotor() {
+  return (
+    <svg viewBox="0 0 460 110" width="460" height="110" style={{ display: "block", margin: "10px 0" }}>
+      <ArrowMarker />
+      <text x="2" y="38" fill="#a0c4ff" fontSize="12" fontFamily="monospace">Va(s)</text>
+      {/* sum */}
+      <line x1="42" y1="35" x2="58" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <circle cx="66" cy="35" r="8" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="60" y="30" fill="#a0c4ff" fontSize="9">+</text>
+      <text x="60" y="44" fill="#f87171" fontSize="9">−</text>
+      <line x1="74" y1="35" x2="86" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* armature */}
+      <rect x="88" y="22" width="68" height="26" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="122" y="36" fill="#e2e8f0" fontSize="10" textAnchor="middle">1/(Las+Ra)</text>
+      <line x1="156" y1="35" x2="172" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* Km */}
+      <rect x="174" y="22" width="42" height="26" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="195" y="38" fill="#e2e8f0" fontSize="12" fontFamily="monospace" textAnchor="middle">Km</text>
+      <line x1="216" y1="35" x2="230" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      {/* mechanical */}
+      <rect x="232" y="22" width="62" height="26" rx="3" fill="none" stroke="#a0c4ff" strokeWidth="1.5" />
+      <text x="263" y="38" fill="#e2e8f0" fontSize="10" textAnchor="middle">1/(Js+b)</text>
+      <line x1="294" y1="35" x2="316" y2="35" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <circle cx="316" cy="35" r="3" fill="#a0c4ff" />
+      <text x="322" y="39" fill="#a0c4ff" fontSize="12" fontFamily="monospace">ω(s)</text>
+      {/* Kb feedback */}
+      <line x1="316" y1="35" x2="316" y2="80" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="316" y1="80" x2="120" y2="80" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+      <rect x="100" y="72" width="35" height="18" rx="2" fill="none" stroke="#34d399" strokeWidth="1.5" />
+      <text x="117" y="85" fill="#34d399" fontSize="10" textAnchor="middle">Kb</text>
+      <line x1="100" y1="80" x2="66" y2="80" stroke="#a0c4ff" strokeWidth="1.5" />
+      <line x1="66" y1="80" x2="66" y2="44" stroke="#a0c4ff" strokeWidth="1.5" markerEnd="url(#arr)" />
+    </svg>
+  );
+}
+
+const QUESTIONS = [
+  // ── BLOK DİYAGRAM ──────────────────────────────────────────────────────────
+  {
+    id: 1, topic: "blok",
+    q: "Aşağıdaki seri bağlantıyı tek bir bloğa indirgeyin ve eşdeğer transfer fonksiyonunu yazın.",
+    svg: <SvgSeries />,
+    a: "Seri bağlantıda bloklar çarpılır:\n\nT(s) = G₁(s) · G₂(s)\n\nKural: Birbirini takip eden blokların transfer fonksiyonları çarpılarak tek bir bloğa indirgenir."
+  },
+  {
+    id: 2, topic: "blok",
+    q: "Aşağıdaki paralel bağlantıyı tek bir bloğa indirgeyin.",
+    svg: <SvgParallel />,
+    a: "Paralel bağlantıda bloklar toplanır:\n\nT(s) = G₁(s) + G₂(s)\n\nKural: Aynı giriş-çıkış noktaları arasında paralel bloklar toplanarak tek bloğa indirgenir."
+  },
+  {
+    id: 3, topic: "blok",
+    q: "Aşağıdaki standart negatif geri beslemeli sistemi tek bloğa indirgeyin.",
+    svg: <SvgFeedback />,
+    a: "Kapalı döngü transfer fonksiyonu:\n\nT(s) = G(s) / (1 + G(s)·H(s))\n\nPay: ileri yol kazancı = G(s)\nPayda: 1 + (döngü kazancı) = 1 + G(s)H(s)\n\nBirim geri beslemede H(s)=1 → T(s) = G(s)/(1+G(s))"
+  },
+  {
+    id: 4, topic: "blok",
+    q: "Aşağıdaki iç-dış döngülü sistemi indirgeyin. İçteki döngü G₂ ve H₁ bloklarından, dıştaki döngü G₁, eşdeğer iç blok ve H₂'den oluşmaktadır.",
+    svg: <SvgInnerOuter />,
+    a: "Adım 1 – İç döngüyü indirge:\nT_iç = G₂ / (1 + G₂H₁)\n\nAdım 2 – Dış döngüyü indirge:\nT(s) = G₁ · T_iç / (1 + G₁ · T_iç · H₂)\n\n= G₁G₂ / (1 + G₂H₁ + G₁G₂H₂)\n\nKural: Her zaman en içteki döngüden başla."
+  },
+  {
+    id: 5, topic: "blok",
+    q: "Blok diyagram indirgeme kuralı: Bir toplama noktasını bloğun ARKASINA almak nasıl yapılır?",
+    a: "Bir toplama noktası (summing junction) G(s) bloğunun arkasına taşınırken:\n• G(s)'den önce gelen sinyal değişmez.\n• G(s)'den SONRA gelen sinyal, G(s) ile ÇARPILARAK bloğun önündeki toplayıcıya alınır.\n\nBaşka bir deyişle: X₃ = G·X₁ ± X₂  →  X₃ = G·(X₁ ± X₂/G)"
+  },
+  {
+    id: 6, topic: "blok",
+    q: "Blok diyagram indirgeme kuralı: Bir dal noktasını bloğun ÖNÜNE almak nasıl yapılır?",
+    a: "Bir dal (branch) noktası G(s) bloğunun önüne taşınırken:\n• Ana yol üzerindeki sinyal değişmez.\n• Dallanan sinyal, G(s) bloğuyla ÇARPILARAK yeni konumda elde edilir.\n\nX₂ = G·X₁ dallanıyorsa → önüne alındığında X₂/G·G = X₂ olarak korunur."
+  },
+  {
+    id: 7, topic: "blok",
+    q: "G₁, G₂, G₃ seri bağlı ileri yol, H₁ ikinci bloğun çıkışından (G₂G₃ arasından) geri, H₂ çıkıştan (tüm sistem) geri besleme yapıyorsa toplam transfer fonksiyonu nedir?",
+    a: "Adım 1 – İç döngü (G₃ ve H₁):\nT_iç = G₃ / (1 + G₃H₁)\n\nAdım 2 – G₂ ile seri:\nT_orta = G₂ · G₃ / (1 + G₃H₁)\n\nAdım 3 – Dış döngü:\nT(s) = G₁G₂G₃ / (1 + G₃H₁ + G₁G₂G₃H₂)"
+  },
+  {
+    id: 8, topic: "blok",
+    q: "Birden fazla girişli bir kapalı döngü sistemde süperpozisyon (toplamsallık) ilkesi nasıl uygulanır?",
+    a: "Süperpozisyon ilkesi:\n1. Tek bir giriş bırak, diğer girişleri SIFIRLA (R=0 → dalı kes; bozucu D=0 → dalı kes).\n2. O giriş için çıkışı hesapla.\n3. Tüm girişler için tekrarla.\n4. Tüm çıkışları TOPLA: Y = Y₁ + Y₂ + ...\n\nNot: Sistem doğrusal olduğundan bu geçerlidir."
+  },
+  {
+    id: 9, topic: "blok",
+    q: "Aşağıdaki çok döngülü sistemde T(s) = Y(s)/R(s) nedir?\n\nR→[G₁]→⊕→[G₂]→⊕→[G₃]→[G₄]→Y\n         ↑H₂(−)    ↑H₁(−)         |\n         └──────────────────────────┘\n                    └─────H₃(−)────┘\n\n(H₃ en dış, H₂ sol iç, H₁ sağ iç döngü)",
+    a: "Ders slaytındaki örnek (Dorf & Bishop):\n\nT(s) = G₁G₂G₃G₄ / (1 − G₃G₄H₁ + G₂G₃H₂ + G₁G₂G₃G₄H₃)\n\nNot: İşaretlere dikkat — negatif geri beslemede (−) işareti paydaya (+) olarak girer."
+  },
+  {
+    id: 10, topic: "blok",
+    q: "G₁(s) = (s+1)/(s+2) ve G₂(s) = 4/[s(s+1)] seri bağlı olduğunda T(s) = Y(s)/R(s) nedir?",
+    a: "T(s) = G₁(s) · G₂(s)\n= [(s+1)/(s+2)] · [4/(s(s+1))]\n= 4(s+1) / [s(s+1)(s+2)]\n= 4 / [s(s+2)]\n= 4 / (s² + 2s)\n\n(s+1) faktörü sadeleşti!)"
+  },
+  {
+    id: 11, topic: "blok",
+    q: "6 temel blok diyagram indirgeme kuralını kısaca listele.",
+    a: "1. Seri bağlantı: T = G₁·G₂\n2. Paralel bağlantı: T = G₁ + G₂\n3. Geri bildirim döngüsü: T = G/(1±GH)\n4. Dal noktasını bloğun ÖNÜNE alma: dal koluna G eklenir\n5. Dal noktasını bloğun ARKASINA alma: dal koluna 1/G eklenir\n6. Toplama noktasını bloğun ÖNÜNE alma: o kola 1/G eklenir\n   Toplama noktasını bloğun ARKASINA alma: o kola G eklenir"
+  },
+  {
+    id: 12, topic: "blok",
+    q: "Bir sistemin transfer fonksiyonu T(s) = (G₁G₂ + G₂G₃) / (1 + G₂G₄) olarak veriliyor. Bu sistemi oluşturan blok diyagramı açıkla.",
+    a: "Olası yapı:\n• Paralel üst kol: G₁, alt kol: G₃ → toplayıcıda birleşir → ortak G₂ bloğu\n• G₂ çıkışından G₄ ile negatif geri besleme\n\nYani:\n- Pay: G₂(G₁+G₃) → paralel G₁‖G₃ sonra G₂\n- Payda: 1+G₂G₄ → G₂ çıkışından G₄'lü geri besleme\n\nT = G₂(G₁+G₃)/(1+G₂G₄)"
+  },
+
+  // ── MASON / SFG ──────────────────────────────────────────────────────────────
+  {
+    id: 13, topic: "mason",
+    q: "Mason Kazanç Formülü'nü yaz ve her terimi tanımla.",
+    a: "T_ij = (Σₖ Pᵢⱼₖ · Δᵢⱼₖ) / Δ\n\n• Pᵢⱼₖ : xᵢ'den xⱼ'ye giden k. ileri yolun kazancı\n• Δ : Sistemin determinantı (karakteristik denklem payda)\n• Δᵢⱼₖ : k. ileri yolun kofaktörü (bu yol kaldırıldığında kalan determinant)\n\nΔ = 1 − (tüm döngüler) + (değmeyen ikili döngü çarpımları) − (değmeyen üçlü...) + ..."
+  },
+  {
+    id: 14, topic: "mason",
+    q: "İki döngüsü birbirine DEĞEN, iki döngüsü birbirine DEĞMEYEN bir SFG'de Δ nasıl hesaplanır? (4 döngü: L₁, L₂, L₃, L₄; L₁ ile L₂ değişiyor, L₃ ile L₄ değişmiyor.)",
+    a: "Δ = 1 − (L₁+L₂+L₃+L₄) + (değmeyen ikili çarpımlar)\n\nDeğmeyen çiftler: sadece (L₃,L₄) değişmiyor → tek ikili çarpım var\n\nΔ = 1 − L₁ − L₂ − L₃ − L₄ + L₃L₄\n\nNot: L₁ ile L₂ değiştiğinden L₁L₂ terimi EKLENMEZ."
+  },
+  {
+    id: 15, topic: "mason",
+    q: "Kofaktör Δₖ nedir? Nasıl hesaplanır?",
+    a: "Δₖ : k. ileri yolun kofaktörü.\n\nHesaplama:\n1. k. ileri yolun geçtiği tüm düğümler ve bu düğümlere bağlı dallar SFG'den kaldırılır.\n2. Kalan SFG için Δ formülü uygulanır.\n\nEğer k. ileri yol kaldırıldığında hiç döngü kalmıyorsa → Δₖ = 1\nEğer bazı döngüler kaldıysa → Δₖ = 1 − (kalan döngüler) + ..."
+  },
+  {
+    id: 16, topic: "mason",
+    q: "Aşağıdaki SFG'de T(s) = Y(s)/R(s)'yi Mason formülüyle bul.",
+    svg: <SvgSFG1 />,
+    a: "İleri yol: P₁ = G₁G₂G₃  (tek yol)\n\nDöngüler:\nL₁ = −G₂G₃H₁  (x₁→x₂→x₃→x₁)\nL₂ = −G₁G₂G₃H₂  (R→x₁→x₂→x₃→R)\n\nDeğmeyen çift yok (her iki döngü de x₁ düğümünü paylaşıyor).\n\nΔ = 1 − L₁ − L₂ = 1 + G₂G₃H₁ + G₁G₂G₃H₂\n\nP₁ kaldırılınca hiçbir düğüm kalmaz → Δ₁ = 1\n\nT(s) = P₁Δ₁/Δ = G₁G₂G₃ / (1 + G₂G₃H₁ + G₁G₂G₃H₂)"
+  },
+  {
+    id: 17, topic: "mason",
+    q: "Ders slaytındaki etkileşimli sistemde 2 ileri yol ve 4 döngü var: P₁=G₁G₂G₃G₄, P₂=G₅G₆G₇G₈, L₁=G₂H₂, L₂=G₃H₃, L₃=G₆H₆, L₄=G₇H₇. Hangi döngü çiftleri birbirine değmez ve Δ nedir?",
+    a: "P₁ üst yolda: L₁, L₂ bu yolun döngüleri.\nP₂ alt yolda: L₃, L₄ bu yolun döngüleri.\n\nDeğmeyen çiftler: (L₁,L₃), (L₁,L₄), (L₂,L₃), (L₂,L₄) — üst ve alt yol döngüleri kesişmiyor.\n\nΔ = 1−(L₁+L₂+L₃+L₄) + (L₁L₃+L₁L₄+L₂L₃+L₂L₄)\n\nKofaktörler:\n• Δ₁ (P₁ kaldırılınca L₁,L₂ gider, L₃,L₄ kalır): Δ₁ = 1−L₃−L₄\n• Δ₂ (P₂ kaldırılınca L₃,L₄ gider, L₁,L₂ kalır): Δ₂ = 1−L₁−L₂"
+  },
+  {
+    id: 18, topic: "mason",
+    q: "ẋ₁ = x₂,  ẋ₂ = −2x₁ − 3x₂ + u,  y = x₁ durum denklemleri verildiğinde SFG'yi çiz ve Mason formülüyle T(s) = Y(s)/U(s) bul.",
+    svg: <SvgSFGSS />,
+    a: "Laplace alanında:\nsX₁ = X₂ → X₁ = (1/s)X₂\nsX₂ = −2X₁ − 3X₂ + U → X₂ = (1/s)(U − 3X₂ − 2X₁)\n\nSFG:\nU→(1/s)→ẋ₂→(s⁻¹)→x₂→(s⁻¹)→x₁=Y\n... ile −3 öz döngüsü (x₂→x₂), −2 geri besleme (x₁→x₂)\n\nİleri yol: P₁ = (1/s)·(1/s) = 1/s²\n\nDöngüler: L₁ = −3/s, L₂ = −2/s²\n\nDeğmeyen çift yok.\nΔ = 1 + 3/s + 2/s²\nΔ₁ = 1\n\nT(s) = (1/s²) / (1 + 3/s + 2/s²) = 1 / (s² + 3s + 2)"
+  },
+  {
+    id: 19, topic: "mason",
+    q: "Blok diyagram ile SFG arasındaki temel farklar nelerdir?",
+    a: "Blok Diyagram:\n• Bloklar (transfer fonksiyonu kutuları) + toplayıcılar + dal noktaları\n• Görsel olarak daha sezgisel\n• İndirgeme kurallarıyla adım adım sadeleştirme\n\nSFG (Signal Flow Graph):\n• Yalnızca düğümler (node) ve dallar (branch/kazanç)\n• Toplayıcı yoktur — her düğüm gelen sinyallerin toplamıdır\n• Mason formülü doğrudan uygulanır, otomatik çözüm\n• Karmaşık sistemlerde blok diyagramdan daha hızlı"
+  },
+  {
+    id: 20, topic: "mason",
+    q: "Bir SFG'de R'den Y'ye 2 ileri yol var: P₁ = 3, P₂ = 2. Tek döngü: L₁ = −0.5. P₂ yolu L₁'e değmiyor. T(s) = Y/R nedir?",
+    a: "Δ = 1 − L₁ = 1 − (−0.5) = 1.5\n\nKofaktörler:\n• Δ₁ : P₁ kaldırılınca L₁ da giderse → Δ₁ = 1\n• Δ₂ : P₂ L₁'e değmiyor, L₁ kalıyor → Δ₂ = 1 − L₁ = 1.5\n\nT = (P₁Δ₁ + P₂Δ₂) / Δ\n= (3·1 + 2·1.5) / 1.5\n= (3 + 3) / 1.5\n= 6 / 1.5 = 4"
+  },
+  {
+    id: 21, topic: "mason",
+    q: "Quiz sınavındaki MIMO sistemde (Şekil.1) Y₁(s)/R₂(s) transfer fonksiyonu nasıl bulunur? Hangi ileri yollar ve döngüler vardır? (G₂,G₃,G₄,G₅,G₈,G₉, H₁, H₂ bloklarını kullan.)",
+    a: "Adım 1: R₁=0, Y₂=0 koşuluyla sistemi sadeleştir.\n\nR₂'den Y₁'e ileri yollar:\nP₁ = G₄G₅G₈G₂G₃ = G₂G₃G₄G₅G₈\nP₂ = G₄G₅G₉G₃ = G₃G₄G₅G₉\n\nDöngüler: L₁ = −G₅H₂,  L₂ = −G₃H₁\nL₁ ile L₂ birbirine değmez → ΔL = L₁·L₂\n\nΔ = 1 + G₅H₂ + G₃H₁ + G₃G₅H₁H₂\n\nHer iki ileri yol da tüm döngülere değiyor → Δ₁ = Δ₂ = 1\n\nY₁/R₂ = (G₂G₃G₄G₅G₈ + G₃G₄G₅G₉) / (1 + G₃H₁ + G₅H₂ + G₃G₅H₁H₂)"
+  },
+  {
+    id: 22, topic: "mason",
+    q: "SFG'de döngü kazancı L = G(s)·H(s) olan bir geri besleme döngüsü çiz. H(s) = K₂, G(s) = K₁/(s+a) ise döngü kazancı ve Δ nedir?",
+    a: "Döngü kazancı:\nL = G(s)·H(s) = K₁K₂/(s+a)\n\n(Negatif geri beslemede dal kazancı −H olarak gösterilir, dolayısıyla L = −K₁K₂/(s+a))\n\nTek döngü için:\nΔ = 1 − L = 1 + K₁K₂/(s+a) = (s + a + K₁K₂)/(s+a)"
+  },
+
+  // ── LAPLACE ────────────────────────────────────────────────────────────────
+  {
+    id: 23, topic: "laplace",
+    q: "F(s) = A/(s+a) fonksiyonunun ters Laplace dönüşümünü yaz.",
+    a: "f(t) = A · e^(−at) · u(t)\n\nCinsi: azalan üstel fonksiyon.\nBaşlangıç değeri: f(0) = A\nSon değer: f(∞) = 0 (a>0 ise)"
+  },
+  {
+    id: 24, topic: "laplace",
+    q: "F(s) = K/(s+a)² fonksiyonunun ters Laplace dönüşümünü yaz. Bu tür kutuplara ne denir?",
+    a: "f(t) = K · t · e^(−at) · u(t)\n\nBu, 2. dereceden katlı kök (repeated pole) içeren bir fonksiyondur.\n(s+a)² → s = −a noktasında çift kutup.\n\nİlk rezidüün türev formülüyle bulunduğuna dikkat:\nB = d/ds[(s+a)² F(s)]|_{s=−a}"
+  },
+  {
+    id: 25, topic: "laplace",
+    q: "F(s) = 10 / [(s+1)(s+3)] fonksiyonunun ters Laplace dönüşümünü kısmi kesir yöntemiyle bul.",
+    a: "F(s) = A/(s+1) + B/(s+3)\n\nA = (s+1)F(s)|_{s=−1} = 10/(−1+3) = 10/2 = 5\nB = (s+3)F(s)|_{s=−3} = 10/(−3+1) = 10/(−2) = −5\n\nF(s) = 5/(s+1) − 5/(s+3)\n\nf(t) = 5e^(−t) − 5e^(−3t)  (t ≥ 0)"
+  },
+  {
+    id: 26, topic: "laplace",
+    q: "Son Değer Teoremi'ni tanımla ve F(s) = 5 / [s(s²+s+2)] için f(∞) değerini bul.",
+    a: "Son Değer Teoremi:\nf(∞) = lim_{t→∞} f(t) = lim_{s→0} s·F(s)\n\n(Koşul: s·F(s)'nin tüm kutupları sol yarı düzlemde veya orijinde olmalı.)\n\nf(∞) = lim_{s→0} s · 5/[s(s²+s+2)]\n= lim_{s→0} 5/(s²+s+2)\n= 5/2"
+  },
+  {
+    id: 27, topic: "laplace",
+    q: "Başlangıç Değeri Teoremi'ni tanımla ve G(s) = 4/(s+2)'ye birim basamak giriş uygulandığında y(0⁺) değerini bul.",
+    a: "Başlangıç Değer Teoremi:\nf(0⁺) = lim_{s→∞} s·F(s)\n\nBirim basamak giriş: R(s) = 1/s → Y(s) = G(s)/s = 4/[s(s+2)]\n\ny(0⁺) = lim_{s→∞} s · 4/[s(s+2)]\n= lim_{s→∞} 4/(s+2) = 0\n\nFiziksel yorum: 1. dereceden sistem anlık değişim yapamaz → başlangıç çıkışı sıfır."
+  },
+  {
+    id: 28, topic: "laplace",
+    q: "Temel Laplace çiftlerini yaz: δ(t), u(t), r(t)=t, p(t)=t²/2",
+    a: "δ(t)  ↔  1              (birim darbe)\nu(t)  ↔  1/s             (birim basamak)\nr(t)=t  ↔  1/s²          (birim rampa)\np(t)=t²/2  ↔  1/s³      (birim parabol)\n\nGenel: tⁿ/n! ↔ 1/s^(n+1)"
+  },
+  {
+    id: 29, topic: "laplace",
+    q: "Quiz sınavı Soru 2: w(s) = [2.5(s+2)] / [(s+5)(s+1)²·4s] verilmiştir. Kısmi kesir açılımını yap ve w(t) = ? bul.\n(Katlı kök rezidüsü: B = d/ds[(s+1)²·w(s)]|_{s=−1})",
+    a: "w(s) = A/(s+5) + B/(s+1) + C/(s+1)² + D/(4s)\n\n• D = s·w(s)|_{s=0} = [2.5·2]/[5·1²] · (1/4) = 1/4\n• A = (s+5)·w(s)|_{s=−5}\n  = [2.5(−3)] / [(−4)²·(−5)·4] = (−7.5)/(−320) = 3/128\n• C = (s+1)²·w(s)|_{s=−1}\n  = [2.5(1)] / [(4)(−1)·4] = 2.5/(−16) = −5/32\n• B = d/ds[(s+1)²·w(s)]|_{s=−1} = −35/128\n\nw(t) = 1/4 + (3/128)e^(−5t) − (35/128)e^(−t) − (5/32)te^(−t)"
+  },
+  {
+    id: 30, topic: "laplace",
+    q: "F(s) = (2s+3) / [(s+1)(s+2)] için ters Laplace'ı bul.",
+    a: "Kısmi kesirler:\nF(s) = A/(s+1) + B/(s+2)\n\nA = (s+1)F(s)|_{s=−1} = (2(−1)+3)/(−1+2) = 1/1 = 1\nB = (s+2)F(s)|_{s=−2} = (2(−2)+3)/(−2+1) = (−1)/(−1) = 1\n\nF(s) = 1/(s+1) + 1/(s+2)\n\nf(t) = e^(−t) + e^(−2t)  (t ≥ 0)"
+  },
+
+  // ── DOĞRUSALLAŞTIRMA ────────────────────────────────────────────────────────
+  {
+    id: 31, topic: "lineer",
+    q: "Neden doğrusallaştırma yapıyoruz? Doğrusallaştırmanın geçerli olduğu koşul nedir?",
+    a: "Neden:\nDoğrusal olmayan (nonlinear) sistemlere transfer fonksiyonu, Laplace dönüşümü ve blok diyagram gibi doğrusal analiz araçları uygulanamaz. Doğrusallaştırma ile bir çalışma noktası etrafında sistemi doğrusal bir modelle yaklaşık temsil ederiz.\n\nGeçerlilik koşulu:\nSistem, çalışma noktası (x₀) civarında küçük pertürbasyonlarla çalışmalıdır:\n|Δx| << |x₀|\n\nBüyük sapmalar varsa → model geçersiz."
+  },
+  {
+    id: 32, topic: "lineer",
+    q: "f(x) = e^(3x) fonksiyonunu x₀ = 0 çalışma noktası civarında doğrusallaştır.",
+    a: "Taylor serisi 1. terime kadar:\nf(x) ≈ f(x₀) + f'(x₀)·(x − x₀)\n\nf(0) = e⁰ = 1\nf'(x) = 3e^(3x) → f'(0) = 3\n\nΔf ≈ 3·Δx\n\nDoğrusallaştırılmış model:\nΔy = 3·Δx\n(Lineer gain = 3)"
+  },
+  {
+    id: 33, topic: "lineer",
+    q: "Quiz sınavı Soru 3: Manyetik kaldırma kuvveti F_H = k·i⁶/z² verilmektedir. Denge noktasında F_H = mg'dir. (i₀,z₀) denge noktası civarında z ve i arasında doğrusal bağıntı elde et.",
+    a: "Denge: k·i₀⁶/z₀² = mg → z₀ = √(k/mg)·i₀³\n\nz = z(i) fonksiyonunu Taylor serisine aç:\nz = z₀ + dz/di|_{i₀} · (i − i₀)\n\ndz/di = 3·√(k/mg)·i²\n\ndz/di|_{i₀} = 3·√(k/mg)·i₀²\n\nDoğrusallaştırılmış denklem:\nΔz = (3·√(k/mg)·i₀²)·Δi\n\nYani hava boşluğu değişimi Δz, akım değişimi Δi ile orantılıdır."
+  },
+  {
+    id: 34, topic: "lineer",
+    q: "sin(θ) ≈ θ yaklaşımı neden ve ne zaman geçerlidir? Sarkaç sistemi için uygula.",
+    a: "sin(θ) ≈ θ: θ çok küçük açılar için geçerli (rad cinsinden, |θ| << 1).\n\nSarkaç denklemi: mL·θ̈ = −mg·sin(θ)\n\nDoğrusallaştırma (θ₀ = 0 civarında):\nsin(θ) ≈ θ → mL·θ̈ = −mg·θ\n\nθ̈ + (g/L)·θ = 0\n\nBu standart harmonik osilatör, ω_n = √(g/L).\nDoğrusal model sadece |θ| < ~15-20° için geçerlidir."
+  },
+  {
+    id: 35, topic: "lineer",
+    q: "Slayttaki tren motoru örneği: Güç yükselteci V_c = 2e^(3v_g) şeklinde nonlineer davranış gösteriyor. v_{g0} = 1.5V çalışma noktasında doğrusallaştır ve G₁(s) = V_c(s)/V_g(s) nedir?",
+    a: "Taylor serisi:\nΔV_c = (dV_c/dv_g)|_{vg0=1.5} · Δv_g\n\ndV_c/dv_g = 6e^(3v_g) → 6e^(3·1.5) = 6e^4.5\n\ne^4.5 ≈ 90.017 → kazanç ≈ 540.1\n\nΔV_c ≈ 540.1 · Δv_g\n\nG₁(s) = V_c(s)/V_g(s) = 540.1\n\n(Saf kazanç — frekansa bağlı dinamik yok, doğrudan sabit)"
+  },
+
+  // ── DURUM UZAYI ────────────────────────────────────────────────────────────
+  {
+    id: 36, topic: "durum",
+    q: "Durum değişkeni olarak neden kapasitör gerilimi (v_C) ve indüktör akımı (i_L) seçilir?",
+    a: "Fiziksel gerekçe:\n• Kapasitör: enerji E = ½CV² → gerilim = 'hafıza' değişkeni\n• İndüktör: enerji E = ½LI² → akım = 'hafıza' değişkeni\n\nMatematiksel gerekçe:\n• Kapasitör: i = C·dv_C/dt → v_C türevlenebilir durum değişkeni\n• İndüktör: v = L·di_L/dt → i_L türevlenebilir durum değişkeni\n\nBu elemanlar anlık değişemez → kesintisiz durumu temsil ederler."
+  },
+  {
+    id: 37, topic: "durum",
+    q: "Quiz sınavı Soru 5a: Paralel RLC devresinde (akım kaynağı u(t), x₁=v_C, x₂=i_L, çıkış y=v₀=R·i_L) durum denklemlerini yaz.",
+    svg: <SvgRLC />,
+    a: "KCL (akım yasası) kapasitör düğümüne:\ni_C = C·dv_C/dt = u(t) − i_L\n→ ẋ₁ = (1/C)u(t) − (1/C)x₂\n\nKVL (gerilim yasası) indüktör için:\nv_C = L·di_L/dt + R·i_L (hata: paralel devrede v_C = v_L = L·di_L/dt ve v₀=R·i_L çıkışı ayrı)\nAslında: v_C = L·di_L/dt → di_L/dt = v_C/L → ẋ₂ = (1/L)x₁\n\n(Not: seri dirençte ẋ₂ = (1/L)x₁ − (R/L)x₂)\n\nMatris formu:\n[ẋ₁]   [ 0    −1/C ] [x₁]   [1/C]\n[ẋ₂] = [ 1/L  −R/L ] [x₂] + [ 0 ]u\n\ny = [0  R][x₁;x₂] = R·x₂"
+  },
+  {
+    id: 38, topic: "durum",
+    q: "ẋ₁ = x₂,  ẋ₂ = −2x₁ − 3x₂ + u,  y = x₁ sistemi için A, B, C, D matrislerini yaz.",
+    a: "Durum uzayı: ẋ = Ax + Bu,  y = Cx + Du\n\nA = [ 0   1 ]\n    [−2  −3]\n\nB = [0]\n    [1]\n\nC = [1  0]\n\nD = [0]\n\nNot: 2. dereceden sistem → 2×2 A matrisi."
+  },
+  {
+    id: 39, topic: "durum",
+    q: "Soru 38'deki sistemin SFG'sini çiz ve Mason formülüyle T(s) = Y(s)/U(s)'yu doğrula.",
+    svg: <SvgSFGSS />,
+    a: "Laplace:\nsX₁ = X₂  →  X₂ = sX₁\nsX₂ = −2X₁ − 3X₂ + U\n\nSFG: U →(1/s)→ ẋ₂ →(s⁻¹)→ x₂ →(s⁻¹)→ x₁ = Y\nÖz döngü: −3/s (x₂→x₂)\nGeri besleme: −2/s² (x₁→x₂)\n\nP₁ = (1/s²)\nL₁ = −3/s,  L₂ = −2/s²\nΔ₁ = 1\nΔ = 1 + 3/s + 2/s²\n\nT(s) = (1/s²) / (1+3/s+2/s²) = 1/(s²+3s+2)"
+  },
+  {
+    id: 40, topic: "durum",
+    q: "ẋ = −3x + 2u,  y = x (1. dereceden sistem). Laplace dönüşümüyle T(s) = Y(s)/U(s)'yu bul.",
+    a: "Laplace (sıfır başlangıç koşulu):\nsX(s) = −3X(s) + 2U(s)\n(s + 3)X(s) = 2U(s)\nX(s) = 2U(s)/(s+3)\n\nY(s) = X(s) → T(s) = Y/U = 2/(s+3)\n\nKutup: s = −3 (sol yarı düzlem → kararlı)\nStatik kazanç: T(0) = 2/3"
+  },
+  {
+    id: 41, topic: "durum",
+    q: "T(s) = (s+3) / (s²+4s+3) transfer fonksiyonu için kontrol kanonik formdaki durum uzayı modelini yaz.",
+    a: "Payda: s²+4s+3 → a₁=4, a₀=3\nPay: s+3 → b₁=1, b₀=3\n\nKontrol kanonik form:\nA = [ 0    1 ]     B = [0]\n    [−3  −4]         [1]\n\nC = [b₀  b₁] = [3  1]\nD = [0]\n\nDoğrulama:\nT(s) = C(sI−A)⁻¹B = (s+3)/(s²+4s+3) ✓"
+  },
+  {
+    id: 42, topic: "durum",
+    q: "A = [[0, 1], [−2, −3]] matrisi için karakteristik denklemi ve sistem kutuplarını bul.",
+    a: "Karakteristik denklem: det(sI − A) = 0\n\nsI − A = [s  −1]\n         [2  s+3]\n\ndet = s(s+3) − (−1)(2) = s²+3s+2\n\nKarakteristik denklem: s²+3s+2 = 0\n\nKökler (kutuplar):\n(s+1)(s+2) = 0 → s₁ = −1,  s₂ = −2\n\nHer iki kutup sol yarı düzlemde → sistem KARARLИ."
+  },
+  {
+    id: 43, topic: "durum",
+    q: "Seri RL devresi: L=2H, R=4Ω, giriş v(t), çıkış i_L(t). Durum uzayı denklemini ve T(s) = I_L(s)/V(s)'yi bul.",
+    a: "KVL: v(t) = L·di_L/dt + R·i_L\n\nDurum denklemi:\nẋ = −(R/L)x + (1/L)u = −2x + 0.5u\n(x = i_L,  u = v)\n\nLaplace:\n(s+2)I_L(s) = 0.5·V(s)\nT(s) = I_L(s)/V(s) = 0.5/(s+2) = 1/(2s+4)\n\nAlternatif yazım: T(s) = (1/L)/(s + R/L) = 0.5/(s+2)"
+  },
+
+  // ── DC MOTOR ───────────────────────────────────────────────────────────────
+  {
+    id: 44, topic: "motor",
+    q: "Armatür denetimli DC motorun armatür devresi Laplace denklemini yaz ve blok şemasını göster.",
+    svg: <SvgDCMotor />,
+    a: "Armatür devresi (KVL):\nV_a(s) = (L_a·s + R_a)·I_a(s) + K_b·ω(s)\n\nYeniden düzenle:\nI_a(s) = [V_a(s) − K_b·ω(s)] / (L_a·s + R_a)\n\n• V_a(s) : uygulanan armatür gerilimi (giriş)\n• I_a(s) : armatür akımı\n• K_b·ω(s) : zıt EMK (back-EMF) — iç geri besleme\n• L_a : armatür endüktansı\n• R_a : armatür direnci"
+  },
+  {
+    id: 45, topic: "motor",
+    q: "DC motorun döndürme momenti (tork) ile açısal hız arasındaki ilişkiyi yaz. (Mekanik denklem)",
+    a: "Tork-akım ilişkisi:\nT_m(s) = K_m · I_a(s)\n(K_m = K_a·K_f·I_f : motor sabiti)\n\nMekanik denge (Newton 2. kanunu dönel):\nT_m(s) = T_L(s) = (Js + b)·ω(s)\n\n• J : rotor eylemsizlik momenti (kg·m²)\n• b : visköz sürtünme katsayısı\n• ω(s) : açısal hız çıkışı\n\nTeta için: ω(s) = s·Θ(s)"
+  },
+  {
+    id: 46, topic: "motor",
+    q: "Armatür endüktansı L_a ihmal edildiğinde (L_a ≈ 0) ω(s)/V_a(s) transfer fonksiyonu nedir?",
+    a: "L_a ihmal edilince: I_a = (V_a − K_b·ω)/R_a\n\nT_m = K_m·I_a = K_m·(V_a − K_b·ω)/R_a\n\nT_m = (Js + b)ω → denklemi düzenle:\nK_m·V_a/R_a = (Js + b + K_m·K_b/R_a)·ω\n\nG₁(s) = ω(s)/V_a(s) = K_m/R_a / (Js + b + K_m·K_b/R_a)\n\n= K₁ / (s + 1/τ)\n\nKalıplaştırarak:\nK₁ = K_m/(K_m·K_b + R_a·b)\nτ = R_a·J/(K_m·K_b + R_a·b)"
+  },
+  {
+    id: 47, topic: "motor",
+    q: "Zıt elektromotor kuvveti (back-EMF) nedir ve DC motor transfer fonksiyonunu nasıl etkiler?",
+    a: "Tanım:\nMotor dönerken şaft üzerindeki iletkenler manyetik alanda hareket eder → Faraday yasasıyla V_b = K_b·ω gerilimi üretilir.\n\nEtkisi:\n• V_b, uygulanan V_a'ya zıt yönde → net armatür gerilimi V_a − V_b\n• Bu, sistemin doğal iç geri beslemesidir (negatif)\n• Hız arttıkça armatür akımı azalır → tork azalır → otomatik düzenleme (hız regülasyonu)\n• Transfer fonksiyonunda paydada K_m·K_b terimi ortaya çıkar."
+  },
+  {
+    id: 48, topic: "motor",
+    q: "Alan denetimli ve armatür denetimli DC motor arasındaki farkları karşılaştır.",
+    a: "Armatür Denetimli:\n• Alan akımı i_f = I_f = sabit (mıknatıs veya sabit akım)\n• Kontrol değişkeni: armatür gerilimi V_a\n• Transfer fonksiyonu: ω/V_a = K_m/[R_a(Js+b)+K_mK_b]\n• Hızlı yanıt\n\nAlan Denetimli:\n• Armatür akımı i_a = I_a = sabit\n• Kontrol değişkeni: alan gerilimi V_f\n• T_m = K_a·i_a·φ = K_a·I_a·K_f·i_f\n• θ/V_f = K_m / [s(Js+b)(L_f·s+R_f)]\n• Büyük güç sistemlerinde tercih edilir"
+  },
+
+  // ── DUYARLILIK ─────────────────────────────────────────────────────────────
+  {
+    id: 49, topic: "duyar",
+    q: "Açık döngü sistemlerde G(s)'ye karşı duyarlılık nedir?",
+    a: "Açık döngü sistemde T(s) = G(s).\n\nDuyarlılık formülü:\nS^T_G = (∂T/∂G)·(G/T)\n= (1)·(G/G) = 1\n\nYani %100 duyarlılık — G'deki %X değişimi, çıkışa doğrudan %X olarak yansır.\nAçık döngü sistemler parametre değişimlerine karşı savunmasızdır."
+  },
+  {
+    id: 50, topic: "duyar",
+    q: "Kapalı döngü sistemde T = G/(1+GH) için G'ye karşı duyarlılık S^T_G nedir?",
+    a: "S^T_G = (∂T/∂G)·(G/T)\n\n∂T/∂G = [1·(1+GH) − G·H]/(1+GH)² = 1/(1+GH)²\n\nG/T = G·(1+GH)/G = (1+GH)\n\nS^T_G = [1/(1+GH)²]·(1+GH) = 1/(1+GH)\n\nAçık döngüye göre (1+GH) kat daha az duyarlı!\nGH >> 1 ise → S ≈ 0 (çok düşük duyarlılık)"
+  },
+  {
+    id: 51, topic: "duyar",
+    q: "T = G/(1+GH) için H(s)'ye (geri besleme elemanına) karşı duyarlılık S^T_H nedir?",
+    a: "S^T_H = (∂T/∂H)·(H/T)\n\n∂T/∂H = −G²/(1+GH)²\n\nH/T = H·(1+GH)/G\n\nS^T_H = [−G²/(1+GH)²]·[H(1+GH)/G]\n= −GH/(1+GH)\n\nGH >> 1 ise:\nS^T_H ≈ −GH/GH = −1\n\nSonuç: Sistemin çıkışı geri besleme elemanındaki değişime yaklaşık %100 duyarlıdır. Sensör kalitesi kritiktir!"
+  },
+  {
+    id: 52, topic: "duyar",
+    q: "G = 100, H = 0.01 değerleri için kapalı döngü sistemin G'ye duyarlılığını hesapla ve açık döngüyle karşılaştır.",
+    a: "GH = 100 × 0.01 = 1\n\nKapalı döngü duyarlılık:\nS^T_G = 1/(1+GH) = 1/(1+1) = 0.5\n\nAçık döngü duyarlılık: S = 1.0\n\nKarşılaştırma:\nKapalı döngü 1/0.5 = 2 kat daha az duyarlı.\n\nGH = 100 olsaydı:\nS = 1/101 ≈ 0.01 → 100 kat daha az duyarlı!\nBüyük döngü kazancı daha dayanıklı sistem sağlar."
+  },
+  {
+    id: 53, topic: "duyar",
+    q: "Zincirleme duyarlılık formülünü yaz. T = G(α)'ya, G = G(α) → T ile α arasındaki duyarlılık nedir?",
+    a: "Zincirleme (chain) duyarlılık kuralı:\nS^T_α = S^T_G · S^G_α\n\nAçılımı:\nS^T_α = (∂T/∂α)·(α/T)\n= (∂T/∂G·∂G/∂α)·(α/T)\n= (∂T/∂G·G/T)·(∂G/∂α·α/G)\n= S^T_G · S^G_α\n\nUygulama: α değişimi → G'yi etkiler → G değişimi → T'yi etkiler.\nZincir boyunca duyarlılıklar çarpılır."
+  },
+
+  // ── MATLAB ─────────────────────────────────────────────────────────────────
+  {
+    id: 54, topic: "matlab",
+    q: "MATLAB'da T(s) = 10/(s²+2s+5) transfer fonksiyonunu nasıl tanımlarsın?",
+    a: "G = tf([10], [1 2 5])\n\n• İlk parametre: pay katsayıları (yüksek dereceden düşüğe)\n• İkinci parametre: payda katsayıları\n\nKontrol:\n>> G\nTransfer function:\n      10\n-----------\ns^2 + 2s + 5\n\nNot: tf([10],[1 2 5]) → pay=[10], payda=[1,2,5]"
+  },
+  {
+    id: 55, topic: "matlab",
+    q: "MATLAB'da series, parallel, feedback komutlarının kullanımını örnekle açıkla. Pozitif ve negatif geri besleme farkı nedir?",
+    a: "Seri bağlantı:\nT = series(G1, G2)  veya  T = G1 * G2\n\nParalel bağlantı:\nT = parallel(G1, G2)  veya  T = G1 + G2\n\nGeri besleme (negatif - varsayılan):\nT = feedback(G, H)        % T = G/(1+GH)\n\nGeri besleme (pozitif):\nT = feedback(G, H, +1)    % T = G/(1−GH)\n\nBirim geri besleme (H=1):\nT = feedback(G, 1)        % T = G/(1+G)"
+  },
+  {
+    id: 56, topic: "matlab",
+    q: "MATLAB'da T(s) transfer fonksiyonuna birim basamak yanıtını çizdiren kod nedir? t = 0'dan 5'e 0.01 adım aralığıyla çizdir.",
+    a: "t = 0:0.01:5;\nstep(T, t)\n\nAlternatif (grafik özelleştirme için):\n[y, t] = step(T, t);\nplot(t, y)\ngrid\nxlabel('Zaman (s)')\nylabel('Çıkış y(t)')\n\n10°'lik basamak için (Quiz Soru 4 gibi):\nstep(10*T)\n(Giriş genliği T ile çarpılır)"
+  },
+  {
+    id: 57, topic: "matlab",
+    q: "MATLAB'da pzmap, pole, zero, roots komutlarının ne işe yaradığını açıkla.",
+    a: "pole(G)   → Transfer fonksiyonunun kutuplarını (payda kökleri) döndürür\nzero(G)   → Transfer fonksiyonunun sıfırlarını (pay kökleri) döndürür\npzmap(G)  → Kutup ve sıfırları s-düzleminde çizer (× kutup, ○ sıfır)\nroots(p)  → Polinom p'nin köklerini bulur\n\nÖrnek:\nG = tf([1 2],[1 3 2])\npole(G)   → [−1; −2]\nzero(G)   → [−2]\npzmap(G)  → grafik\nroots([1 3 2]) → [−1; −2]"
+  },
+  {
+    id: 58, topic: "matlab",
+    q: "Quiz sınavı Soru 4: K=100, a=1, b=8, J=25 parametreleri için AUV kontrol sisteminin MATLAB kodunu yaz. Denetleyici K(s+a)/(s+b), AUV modeli 1/[s(Js+1)].",
+    a: "K=100; a=1; b=8; J=25;\n\nGD = K * tf([1 a], [1 b]);     % Denetleyici: K(s+a)/(s+b)\nGA = tf([1], [J 1 0]);          % AUV: 1/[s(Js+1)]\n\nG = series(GD, GA);             % Açık döngü\nT = feedback(G, [1]);           % Kapalı döngü (birim geri besleme)\n\nstep(10*T)                      % 10° basamak yanıtı\n\nNot: tf([1],[J 1 0]) = 1/(Js²+s) = 1/[s(Js+1)]"
+  },
+  {
+    id: 59, topic: "matlab",
+    q: "3s⁴+10s³+5s²+2 = 0 denkleminin köklerini MATLAB ile bul. Sol yarı düzlemdeki kök sayısı kaçtır? (Routh-Hurwitz ile kontrol et.)",
+    a: "MATLAB:\nroots([3 10 5 0 2])\n\nRouth-Hurwitz tablosu:\ns⁴: 3    5    2\ns³: 10   0    0\ns²: 5    2    0\ns¹: −4   0\ns⁰: 2\n\nİşaret değişimleri: s²→s¹ ve s¹→s⁰ → 2 adet\n→ 2 kök sağ yarı düzlemde, 2 kök sol yarı düzlemde\n\nSistem KARARSIZ (ders slaytında cevap: kararsız)."
+  },
+  {
+    id: 60, topic: "matlab",
+    q: "Aynı sistem için K=10 ve K=100 değerlerinde basamak yanıtlarını aynı grafikte çizdiren MATLAB kodunu yaz. G(s) = K/[s(s+1)], birim geri besleme.",
+    a: "figure; hold on;\n\nfor K = [10 100]\n    G = tf([K], [1 1 0]);     % K/[s(s+1)]\n    T = feedback(G, [1]);     % Kapalı döngü\n    step(T);\nend\n\nhold off;\nlegend('K=10', 'K=100')\ngrid\n\nBeklenen:\n• K=10: az sönümlü veya kritik, yavaş\n• K=100: daha az sönümlü, aşım artar\n  (ω_n = √K artar, ζ = 1/(2√K) azalır)"
+  },
+];
+
+// App fonksiyonundaki "export default" kısmını çıkardık
+function App() {
+  const [activeTopic, setActiveTopic] = useState("all");
+  const [shown, setShown] = useState({});
+
+  const filtered = activeTopic === "all"
+    ? QUESTIONS
+    : QUESTIONS.filter(q => q.topic === activeTopic);
+
+  const toggle = (id) => setShown(s => ({ ...s, [id]: !s[id] }));
+
+  const topicColors = {
+    blok: "#3b82f6", mason: "#8b5cf6", laplace: "#10b981",
+    lineer: "#f59e0b", durum: "#ef4444", motor: "#06b6d4",
+    duyar: "#ec4899", matlab: "#84cc16"
+  };
+
+  const topicLabel = {
+    blok: "Blok", mason: "Mason", laplace: "Laplace",
+    lineer: "Doğrusal", durum: "Durum", motor: "Motor",
+    duyar: "Duyar", matlab: "MATLAB"
+  };
+
+  return (
+    <div style={{
+      background: "#0d1117",
+      minHeight: "100vh",
+      fontFamily: "'IBM Plex Mono', 'Fira Code', monospace",
+      color: "#e2e8f0",
+      padding: "0 0 60px 0"
+    }}>
+      {/* Header */}
+      <div style={{
+        background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
+        borderBottom: "1px solid #1e3a5f",
+        padding: "28px 24px 20px",
+        position: "sticky",
+        top: 0,
+        zIndex: 100
+      }}>
+        <div style={{ maxWidth: 820, margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6 }}>
+            <span style={{ fontSize: 11, color: "#64748b", letterSpacing: 3, textTransform: "uppercase" }}>KOÜ · Kontrol Sistemleri</span>
+          </div>
+          <h1 style={{ margin: "0 0 4px", fontSize: 22, fontWeight: 700, color: "#7dd3fc", letterSpacing: -0.5 }}>
+            Vize Soru Havuzu
+          </h1>
+          <p style={{ margin: 0, fontSize: 12, color: "#475569" }}>
+            {filtered.length} soru · {activeTopic === "all" ? "tüm konular" : TOPICS.find(t => t.id === activeTopic)?.label}
+          </p>
+        </div>
+      </div>
+
+      {/* Topic filter */}
+      <div style={{
+        maxWidth: 820, margin: "0 auto",
+        padding: "16px 24px 0",
+        display: "flex", flexWrap: "wrap", gap: 8
+      }}>
+        {TOPICS.map(t => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTopic(t.id)}
+            style={{
+              padding: "5px 14px",
+              borderRadius: 6,
+              border: activeTopic === t.id
+                ? `1.5px solid ${t.id === "all" ? "#7dd3fc" : topicColors[t.id] || "#7dd3fc"}`
+                : "1.5px solid #1e293b",
+              background: activeTopic === t.id
+                ? (t.id === "all" ? "#1e3a5f" : topicColors[t.id] + "22")
+                : "transparent",
+              color: activeTopic === t.id
+                ? (t.id === "all" ? "#7dd3fc" : topicColors[t.id] || "#7dd3fc")
+                : "#475569",
+              cursor: "pointer",
+              fontSize: 12,
+              fontFamily: "inherit",
+              transition: "all 0.15s"
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Questions */}
+      <div style={{ maxWidth: 820, margin: "20px auto", padding: "0 24px", display: "flex", flexDirection: "column", gap: 12 }}>
+        {filtered.map((q) => (
+          <div key={q.id} style={{
+            background: "#0f172a",
+            border: "1px solid #1e293b",
+            borderRadius: 10,
+            overflow: "hidden",
+            transition: "border-color 0.2s"
+          }}>
+            {/* Question header */}
+            <div style={{ padding: "16px 18px 12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{
+                    background: topicColors[q.topic] + "22",
+                    color: topicColors[q.topic],
+                    border: `1px solid ${topicColors[q.topic]}44`,
+                    borderRadius: 4,
+                    padding: "1px 8px",
+                    fontSize: 10,
+                    fontWeight: 600,
+                    letterSpacing: 1,
+                    textTransform: "uppercase"
+                  }}>{topicLabel[q.topic]}</span>
+                  <span style={{ color: "#334155", fontSize: 12 }}>#{q.id}</span>
+                </div>
+              </div>
+              <p style={{ margin: "0 0 8px", fontSize: 14, lineHeight: 1.7, color: "#cbd5e1", whiteSpace: "pre-line" }}>{q.q}</p>
+              {q.svg && q.svg}
+            </div>
+
+            {/* Answer toggle */}
+            <button
+              onClick={() => toggle(q.id)}
+              style={{
+                width: "100%",
+                background: shown[q.id] ? "#1e293b" : "transparent",
+                border: "none",
+                borderTop: "1px solid #1e293b",
+                padding: "10px 18px",
+                textAlign: "left",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                color: shown[q.id] ? "#7dd3fc" : "#475569",
+                fontSize: 12,
+                fontFamily: "inherit",
+                transition: "all 0.2s"
+              }}
+            >
+              <span style={{ fontSize: 14 }}>{shown[q.id] ? "▼" : "▶"}</span>
+              {shown[q.id] ? "Cevabı gizle" : "Cevabı göster"}
+            </button>
+
+            {/* Answer body */}
+            {shown[q.id] && (
+              <div style={{
+                background: "#0a0f1a",
+                borderTop: "1px solid #1e293b",
+                padding: "16px 18px",
+              }}>
+                <pre style={{
+                  margin: 0,
+                  fontSize: 13,
+                  lineHeight: 1.75,
+                  color: "#94a3b8",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  fontFamily: "inherit"
+                }}>{q.a}</pre>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Ekrana basan fonksiyon
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSBDA Vize Hazırlık</title>
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --hover-color: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 15px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress {
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: #dbeafe;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: var(--primary-color);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .menu-btn:hover {
+            color: var(--hover-color);
+        }
+
+        .question-box {
+            min-height: 100px;
+            font-size: 1.15em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            white-space: pre-wrap; 
+        }
+
+        .answer-box {
+            display: none;
+            background-color: #ecfdf5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 1.05em;
+            line-height: 1.6;
+            white-space: pre-wrap; 
+            overflow-x: auto;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid #d1d5db;
+        }
+
+        .btn-outline:hover {
+            background-color: #f3f4f6;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navigation .btn {
+            margin-bottom: 0;
+        }
+
+        /* --- YAN MENÜ (SIDEBAR) STİLLERİ --- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100vh;
+            background-color: var(--card-bg);
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+        }
+
+        .close-btn:hover {
+            color: #111827;
+        }
+
+        .question-list-container {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 5px;
+        }
+
+        .question-list-item {
+            padding: 12px;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .question-list-item:hover {
+            background-color: #e5e7eb;
+        }
+
+        .question-list-item.active {
+            border-left-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .q-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        .q-preview {
+            font-size: 0.9em;
+            color: #4b5563;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            .navigation {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="menuyuKapat()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 style="margin: 0; color: #1f2937;">Tüm Sorular</h3>
+            <button class="close-btn" onclick="menuyuKapat()">&times;</button>
+        </div>
+        <div class="question-list-container" id="question-list-container"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2 style="margin: 0; font-size: 1.4em;">Radar Sistemleri Vize</h2>
+            <div class="header-right">
+                <div class="progress" id="progress-text">1 / 51</div>
+                <button class="menu-btn" onclick="menuyuAc()">&#9776;</button>
+            </div>
+        </div>
+
+        <div class="question-box" id="question-text">Soru yükleniyor...</div>
+        <button class="btn" id="show-answer-btn" onclick="cevabiGoster()">Cevabı Gör</button>
+        <div class="answer-box" id="answer-text">Cevap yükleniyor...</div>
+
+        <div class="navigation">
+            <button class="btn btn-outline" onclick="oncekiSoru()">&#8592; Önceki</button>
+            <button class="btn btn-outline" onclick="sonrakiSoru()">Sonraki &#8594;</button>
+        </div>
+    </div>
+
+    <script>
+const sorular = [
+    {
+        soru: `FDTD yönteminin açılımı nedir ve temel çalışma prensibi nedir?`,
+        cevap: `Finite Difference Time Domain (Zamanda Sonlu Farklar Yöntemi). Maxwell denklemlerini zaman düzleminde, uzay ve zamanın küçük adımlara bölünmesiyle sayısal olarak çözen bir elektromanyetik analiz yöntemidir. Alan bileşenleri iteratif olarak güncellenir; sayısallaştırma dışında başka bir yaklaşıklık yoktur.`
+    },
+    {
+        soru: `FDTD yönteminin 3 temel adımını sayınız.`,
+        cevap: `• Uzayı ve zamanı hücrelere bölmek<br>• Maxwell denklemlerini sonlu farklar ile yazmak<br>• Alanları zaman adımıyla güncellemek`
+    },
+    {
+        soru: `Maxwell denklemlerinin dört temel yasasını Türkçe adları ve diferansiyel formları ile yazınız.`,
+        cevap: `• <strong>Gauss Yasası:</strong> $\\nabla\\cdot D=\\rho$<br>• <strong>Manyetik Gauss Yasası:</strong> $\\nabla\\cdot B=0$<br>• <strong>Faraday Yasası:</strong> $\\nabla\\times E=-\\frac{\\partial B}{\\partial t}$<br>• <strong>Amper Yasası:</strong> $\\nabla\\times H=J+\\frac{\\partial D}{\\partial t}$`
+    },
+    {
+        soru: `Serbest uzayda ışık hızı nasıl ifade edilir? Farklı bir ortamdaki dalga hızı ne olur?`,
+        cevap: `<strong>Serbest uzayda:</strong><br>$c=\\frac{1}{\\sqrt{\\mu_0\\epsilon_0}}\\approx3\\times10^8~m/s$<br><br><strong>Farklı bir ortamda:</strong><br>$v=\\frac{c}{\\sqrt{\\mu_r\\epsilon_r}}$`
+    },
+    {
+        soru: `Karakteristik empedans nedir? Serbest uzayda değeri nedir?`,
+        cevap: `Bir ortamın elektrik alan şiddetinin manyetik alan şiddetine oranıdır.<br>$Z=\\sqrt{\\frac{\\mu}{\\epsilon}}$<br><strong>Serbest uzayda:</strong> $Z_0\\approx377~\\Omega$`
+    },
+    {
+        soru: `Taylor serisi neden FDTD'de kullanılır? Genel açılım formülünü yazınız.`,
+        cevap: `Maxwell denklemleri sürekli türevler içerir; bilgisayarlar analitik türev alamaz. Taylor serisi bu türevleri sayısal olarak yaklaşık hesaplamak için kullanılır.<br>$f(x)=f(x_i)+f'(x_i)(x-x_i)+\\frac{f''(x_i)}{2!}(x-x_i)^2+\\frac{f'''(x_i)}{3!}(x-x_i)^3+...$`
+    },
+    {
+        soru: `İleri yönde 1. dereceden sonlu fark yaklaşımını türetin ve hata mertebesini belirtin.`,
+        cevap: `Taylor serisinde yüksek mertebe terimler ihmal edilirse:<br>$f'(x_i)=\\frac{f(x_{i+1})-f(x_i)}{h}+O(h)$<br>Hata mertebesi $O(h)$ (1. dereceden yaklaşım).`
+    },
+    {
+        soru: `Geri yönde 1. dereceden sonlu fark yaklaşımını yazınız.`,
+        cevap: `$f'(x_i)=\\frac{f(x_i)-f(x_{i-1})}{h}+O(h)$`
+    },
+    {
+        soru: `Merkezi 1. dereceden sonlu fark formülünü türetin.`,
+        cevap: `İleri ve geri Taylor açılımları çıkarılırsa:<br>$f'(x_i)=\\frac{f(x_{i+1})-f(x_{i-1})}{2h}+O(h^2)$<br>Hata mertebesi $O(h^2)$ ileri/geri farktan daha doğru (2. mertebeden hassas).`
+    },
+    {
+        soru: `2. dereceden merkezi fark formülünü (ikinci türev) türetin.`,
+        cevap: `İleri ve geri Taylor açılımları toplanırsa:<br>$f''(x_i)=\\frac{f(x_{i+1})-2f(x_i)+f(x_{i-1})}{h^2}+O(h^2)$`
+    },
+    {
+        soru: `Yee hücresi nedir ve neden E ile H alanları aynı noktaya konulmaz?`,
+        cevap: `Yee hücresi, E ve H alan bileşenlerini uzayda yarım hücre boyu ($\\Delta z/2$) ve zamanda yarım zaman adımı kadar birbirine göre kaydırarak yerleştiren FDTD ızgarasıdır.<br>Aynı noktaya konulmamasının sebebi: Maxwell denklemlerindeki curl (rotasyonel) operatörleri, bir noktadaki alanı komşu konumlardaki diğer alanla bağlar. Aynı noktada merkezi fark oluşturulamaz ve simülasyon kararsız hale gelebilir.`
+    },
+    {
+        soru: `Yee hücresindeki "leapfrog (kurbağalama) algoritması" ne anlama gelir?`,
+        cevap: `E alanları tam zaman adımlarında ($n$), H alanları yarım zaman adımlarında ($n+\\frac{1}{2}$) hesaplanır. Önce tüm H değerleri güncellenir, ardından güncellenmiş H değerleri kullanılarak tüm E değerleri hesaplanır. Bu "atlamalı" ilerleme hem sayısal kararlılığı hem de verimli hesaplamayı sağlar.`
+    },
+    {
+        soru: `Serbest uzay için 1D-FDTD'de Ex ve Hy güncelleme denklemlerini (normalize, koda yazılabilir) yazınız.`,
+        cevap: `<code>E[k] = E[k] + 0.5 * (H[k-1] - H[k])</code><br><code>H[k] = H[k] + 0.5 * (E[k] - E[k+1])</code>`
+    },
+    {
+        soru: `1D FDTD kodunda zaman adımı ($\\Delta t$) ile uzay adımı ($\\Delta z$) arasındaki ilişki nedir?`,
+        cevap: `$\\Delta t=\\frac{\\Delta z}{2c}$<br>Kodda: <code>dt = dz / (2 * c0)</code><br>Bu seçim Courant kararlılık koşulunu güvenli biçimde sağlamak içindir (Courant sayısı $S=0.5$).`
+    },
+    {
+        soru: `Courant Kararlılık Koşulu nedir? Fiziksel anlamını açıklayınız.`,
+        cevap: `$c\\cdot\\Delta t\\le\\Delta z$<br><strong>Fiziksel anlam:</strong> Bir alan bileşeni (dalga), belirlenen tek bir $\\Delta t$ zaman adımı süresince, uzaysal ağdaki bir tam hücre boyutundan daha fazla mesafe kat edemez. Bu koşul sağlanmadığında simülasyon "patlar", hata her adımda büyüyerek sonuç sonsuza gider.`
+    },
+    {
+        soru: `3D eşit hücre ($\\Delta x=\\Delta y=\\Delta z=\\Delta$) ve genel d-boyutlu durum için Courant koşulunu yazınız.`,
+        cevap: `<strong>3D eşit hücre:</strong> $\\Delta t\\le\\frac{\\Delta}{c\\sqrt{3}}$<br><strong>Genel d-boyutlu:</strong> $\\Delta t\\le\\frac{\\Delta}{c\\sqrt{d}}$ (d = 1, 2 veya 3)`
+    },
+    {
+        soru: `Taflove normalizasyonu nedir ve neden gereklidir?`,
+        cevap: `Serbest uzayda E ve H alanları arasında $\\approx377~\\Omega$ mertebesinde büyüklük farkı vardır; bu sayısal hassasiyet ve ölçek sorunlarına yol açar. Taflove normalizasyonu E alanını serbest uzay empedansı ile ölçekler:<br>$\\tilde{E}=\\sqrt{\\frac{\\epsilon_0}{\\mu_0}}\\cdot E$<br>Böylece E ve H aynı mertebede büyüklüklere sahip olur; güncelleme denklemlerindeki katsayı 0.5 olarak sadeleşir.`
+    },
+    {
+        soru: `Gauss darbesi fonksiyonu formülünü yazınız. $t_0$ ve spread parametrelerinin etkisini açıklayınız.`,
+        cevap: `$gauss=\\exp\\left(-0.5\\cdot\\left(\\frac{t-t_0}{spread}\\right)^2\\right)$<br>• <strong>$t_0$:</strong> Darbenin zaman eksenindeki merkez konumunu belirler (tepe noktası).<br>• <strong>spread:</strong> Darbenin genişliğini (süresini) belirler. Büyüdükçe darbe daha geniş ve yavaş değişkendir, dolayısıyla frekans bandı daralır.`
+    },
+    {
+        soru: `Aşağıdaki Octave kodu ne çizer? $t_0=80$, spread=10 için tepe noktasını belirtiniz.<br><code>t=1:1:200; t0=80; spread=10;<br>A=exp(-.5*((t-t0)/spread).^2);<br>plot(t,A,'b'); grid on</code>`,
+        cevap: `t=1'den 200'e kadar bir Gauss darbesi çizer. Tepe noktası: $t=80$, $A=1$ (maksimum). $1/e$ genlik noktaları ($A\\approx0.607$) $t=70$ ve $t=90$ civarındadır ($t_0\\pm spread$).`
+    },
+    {
+        soru: `FDTD'de sınır değer problemi neden kritiktir? Sınır koşulu tanımlanmadığında ne olur?`,
+        cevap: `Sonlu ızgara sınırlarında komşu hücre bulunmadığından alan hesabı yapılamaz. Tanımlanmazsa:<br>• <strong>Programlama hatası:</strong> Dizi sınırları dışına çıkılır (Index Out of Bounds).<br>• <strong>Fiziksel hata:</strong> Sınır değerleri sıfıra eşitlendiğinden dalga ters fazda tam yansır (mükemmel iletken duvar etkisi).`
+    },
+    {
+        soru: `1D FDTD'de sol ve sağ sınır için basit "açık sınır koşulu" denklemlerini yazınız.`,
+        cevap: `<strong>Sol sınır:</strong> <code>E[1] = E[2]</code><br><strong>Sağ sınır:</strong> <code>E[ke] = E[ke-1]</code> (önceki adımdan saklanarak uygulanır)<br>Kodda bu değerleri saklamak için <code>ex_low_m1</code>, <code>ex_low_m2</code>, <code>ex_high_m1</code>, <code>ex_high_m2</code> değişkenleri kullanılır.`
+    },
+    {
+        soru: `Dirichlet ve Neumann sınır koşullarını elektromanyetik bağlamda açıklayınız.`,
+        cevap: `• <strong>Dirichlet (PEC):</strong> Alanın sınırda sabit bir değere (genellikle 0) eşitlenmesi. Mükemmel elektrik iletken duvar (PEC) ile eşdeğerdir; gelen dalga ters fazda tam yansır.<br>• <strong>Neumann (PMC):</strong> Alanın türevinin sınırda sıfıra eşitlenmesi. Sanal manyetik iletken duvar (PMC) gibi davranır; elektrik alan faz değiştirmeden yansır.`
+    },
+    {
+        soru: `Mur ABC nedir? 1. derece Mur'un temel fikri nedir?`,
+        cevap: `Dalganın sınırdan yansımadan sonsuzluğa ilerliyormuş gibi davranmasını sağlayan matematiksel kurallardır (Absorbing Boundary Conditions - Yutucu Sınır Koşulları).<br><strong>1. derece Mur:</strong> Sınırdaki hücrenin değerini, bir önceki zaman adımında ona komşu iç hücrenin değeriyle günceller. Dalganın $c$ hızıyla ilerlediği varsayılarak lineer ekstrapolasyon yapılır.`
+    },
+    {
+        soru: `1. Derece Mur ABC'de Courant sayısı $S=1$ ($c\\cdot\\Delta t=\\Delta x$) olduğunda ne olur?`,
+        cevap: `Mur katsayısı $k=0$ olur ve formül:<br>$E^{n+1/2}[0]=E^{n-1/2}[1]$ halini alır.<br>Dalga her zaman adımında tam olarak bir hücre kayar (mükemmel geçiş, yansıma yoktur). Kararlılık için genelde $S<1$ seçilir ve küçük bir yansıma kaçınılmazdır.`
+    },
+    {
+        soru: `1. Derece Mur ABC'nin sınırlamaları nelerdir?`,
+        cevap: `• <strong>Açısal bağımlılık:</strong> 1D'de mükemmel çalışır (dalga her zaman dik gelir). 2D/3D'de eğik açılarda yansıma artar.<br>• <strong>Düşük mertebe:</strong> Taylor açılımında sadece ilk terimler kullanılır; 2. derece Mur daha az yansıma yapar.<br>• <strong>Yakın alan:</strong> Kaynak sınıra çok yakınsa kararsız olabilir; aralarında en az 10-15 hücre "beyaz uzay" bırakılmalıdır.`
+    },
+    {
+        soru: `PML (Perfectly Matched Layer) nedir ve Mur ABC'den üstünlüğü nedir?`,
+        cevap: `Hesaplama bölgesinin etrafına birkaç hücre kalınlığında eklenen yapay bir soğurucu ortam tabakasıdır. Dalga bu ortama yansımadan girer ve içinde sönümlenerek yok olur.<br><strong>Mur'dan üstünlüğü:</strong> Yüksek frekanslarda ve eğik gelen dalgalarda çok daha düşük yansıma sağlar.`
+    },
+    {
+        soru: `Hard kaynak ve Soft kaynak yöntemlerinin farkı nedir?`,
+        cevap: `<strong>Hard kaynak:</strong> Alan değeri doğrudan kaynak formülüne eşitlenir: <code>E(ks) = gauss(t)</code>. Kaynak noktası metalik duvar gibi davranır; yansıyan dalgalar kaynaktan geçemez.<br><br><strong>Soft kaynak:</strong> Kaynak mevcut alan değerinin üstüne eklenir: <code>E(ks) = E(ks) + gauss(t)</code>. Fiziksel olarak daha gerçekçidir; yansımalar kaynak noktasından şeffaf biçimde geçebilir (süperpozisyon ilkesi).`
+    },
+    {
+        soru: `TF/SF (Total Field / Scattered Field) yöntemi ne için kullanılır?`,
+        cevap: `Özellikle düzlemsel dalga üretmek veya saçılma problemlerini incelemek için kullanılır. Uzay iki bölgeye ayrılır:<br>• <strong>Toplam Alan (Total Field):</strong> Hem kaynak hem de saçılan dalgaları içerir.<br>• <strong>Saçılan Alan (Scattered Field):</strong> Sadece nesne kaynaklı saçılan dalgaları içerir.<br>Avantajı: Tek yönlü ilerleyen düzlemsel dalgalar üretebilir.`
+    },
+    {
+        soru: `Üç kaynak fonksiyonunu karşılaştırınız. Hangi durumda hangisi seçilir?`,
+        cevap: `<strong>Kaynak | Kullanım Amacı</strong><br>• <strong>Gauss Darbesi:</strong> 0'dan $f_{max}$ kadar geniş bant analizi<br>• <strong>Sinüs Kaynağı:</strong> Tek frekansta kararlı hal (steady-state) analizi<br>• <strong>Modüleli Gauss:</strong> Belirli bir merkez frekansı ($f_c$) etrafında bant analizi`
+    },
+    {
+        soru: `Modüleli Gauss darbesi formülünü yazınız ve standart Gauss'tan ayıran özelliği açıklayınız.`,
+        cevap: `$mod\\_gauss=\\exp\\left(-0.5\\cdot\\left(\\frac{n-t_0}{spread}\\right)^2\\right)\\times\\sin(2\\pi\\cdot f_c\\cdot\\Delta t\\cdot n)$<br>Standart Gauss her zaman DC (0 Hz)'dan başlar. Modüleli Gauss enerjiyi doğrudan $f_c$ merkez frekansına odaklar, DC bileşenini kaldırır ve sayısal dağılım (dispersion) hatalarını minimize eder.`
+    },
+    {
+        soru: `Dielektrik ortam için 1D-FDTD güncelleme denklemlerini yazınız. Serbest uzay durumundan farkı nedir?`,
+        cevap: `<code>E[k] = E[k] + (0.5 / eps_r) * (H[k-1] - H[k])</code><br><code>H[k] = H[k] + 0.5 * (E[k] - E[k+1])</code><br><strong>Fark:</strong> Elektrik alan güncellemesindeki katsayı 0.5 yerine $0.5/\\epsilon_r$ olur. Kodda <code>cb(k) = 0.5 / epsilon</code> şeklinde tanımlanır. Manyetik alan denklemi değişmez.`
+    },
+    {
+        soru: `İki ortam arasındaki arayüzde yansıma ($\\Gamma$) ve iletim ($\\tau$) katsayıları nasıl hesaplanır?`,
+        cevap: `$\\eta=\\sqrt{\\frac{\\mu}{\\epsilon}}$ [karakteristik empedans]<br>$\\Gamma=\\frac{\\eta_2-\\eta_1}{\\eta_2+\\eta_1}$ [yansıma katsayısı]<br>$\\tau=\\frac{2\\eta_2}{\\eta_2+\\eta_1}$ [iletim katsayısı]`
+    },
+    {
+        soru: `Ortam 1: serbest uzay ($\\epsilon_{r1}=1, \\mu_r=1$), Ortam 2: dielektrik ($\\epsilon_{r2}=15, \\mu_r=1$) için $\\Gamma$ ve $\\tau$'yi hesaplayınız.`,
+        cevap: `$\\eta_1=377~\\Omega$<br>$\\eta_2=377/\\sqrt{15}\\approx97.3~\\Omega$<br>$\\Gamma=\\frac{97.3-377}{97.3+377}=\\frac{-279.7}{474.3}\\approx-0.59\\approx-0.6$<br>$\\tau=\\frac{2\\times97.3}{474.3}\\approx0.41\\approx0.4$<br>Negatif $\\Gamma$: Yansıyan dalga ters fazdadır (dalga yoğun ortama giriyor).`
+    },
+    {
+        soru: `$\\epsilon_r\\rightarrow\\infty$ olan bir ortamda (örn. $\\epsilon_r=10000$) dalganın davranışını $\\Gamma$ ve $\\tau$ açısından yorumlayınız.`,
+        cevap: `$\\eta_2\\rightarrow0$ olduğundan:<br>$\\Gamma\\approx-1$ (tam yansıma, ters faz)<br>$\\tau\\approx0$ (iletim neredeyse sıfır)<br>Bu davranış metalik duvar ile eşdeğerdir. $\\sigma\\rightarrow\\infty$ (çok büyük iletkenlik) ile de aynı etki elde edilir.`
+    },
+    {
+        soru: `Kayıplı dielektrik ortam nedir? Kayıpsız dielektrikten farkı nedir?`,
+        cevap: `Gerçek malzemelerde iletkenlik $\\sigma\\ne0$'dır. Kayıplı dielektrikte:<br>• <strong>Genlik sönümlenmesi:</strong> Dalga genliği $e^{-\\alpha z}$ ile azalır.<br>• <strong>Faz farkı:</strong> E ve H alanları arasında faz farkı oluşur (kompleks empedans).<br>• <strong>Kompleks permitivite:</strong> $\\tilde{\\epsilon}=\\epsilon'-j\\epsilon''$ (imajiner kısım ısı kaybını temsil eder).<br>Kayıpsız dielektrikte $\\sigma=0$, ortam gerçel permitivite ile tanımlanır.`
+    },
+    {
+        soru: `Kayıplı dielektrik ortam için Amper yasası nasıl değişir?`,
+        cevap: `İletkenlik $\\sigma$ nedeniyle akım yoğunluğu $J=\\sigma E$ denkleme eklenir:<br>$\\nabla\\times H=\\epsilon_r\\epsilon_0\\frac{\\partial E}{\\partial t}+\\sigma E$<br>Bu, elektrik alan güncelleme denkleminde $\\sigma$'ya bağlı ek katsayılar (ca, cb) çıkarır.`
+    },
+    {
+        soru: `Kayıplı dielektrik için 1D-FDTD elektrik alan güncelleme denklemini ve ca, cb katsayılarını yazınız.`,
+        cevap: `<code>E[k] = ca(k) * E[k] + cb(k) * (H[k-1] - H[k])</code><br><code>H[k] = H[k] + 0.5 * (E[k] - E[k+1])</code><br><strong>Katsayılar:</strong><br><code>eaf = dt * sigma / (2 * eps0 * epsilon_r)</code><br><code>ca(k) = (1 - eaf) / (1 + eaf)</code><br><code>cb(k) = 0.5 / (epsilon_r * (1 + eaf))</code><br>$\\sigma=0$ için $ca=1$, $cb=0.5/\\epsilon_r$ (kayıpsız dielektrik denklemine dönüşür).`
+    },
+    {
+        soru: `2D FDTD'de TM ve TE modlarını tanımlayınız.`,
+        cevap: `<strong>Mod | Bileşenler | Açıklama</strong><br>• <strong>TM:</strong> $E_z, H_x, H_y$ | z yönünde $H_z=0$; E alanı z'ye paralel<br>• <strong>TE:</strong> $H_z, E_x, E_y$ | z yönünde $E_z=0$; H alanı z'ye paralel`
+    },
+    {
+        soru: `2D TM modu için alan güncelleme denklemlerini yazınız.`,
+        cevap: `<strong>$E_z$ güncellemesi:</strong><br><code>Ez(i,j) = Ez(i,j) + 0.5 * [Hy(i,j) - Hy(i-1,j) - Hx(i,j) + Hx(i,j-1)]</code><br><strong>$H_x$ ve $H_y$ güncellemesi:</strong><br><code>Hx(i,j) = Hx(i,j) - 0.5 * [Ez(i,j+1) - Ez(i,j)]</code><br><code>Hy(i,j) = Hy(i,j) + 0.5 * [Ez(i+1,j) - Ez(i,j)]</code>`
+    },
+    {
+        soru: `2D TE modu için alan güncelleme denklemlerini yazınız.`,
+        cevap: `<code>Ex(i,j) = Ex(i,j) + 0.5 * [Hz(i,j) - Hz(i,j-1)]</code><br><code>Ey(i,j) = Ey(i,j) - 0.5 * [Hz(i,j) - Hz(i-1,j)]</code><br><code>Hz(i,j) = Hz(i,j) + 0.5 * [Ex(i,j+1) - Ex(i,j) - Ey(i+1,j) + Ey(i,j)]</code>`
+    },
+    {
+        soru: `2D TM modunda alan bileşenlerinin ızgara üzerindeki yerleşim mantığını açıklayınız.`,
+        cevap: `$E_z$ tam ızgara noktalarında $(i,j)$ tanımlanır. $H_x$ y yönünde yarım adım kaydırılmış $(i, j+\\frac{1}{2})$ konumundadır. $H_y$ ise x yönünde yarım adım kaydırılmış $(i+\\frac{1}{2}, j)$ konumundadır. Bu yerleşim Maxwell denklemlerindeki curl operatörünün geometrik tutarlılığını sağlar.`
+    },
+    {
+        soru: `2D FDTD'de 1. Derece Mur katsayısı nasıl hesaplanır? Courant sayısı ile bağlantısını kurunuz.`,
+        cevap: `$k=\\frac{c\\cdot\\Delta t-\\Delta}{c\\cdot\\Delta t+\\Delta}$<br>Courant sayısı $S=\\frac{c\\cdot\\Delta t}{\\Delta}$ tanımlanırsa:<br>$k=\\frac{S-1}{S+1}$<br>Kararlılık için 2D'de $S\\le1/\\sqrt{2}$. Eğer $S=1/\\sqrt{2}$ seçilirse $k\\approx-0.172$.`
+    },
+    {
+        soru: `2D FDTD'de 1. ve 2. Derece Mur ABC'nin farkını açıklayınız.`,
+        cevap: `• <strong>1. Derece Mur:</strong> Sadece bir önceki zaman adımını ve normal yöndeki komşuyu kullanır. Dik gelen dalgalarda etkilidir fakat eğik açılarda yansıma artar.<br>• <strong>2. Derece Mur:</strong> Bir önceki zaman adımına ek olarak enine terimler (j+1, j-1 değişimleri) de hesaba katılır. Daha geniş açı aralığında dalga yutulur, yansıma önemli ölçüde azalır.`
+    },
+    {
+        soru: `<code>subplot(2,2,1)</code> komutu ne anlama gelir? <code>subplot(1,2,2)</code> ile karşılaştırınız.`,
+        cevap: `• <code>subplot(2,2,1)</code>: 2 satır x 2 sütunluk şekil ekranı oluşturur; 1. pozisyona (sol üst) çizer.<br>• <code>subplot(1,2,2)</code>: 1 satır x 2 sütunluk şekil ekranı oluşturur; 2. pozisyona (sağ) çizer.`
+    },
+    {
+        soru: `FDTD yönteminin avantajlarını ve dezavantajlarını listeleyin.`,
+        cevap: `<strong>Avantajlar:</strong><br>• Tek kaynak ile geniş bantlı frekans cevabı elde edilir.<br>• 3B modeller rahatlıkla çizilir.<br>• Frekansa bağımlı malzemeler tanımlanabilir.<br>• Saçılan alan, anten diyagramı, radar kesit alanı, S-parametreleri elde edilebilir.<br><br><strong>Dezavantajlar:</strong><br>• Izgara tabanlı olduğundan eğimli/yuvarlak yapılar tam modellenemez.<br>• Hücre sayısı arttıkça bellek ihtiyacı ve hesaplama süresi artar.`
+    },
+    {
+        soru: `FDTD'de $\\Gamma$ ve $\\tau$'yi simülasyon verisinden elde etmek için kod neden iki kez çalıştırılır?`,
+        cevap: `FDTD gelen, yansıyan ve iletilen dalgaları doğrudan ayrı ayrı vermez.<br>• <strong>1. çalışma (serbest uzay):</strong> Gözlem noktasında sadece gelen dalga $E_i$ kaydedilir.<br>• <strong>2. çalışma (dielektrik ortam):</strong> Aynı noktada $(E_i+E_r)$ kaydedilir.<br>$E_r = (E_i + E_r) - E_i$<br>$\\Gamma = E_r / E_i$`
+    },
+    {
+        soru: `Kayıplı dielektrik ortamda ikinci ortamın empedansı nasıl farklılaşır?`,
+        cevap: `$\\eta_2=\\sqrt{\\frac{j\\omega\\mu}{\\sigma+j\\omega\\epsilon}}$<br>Empedans komplekstir. Bu nedenle $\\Gamma$ ve $\\tau$ da genel olarak kompleks olur; yansıma katsayısı faz farkı ile ifade edilir. Ayrıca iletilen dalga ortama girdikten sonra $e^{-\\alpha z}$ ile ayrıca sönümlenir.`
+    },
+    {
+        soru: `2D FDTD'de düzlem dalga üretmek için problem uzayı nasıl ayrılır ve iki temel sebebi nedir?`,
+        cevap: `Uzay Toplam Alan (Total Field) ve Saçılan Alan (Scattered Field) olmak üzere iki bölgeye ayrılır (TF/SF yöntemi).<br>• <strong>Sebep 1:</strong> İlerleyen düzlem dalganın yutucu sınır koşullarına nüfuz etmemesi gerekir.<br>• <strong>Sebep 2:</strong> Sınır koşullarındaki geri yansımayı minimize etmek için gelen dalga sınır düzleminden çıkarılır.`
+    },
+    {
+        soru: `<code>fopen</code>, <code>fprintf</code> ve <code>fclose</code> komutlarının kullanım amacını ve sırasını açıklayınız.`,
+        cevap: `<code>fid = fopen('dosya.txt', 'wt');</code> % Yazma modunda dosya aç/oluştur<br><code>fprintf(fid, '%6.2f %12.8f\\n', dizi);</code> % Veriyi formatlı şekilde yaz<br><code>fclose(fid);</code> % Dosyayı kapat<br><br>fclose ile kapatılmadıkça tüm yazma işlemi devam eder. Kapatıldıktan sonra aynı dosya tekrar açılırsa içindekiler silinerek baştan yazılır.`
+    },
+    {
+        soru: `<code>axis([1 200 -2 2])</code> ve <code>set(gca, 'FontSize', 20)</code> komutları ne yapar?`,
+        cevap: `• <code>axis([1 200 -2 2])</code>: x eksenini 1-200, y eksenini -2 ile +2 arasında sınırlar.<br>• <code>set(gca, 'FontSize', 20)</code>: Aktif eksenin (gca = get current axes) yazı boyutunu 20 punto yapar.`
+    },
+    {
+        soru: `<code>ke=200</code>, <code>ks=100</code>, <code>nsteps=20</code> parametrelerinin anlamını açıklayınız. <code>nsteps=20</code> dalganın durumunu tahmin ediniz.`,
+        cevap: `• <code>ke=200</code>: Problem uzayı 200 hücredir ($k=1...200$)<br>• <code>ks=100</code>: Gauss darbesi kaynağı 100. hücreye uygulanır.<br>• <code>nsteps=20</code>: Simülasyon 20 zaman adımı çalışır.<br>nsteps=20'de kaynak henüz aktif olduğu için Gauss darbesi ks=100 etrafında çan şeklinde oluşmaya başlamış, uzaya çok az yayılmıştır (merkezde belirgin tepe görülür).`
+    },
+    {
+        soru: `HESAP; 5x5 ızgara, üst kenar V=100V, diğer kenarlar V=0V, iç noktalar başlangıçta 0V. Laplace fark denklemi: $V(i,j)=[V(i-1,j)+V(i+1,j)+V(i,j-1)+V(i,j+1)]/4$. 1. iterasyonda $V(2,2)$ ve $V(2,3)$ değerlerini bulunuz. ($i=1$ üst sıra)`,
+        cevap: `1. iterasyonda komşular eski (0. iterasyon) değerleriyle güncellenir:<br>$V(2,2)=[V(1,2)+V(3,2)+V(2,1)+V(2,3)]/4 = [100+0+0+0]/4=25~V$<br>$V(2,3)=[V(1,3)+V(3,3)+V(2,2)+V(2,4)]/4 = [100+0+0+0]/4=25~V$`
+    },
+    {
+        soru: `Dielektrik ortamda dalga hızı ve dalga boyu nasıl değişir? $\\epsilon_r=4$ için hesaplayınız.`,
+        cevap: `$v=\\frac{c}{\\sqrt{\\epsilon_r}}=\\frac{3\\times10^8}{\\sqrt{4}}=\\frac{3\\times10^8}{2}=1.5\\times10^8~m/s$<br>$\\lambda_{ortam}=\\frac{\\lambda_0}{\\sqrt{\\epsilon_r}}=\\frac{\\lambda_0}{2}$ (frekans sabit, dalga boyu yarıya iner)<br>Dielektrik ortamda dalga yavaşlar ve dalga boyu kısalır.`
+    },
+    {
+        soru: `FDTD yönteminin EM problem çözüm yöntemleri içindeki yeri nedir?`,
+        cevap: `<strong>Zaman Düzlemi:</strong> FDTD, TLM, IE, PE<br><strong>Frekans Düzlemi:</strong> FEM, FDFD, SDM, FMM<br><strong>Karma:</strong> MoM<br><br>FDTD zaman düzlemi yöntemidir. Maxwell denklemlerini zaman domaininde adım adım çözer; geniş bantlı cevabı tek simülasyonla elde etmesi temel avantajıdır.`
+    },
+    {
+        soru: `<code>plot(t,A,'b', t,B,':r', t,C,'--k')</code> komutunda A, B ve C eğrileri hangi stil ve renkle çizilir?`,
+        cevap: `<strong>Değişken | Renk | Çizgi Stili</strong><br>• <strong>A:</strong> Mavi (b) | Düz çizgi (-)<br>• <strong>B:</strong> Kırmızı (r) | Noktalı çizgi (:)<br>• <strong>C:</strong> Siyah (k) | Kesikli çizgi (--)`
+    }
+];
+        let aktifSoruIndex = 0;
+
+        const questionTextElement = document.getElementById('question-text');
+        const answerTextElement = document.getElementById('answer-text');
+        const progressTextElement = document.getElementById('progress-text');
+        const showAnswerBtn = document.getElementById('show-answer-btn');
+        const listContainer = document.getElementById('question-list-container');
+
+        function menuyuOlustur() {
+            listContainer.innerHTML = ''; 
+            
+            sorular.forEach((soruObjesi, index) => {
+                const item = document.createElement('div');
+                item.className = 'question-list-item';
+                item.onclick = () => {
+                    soruyaGit(index);
+                    menuyuKapat();
+                };
+                
+                const title = document.createElement('div');
+                title.className = 'q-title';
+                title.innerText = `SORU ${index + 1}`;
+                
+                const preview = document.createElement('div');
+                preview.className = 'q-preview';
+                preview.innerHTML = soruObjesi.soru; 
+                
+                item.appendChild(title);
+                item.appendChild(preview);
+                listContainer.appendChild(item);
+            });
+        }
+
+        function ekraniGuncelle() {
+            questionTextElement.innerHTML = sorular[aktifSoruIndex].soru;
+            answerTextElement.innerHTML = sorular[aktifSoruIndex].cevap;
+            progressTextElement.innerHTML = `${aktifSoruIndex + 1} / ${sorular.length}`;
+            
+            answerTextElement.style.display = 'none';
+            showAnswerBtn.style.display = 'block';
+
+            const listeElemanlari = document.querySelectorAll('.question-list-item');
+            listeElemanlari.forEach((item, index) => {
+                if (index === aktifSoruIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            if (window.MathJax) {
+                MathJax.typesetPromise([questionTextElement, answerTextElement]).catch(function (err) {
+                    console.error(err.message);
+                });
+            }
+        }
+
+        function cevabiGoster() {
+            answerTextElement.style.display = 'block';
+            showAnswerBtn.style.display = 'none'; 
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise([answerTextElement]);
+            }
+        }
+
+        function sonrakiSoru() {
+            if (aktifSoruIndex < sorular.length - 1) {
+                aktifSoruIndex++;
+                ekraniGuncelle();
+            } else {
+                alert("Son soruya ulaştınız! Başa dönülüyor.");
+                aktifSoruIndex = 0;
+                ekraniGuncelle();
+            }
+        }
+
+        function oncekiSoru() {
+            if (aktifSoruIndex > 0) {
+                aktifSoruIndex--;
+                ekraniGuncelle();
+            }
+        }
+
+        function soruyaGit(index) {
+            aktifSoruIndex = index;
+            ekraniGuncelle();
+        }
+
+        function menuyuAc() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function menuyuKapat() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        window.onload = () => {
+            menuyuOlustur();
+            ekraniGuncelle();
+        };
+
+    </script>
+</body>
+</html>
