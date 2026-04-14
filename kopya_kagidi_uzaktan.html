@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uzaktan Algılama – Kopya Kağıdı</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #f78166;
+    --accent4: #d2a8ff;
+    --accent5: #ffa657;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --tag-bg: #1f2937;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    padding: 12px;
+  }
+
+  h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px;
+  }
+
+  .block.wide { grid-column: span 2; }
+  .block.full { grid-column: span 3; }
+
+  .block-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .c1 .block-title { color: var(--accent); border-color: var(--accent); }
+  .c2 .block-title { color: var(--accent2); border-color: var(--accent2); }
+  .c3 .block-title { color: var(--accent3); border-color: var(--accent3); }
+  .c4 .block-title { color: var(--accent4); border-color: var(--accent4); }
+  .c5 .block-title { color: var(--accent5); border-color: var(--accent5); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+  }
+
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    text-align: left;
+    padding: 2px 4px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 2px 4px;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:hover td { background: #1f2937; }
+
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    border-radius: 3px;
+    padding: 0px 4px;
+    font-size: 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 1px;
+  }
+
+  .tag.blue { color: var(--accent); }
+  .tag.green { color: var(--accent2); }
+  .tag.red { color: var(--accent3); }
+  .tag.purple { color: var(--accent4); }
+  .tag.orange { color: var(--accent5); }
+
+  .formula {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #1a2332;
+    border-left: 2px solid var(--accent);
+    padding: 3px 6px;
+    margin: 3px 0;
+    font-size: 10px;
+    border-radius: 0 3px 3px 0;
+    color: #79c0ff;
+  }
+
+  .kv {
+    display: flex;
+    gap: 4px;
+    margin: 2px 0;
+    align-items: flex-start;
+  }
+
+  .kv .k {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent2);
+    font-size: 9px;
+    min-width: 70px;
+    padding-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .kv .v { font-size: 10px; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
+
+  .mini-title {
+    font-size: 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 4px 0 2px 0;
+  }
+
+  .warn {
+    background: #2d1f00;
+    border: 1px solid var(--accent5);
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: 10px;
+    color: var(--accent5);
+    margin: 3px 0;
+  }
+
+  .note {
+    background: #0d2137;
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: 10px;
+    color: #9ecbff;
+    margin: 3px 0;
+  }
+
+  ul { padding-left: 12px; }
+  li { margin: 1px 0; font-size: 10px; }
+
+  .sep { height: 1px; background: var(--border); margin: 5px 0; }
+
+  b { color: #cdd9e5; font-weight: 600; }
+  em { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+<h1>⚡ Uzaktan Algılama Teknolojileri — Hızlı Başvuru</h1>
+
+<div class="grid">
+
+  <!-- BLOK 1: EM Spektrum + Atmosfer -->
+  <div class="block c1">
+    <div class="block-title">EM Spektrum</div>
+    <table>
+      <tr><th>Bölge</th><th>Dalgaboyu</th></tr>
+      <tr><td>Gamma</td><td>&lt;0.03 nm</td></tr>
+      <tr><td>X-ışını</td><td>0.03–30 nm</td></tr>
+      <tr><td><b>Morötesi (UV)</b></td><td>10–400 nm</td></tr>
+      <tr><td><b style="color:#58a6ff">Görünür</b></td><td><b style="color:#58a6ff">0.4–0.7 μm</b></td></tr>
+      <tr><td>NIR</td><td>0.7–1.3 μm</td></tr>
+      <tr><td>SWIR</td><td>1.3–3 μm</td></tr>
+      <tr><td>MWIR</td><td>3–8 μm</td></tr>
+      <tr><td>TIR/LWIR</td><td>8–15 μm</td></tr>
+      <tr><td>Mikrodalga</td><td>1mm–1m</td></tr>
+    </table>
+    <div class="sep"></div>
+    <div class="formula">Stefan-Boltzman: M = σT⁴</div>
+    <div style="font-size:9px;color:var(--muted)">Sıcak nesne → daha fazla enerji yayar</div>
+  </div>
+
+  <!-- BLOK 2: Atmosfer Etkileşimi -->
+  <div class="block c2">
+    <div class="block-title">Atmosfer Etkileşimi (4 tür)</div>
+    <div class="kv"><span class="k">Soğurum</span><span class="v">Işıma madde tarafından alınır, ısıya dönüşür</span></div>
+    <div class="kv"><span class="k">İletim</span><span class="v">Işıma maddeden azalarak geçer</span></div>
+    <div class="kv"><span class="k">Saçılım</span><span class="v">Parçacıklar tarafından her yöne dağıtılır</span></div>
+    <div class="kv"><span class="k">Yansıma</span><span class="v">Işıma yüzeyden seker</span></div>
+    <div class="sep"></div>
+    <div class="mini-title">Saçılım türleri</div>
+    <div class="kv"><span class="k">Rayleigh</span><span class="v">Parçacık &lt;&lt; λ (aerosol). Saçılım ∝ 1/λ⁴ → mavi 16× fazla. <b>Gökyüzü mavi</b></span></div>
+    <div class="kv"><span class="k">Mie</span><span class="v">Parçacık ≈ λ (duman, toz). Kısa λ daha etkilenir ama fark az</span></div>
+    <div class="kv"><span class="k">Seçici olmayan</span><span class="v">Parçacık &gt;&gt; λ (su damlası). Tüm λ eşit saçılır → <b>bulut beyaz</b></span></div>
+  </div>
+
+  <!-- BLOK 3: Pasif vs Aktif -->
+  <div class="block c3">
+    <div class="block-title">Pasif vs Aktif Alıcı</div>
+    <table>
+      <tr><th></th><th>Pasif</th><th>Aktif</th></tr>
+      <tr><td><b>Enerji</b></td><td>Güneş</td><td>Kendi kaynağı</td></tr>
+      <tr><td><b>Avantaj</b></td><td>Ucuz, küçük, tespit edilmez</td><td>Gece+gündüz, hava bağımsız</td></tr>
+      <tr><td><b>Dezavantaj</b></td><td>Düşük ışıkta yetersiz</td><td>Pahalı, karmaşık</td></tr>
+      <tr><td><b>Örnekler</b></td><td>PAN, MS, HS, IR</td><td>RADAR, SAR, LiDAR, SONAR</td></tr>
+    </table>
+    <div class="sep"></div>
+    <div class="mini-title">Alıcı türleri</div>
+    <div class="kv"><span class="k">PAN</span><span class="v">1 kanal, görünür, renk yok</span></div>
+    <div class="kv"><span class="k">Multispektral</span><span class="v">3–10 bant (B,G,R,NIR…)</span></div>
+    <div class="kv"><span class="k">Hiperspektral</span><span class="v">50+ dar bant, yüksek spektral bilgi, düşük uzamsal çöz.</span></div>
+  </div>
+
+  <!-- BLOK 4: 4 Çözünürlük -->
+  <div class="block c4">
+    <div class="block-title">4 Çözünürlük Türü</div>
+    <div class="kv"><span class="k">Uzamsal</span><span class="v">Piksel boyutu ↓ → çözünürlük ↑. Anlık görüş açısı (IFOV) ile belirlenir</span></div>
+    <div class="kv"><span class="k">Spektral</span><span class="v">Δλ ne kadar dar → o kadar yüksek. MS &lt; HS</span></div>
+    <div class="kv"><span class="k">Radyometrik</span><span class="v">Dijital kuantalama seviyesi sayısı. 8 bit=256, 11 bit=2048 seviye</span></div>
+    <div class="kv"><span class="k">Zamansal</span><span class="v">Aynı sahneyi görüntüleme sıklığı. Süre ↓ → çözünürlük ↑</span></div>
+    <div class="sep"></div>
+    <div class="mini-title">Örnek uzamsal çözünürlükler</div>
+    <table>
+      <tr><th>Uydu</th><th>PAN</th><th>MS</th></tr>
+      <tr><td>GÖKTÜRK-1</td><td>0.5m</td><td>2m</td></tr>
+      <tr><td>GÖKTÜRK-2</td><td>2.5m</td><td>5m</td></tr>
+      <tr><td>İMECE</td><td>0.99m</td><td>3.96m</td></tr>
+      <tr><td>RASAT</td><td>7.5m</td><td>15m</td></tr>
+      <tr><td>BİLSAT</td><td>4m</td><td>26.7m</td></tr>
+    </table>
+  </div>
+
+  <!-- BLOK 5: Veri Düzeltmeleri -->
+  <div class="block c5">
+    <div class="block-title">Veri Düzeltmeleri (Sıra Önemli!)</div>
+    <div class="kv"><span class="k">1. Radyometrik</span><span class="v">Dijital değer → Işınım → TOA Yansıma</span></div>
+    <div class="formula">Yansıma = (π × Radiance × d²) / (ESUN × cosθSZ)</div>
+    <div class="kv"><span class="k">2. Atmosferik</span><span class="v">TOA yansıma → Yeryüzü yansıması (MODTRAN, FLAASH, QUAC)</span></div>
+    <div class="kv"><span class="k">3. Topografik</span><span class="v">Arazi aydınlatma/gölge etkisi giderme → DEM gerekir</span></div>
+    <div class="kv"><span class="k">4. Geometrik</span><span class="v">Konum hataları → Georeferencing, Ortorektifikasyon, Registration</span></div>
+    <div class="sep"></div>
+    <div style="font-size:9px"><b>Georef:</b> GCP kullanır, afin/polinom dönüşüm &nbsp;|&nbsp; <b>Ortorektif:</b> Her piksel tepeden görünür, DEM kullanır &nbsp;|&nbsp; <b>Registration:</b> İki görüntüyü piksel piksel hizalar</div>
+  </div>
+
+  <!-- BLOK 6: Spektral İmza -->
+  <div class="block c1">
+    <div class="block-title">Spektral İmza</div>
+    <div style="font-size:10px">Materyalin dalgaboyuna bağlı yansıma/ışıma değişimidir. Kimyasal/fiziksel yapıya bağlıdır.</div>
+    <div class="sep"></div>
+    <div class="mini-title">Bitki spektral imzası</div>
+    <div class="kv"><span class="k">Görünür</span><span class="v">Klorofil soğurur (↑ soğurum, 0.4-0.5 + 0.6-0.7 μm)</span></div>
+    <div class="kv"><span class="k">NIR</span><span class="v">Hücre yapısı yansıtır (yüksek yansıma)</span></div>
+    <div class="kv"><span class="k">Sağlıklı</span><span class="v">NIR ↑ + Kırmızı ↓</span></div>
+    <div class="kv"><span class="k">Sağlıksız</span><span class="v">NIR ↓ + Kırmızı ↑</span></div>
+    <div class="sep"></div>
+    <div style="font-size:9px;color:var(--muted)">Değişkenlik nedenleri: alt türler, ölçüm farkları, atmosfer, mevsim</div>
+  </div>
+
+  <!-- BLOK 7: SAR/RADAR -->
+  <div class="block c2 wide">
+    <div class="block-title">RADAR & SAR</div>
+    <div class="row2">
+      <div>
+        <div class="mini-title">RADAR temelleri</div>
+        <div class="kv"><span class="k">Prensip</span><span class="v">Radyo dalgası gönder, geri saçılımı ölç</span></div>
+        <div class="kv"><span class="k">Parlak piksel</span><span class="v">Yüksek geri saçılım → pürüzlü yüzey</span></div>
+        <div class="kv"><span class="k">Karanlık</span><span class="v">Düz alan (yol), bina arkası, radar ulaşamıyor</span></div>
+        <div class="kv"><span class="k">Metal/ıslak</span><span class="v">Yüksek iletkenlik → çok parlak</span></div>
+        <div class="sep"></div>
+        <div class="mini-title">Menzil çözünürlüğü</div>
+        <div class="formula">δR = c / 2B &nbsp;&nbsp; (B: bant genişliği)</div>
+        <div class="mini-title">Azimut çözünürlüğü (RADAR)</div>
+        <div class="formula">δA = Rb = h·cosθ·(λ/dH)</div>
+        <div style="font-size:9px;color:var(--muted)">Örn: 700km, 10 mrad → 7km çözünürlük</div>
+      </div>
+      <div>
+        <div class="mini-title">SAR neden üstün?</div>
+        <div style="font-size:10px;margin-bottom:4px">Platform hareketi boyunca çok atım → Doppler kayması → sentetik açıklık. Anten boyutu sanal olarak artırılır.</div>
+        <div class="formula">δA(SAR) = L/2 &nbsp;&nbsp; (L: fiziksel anten)</div>
+        <div class="warn">SAR azimut çözünürlüğü mesafeden BAĞIMSIZ!</div>
+        <div class="mini-title">SAR geometrik bozunumlar</div>
+        <div class="kv"><span class="k">Foreshortening</span><span class="v">Eğimli yüzey kısalmış görünür</span></div>
+        <div class="kv"><span class="k">Layover</span><span class="v">Tepe tabanından önce görünür → devrilmiş gibi</span></div>
+        <div class="kv"><span class="k">Shadow</span><span class="v">Radar ulaşamaz → karanlık bölge</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOK 8: LiDAR -->
+  <div class="block c3">
+    <div class="block-title">LiDAR</div>
+    <div style="font-size:10px">Lazer ışığı gönder (UV/VIS/NIR/SWIR: 250nm–10μm), geri dönüşü ölç</div>
+    <div class="formula">Mesafe = c × t / 2</div>
+    <div class="mini-title">Yersel çözünürlük</div>
+    <div class="formula">γ ≥ 2.44λ/D &nbsp;|&nbsp; DI ≈ hγ</div>
+    <div style="font-size:9px">Örn: γ=1mrad, h=1km → DI≈1m</div>
+    <div class="mini-title">Menzil çözünürlüğü</div>
+    <div class="formula">ΔR = c·Δt / 2</div>
+    <div style="font-size:9px">Örn: 10ns darbe → min 1.5m ayrıştırma</div>
+    <div class="sep"></div>
+    <div style="font-size:9px"><b>Uyg:</b> Ormancılık, DEM, şehir haritalama, otonom araç</div>
+  </div>
+
+  <!-- BLOK 9: SONAR -->
+  <div class="block c4">
+    <div class="block-title">SONAR</div>
+    <div class="formula">c = 1449.2 + 4.6T − 0.055T² + ... ≈ 1500 m/s</div>
+    <div class="mini-title">Aşağı bakan SONAR çözünürlük</div>
+    <div class="formula">δx = βH &nbsp;(yatay) &nbsp;|&nbsp; δz = cT/2 &nbsp;(dikey)</div>
+    <div class="mini-title">Yan taramalı SONAR</div>
+    <div class="formula">δx = Rβ &nbsp;|&nbsp; δy = cT/(2sinθ)</div>
+    <div class="sep"></div>
+    <div style="font-size:9px"><b>Geri dönen güç ∝ 1/mesafe⁴</b> → yüksek güç + odaklama + CHIRP gerekir</div>
+    <div style="font-size:9px;margin-top:3px"><b>Tarih:</b> İlk aktif SONAR 1914 (Titanik'ten sonra)</div>
+  </div>
+
+  <!-- BLOK 10: İndisler -->
+  <div class="block c5 wide">
+    <div class="block-title">Multispektral İndisler (Sentinel-2)</div>
+    <div class="row2">
+      <div>
+        <table>
+          <tr><th>İndis</th><th>Formül</th><th>Amaç</th></tr>
+          <tr><td><b>NDVI</b></td><td>(B8−B4)/(B8+B4)</td><td>Bitki tespiti</td></tr>
+          <tr><td>GNDVI</td><td>(B8−B3)/(B8+B3)</td><td>Klorofil</td></tr>
+          <tr><td>SAVI</td><td>(B8−B4)/(B8+B4+0.428)×1.428</td><td>Bitki (toprak azalt)</td></tr>
+          <tr><td>EVI</td><td>2.5×(B8−B4)/(B8+6×B4−7.5×B2+1)</td><td>Gelişmiş bitki</td></tr>
+        </table>
+      </div>
+      <div>
+        <table>
+          <tr><th>İndis</th><th>Formül</th><th>Amaç</th></tr>
+          <tr><td><b>NDWI</b></td><td>(B3−B8)/(B3+B8)</td><td>Su kütlesi</td></tr>
+          <tr><td>MNDWI</td><td>(B3−B11)/(B3+B11)</td><td>Su (kentsel)</td></tr>
+          <tr><td>MSI</td><td>B11/B8</td><td>Nem stresi</td></tr>
+          <tr><td>BSI</td><td>(B11+B4−B8−B2)/(B11+B4+B8+B2)</td><td>Çıplak toprak</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="note">Sentinel-2: B2=Mavi, B3=Yeşil, B4=Kırmızı, B8=NIR, B8A=NIR dar, B11=SWIR</div>
+  </div>
+
+  <!-- BLOK 11: Pankeskinleştirme -->
+  <div class="block c1 wide">
+    <div class="block-title">Pankeskinleştirme</div>
+    <div class="row2">
+      <div>
+        <div class="kv"><span class="k">Amaç</span><span class="v">PAN (yüksek uzamsal) + MS (yüksek spektral) → her ikisi bir arada</span></div>
+        <div class="mini-title">CS (Component Substitution)</div>
+        <div class="formula">MS̃k = MS̄k + gk(P − IL)</div>
+        <div style="font-size:9px">MS uzaya dönüştür → PAN ile bileşen yer değiştir → ters dönüşüm</div>
+        <div style="font-size:9px;color:var(--accent3);margin-top:2px">⚠ Spektral bozunum riski var. Global çalışır, hızlı.</div>
+        <div class="mini-title">CS Örnekleri</div>
+        <div style="font-size:9px">IHS, PCA, Gram-Schmidt (GS, GSA), UNB, BDSD, PRACS</div>
+        <div class="sep"></div>
+        <div class="mini-title">IHS (Güncel adımlar)</div>
+        <div style="font-size:10px">1) MS üst-örnekle → PAN boyutuna getir<br>2) Bant ortalaması → I bileşeni<br>3) Her MS bandından I çıkar<br>4) Histogramı eşleştirilmiş PAN ekle</div>
+      </div>
+      <div>
+        <div class="mini-title">MRA (Multi-Resolution Analysis)</div>
+        <div class="formula">MS̃k = MS̄k + gk(P − PL)</div>
+        <div style="font-size:9px">(P − PL): PAN yüksek frekans bilgisi. MS'ye uzamsal detay eklenir.</div>
+        <div style="font-size:9px;color:var(--accent2);margin-top:2px">✓ Daha az spektral bozunum</div>
+        <div class="mini-title">MRA Örnekleri</div>
+        <div style="font-size:9px">HPF, SFIM, Wavelet (WT, ATWT, AWLP), MTF-GLP, MTF-GLP-CBD</div>
+        <div class="sep"></div>
+        <div class="mini-title">Başarım Kriterleri</div>
+        <table>
+          <tr><th>Kriter</th><th>Formül özeti</th><th>Optimal</th></tr>
+          <tr><td>SAM</td><td>arccos(v1·v2/‖v1‖‖v2‖)</td><td>0</td></tr>
+          <tr><td>RMSE</td><td>√E[(I−J)²]</td><td>0</td></tr>
+          <tr><td>ERGAS</td><td>(100/R)√(1/N Σ(RMSE/μ)²)</td><td>0</td></tr>
+          <tr><td>PSNR</td><td>10log₁₀(MAX²/MSE)</td><td>↑ iyi</td></tr>
+          <tr><td>Q-index</td><td>korelasyon × parlaklık × kontrast</td><td>1</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOK 12: Wald Protokolü -->
+  <div class="block c2">
+    <div class="block-title">Wald Protokolü</div>
+    <div style="font-size:10px;margin-bottom:4px"><b>Neden?</b> Gerçek pankeskinleştirme sonucu için referans veri yok → sentetik referans üret</div>
+    <div class="kv"><span class="k">1. Kötüleştir</span><span class="v">Orijinal MS ve PAN → PSF ile Gauss alt-örnekleme → düşük çözünürlüklü sentetik veri</span></div>
+    <div class="kv"><span class="k">2. Pankeskinleştir</span><span class="v">Sentetik MS + sentetik PAN → yöntemi uygula</span></div>
+    <div class="kv"><span class="k">3. Karşılaştır</span><span class="v">Sonucu orijinal MS ile kıyasla</span></div>
+    <div class="note">PSF: nokta yayılım fonksiyonu | SRF: spektral yanıt fonksiyonu</div>
+  </div>
+
+  <!-- BLOK 13: Başarım / OA-AA Hesabı -->
+  <div class="block c3">
+    <div class="block-title">Sınıflandırma Başarımı</div>
+    <div class="mini-title">Karışıklık matrisi örneği (ÇIKMIS SORU!)</div>
+    <table>
+      <tr><th>Gerçek\Tahmin</th><th>Bitki</th><th>Yerleşim</th><th>Su</th></tr>
+      <tr><td>Bitki</td><td>80</td><td>10</td><td>10</td></tr>
+      <tr><td>Yerleşim</td><td>20</td><td>60</td><td>20</td></tr>
+      <tr><td>Su</td><td>10</td><td>20</td><td>70</td></tr>
+    </table>
+    <div class="sep"></div>
+    <div class="formula">OA = Σ(köşegen) / Σ(tüm) = (80+60+70)/300 = 70%</div>
+    <div class="formula">AA = (80/100 + 60/100 + 70/100) / 3 = 70%</div>
+    <div class="note">Her satırın toplamı = o sınıfın gerçek toplam sayısı</div>
+  </div>
+
+  <!-- BLOK 14: Türkiye Uyduları -->
+  <div class="block c4">
+    <div class="block-title">Türkiye Uyduları</div>
+    <table>
+      <tr><th>Uydu</th><th>Fırlatma</th><th>PAN</th><th>MS</th></tr>
+      <tr><td>BİLSAT</td><td>2003</td><td>4m</td><td>26.7m, 4 bant</td></tr>
+      <tr><td>RASAT</td><td>2011</td><td>7.5m</td><td>15m RGB</td></tr>
+      <tr><td>GÖKTÜRK-2</td><td>2012</td><td>2.5m</td><td>5m, 4 bant</td></tr>
+      <tr><td>GÖKTÜRK-1</td><td>2016</td><td>0.5m</td><td>2m, 12bit</td></tr>
+      <tr><td>İMECE</td><td>2023</td><td>0.99m</td><td>3.96m + HS</td></tr>
+      <tr><td style="color:var(--accent3)">GÖKTÜRK-3</td><td style="color:var(--accent3)">Henüz yok</td><td colspan="2" style="color:var(--accent3)">İlk SAR uydumuz (2028?)</td></tr>
+    </table>
+  </div>
+
+  <!-- BLOK 15: Önemli Kavramlar (Çıkmış soru tarzı) -->
+  <div class="block c5 full">
+    <div class="block-title">Çıkmış Final Sorularına Göre Kritik Kavramlar</div>
+    <div class="row3">
+      <div>
+        <div class="mini-title">Görünür bölge aralığı</div>
+        <div class="formula">0.38 – 1 μm ❌ &nbsp; 0.4 – 0.7 μm ✓</div>
+        <div class="mini-title">SAR tercih nedeni (RADAR'a göre)</div>
+        <div style="font-size:10px">Yüksek <b>uzamsal çözünürlük</b> — azimut çözünürlüğü mesafeden bağımsız. Anten boyutu sentetik olarak artırılır.</div>
+        <div class="mini-title">Hiperspektral avantajı (multispektrale göre)</div>
+        <div style="font-size:10px"><b>Yüksek spektral çözünürlük</b> (dar bantlar). Malzeme ayrımı çok daha hassas.</div>
+      </div>
+      <div>
+        <div class="mini-title">Değişim tespiti polar koordinat</div>
+        <div class="kv"><span class="k">Uzaklık</span><span class="v">Değişimin büyüklüğü/önemi</span></div>
+        <div class="kv"><span class="k">Açı</span><span class="v">Değişimin türü/grubu</span></div>
+        <div class="mini-title">k-NN sınıflandırma özellikleri</div>
+        <div style="font-size:10px">Pikseller arası mesafe hesabı → k sayısı komşu sayısı belirler → en sık etiket atanır → veri k adet sınıfa ayrılır</div>
+        <div class="mini-title">Sınıflandırma başarımı nasıl hesaplanır?</div>
+        <div style="font-size:10px">Piksellerin etiketlerinin doğru atanıp atanmadığı kontrol edilir (karışıklık matrisi)</div>
+      </div>
+      <div>
+        <div class="mini-title">Uzaktan Algılama 7 Adım (A→G)</div>
+        <div style="font-size:10px">
+          <b>A</b> Enerji kaynağı &nbsp;
+          <b>B</b> Atmosfer etkileşimi &nbsp;
+          <b>C</b> Hedef etkileşimi &nbsp;
+          <b>D</b> Alıcı kaydeder &nbsp;
+          <b>E</b> İletim & işleme &nbsp;
+          <b>F</b> Yorum & analiz &nbsp;
+          <b>G</b> Uygulama
+        </div>
+        <div class="mini-title">Derin öğrenme HS için neden uygun değil?</div>
+        <div style="font-size:10px">Çok fazla parametre + az etiketli örnek = boyutun laneti. HS verilerinde örnek sayısı her zaman yetersiz kalır.</div>
+        <div class="mini-title">Hedef tespiti sayısal başarım için neler gerekli?</div>
+        <div style="font-size:10px">Sahnedeki konumlar, sınıf etiketleri, karşılaştırma (OA, Kappa, ROC)</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:8px; text-align:center; font-size:9px; color:var(--muted); font-family:'IBM Plex Mono',monospace;">
+  UZAKTAN ALGILAMA TEKNOLOJİLERİ — VİZE HAZIRLIK NOTU &nbsp;|&nbsp; Ctrl+P ile yazdır, "Arkaplan grafikleri" seçeneğini aç
+</div>
+
+</body>
+</html>
