@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DijiKom Lab Hazırlık — KOÜ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600;700&display=swap');
+:root{--bg:#060a06;--s1:#0c110c;--s2:#101810;--g:#3de63d;--gd:#142814;--gb:#88ff88;--am:#ffaa00;--bl:#00aaff;--rd:#ff5555;--tx:#b0cbb0;--txd:#4a6a4a;--br:#1a361a;--br2:#264426}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;font-size:15px;line-height:1.65}
+.topbar{background:var(--s1);border-bottom:1px solid var(--br2);padding:14px 28px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.logo{font-family:'Share Tech Mono',monospace;font-size:17px;color:var(--g);letter-spacing:.06em}
+.logo span{color:var(--am)}
+.subtitle{color:var(--txd);font-size:12px;font-family:'Share Tech Mono',monospace}
+.tabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.tab{background:none;border:1px solid var(--br);color:var(--txd);padding:6px 16px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.06em;transition:all .15s;border-radius:2px}
+.tab:hover{border-color:var(--g);color:var(--g)}
+.tab.active{background:var(--gd);border-color:var(--g);color:var(--gb)}
+.page{display:none;max-width:1060px;margin:0 auto;padding:28px 20px}
+.page.active{display:block}
+.lab-title{font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--g);margin-bottom:4px}
+.lab-sub{color:var(--txd);font-size:12px;margin-bottom:24px}
+.section{background:var(--s1);border:1px solid var(--br);border-radius:4px;margin-bottom:18px;overflow:hidden}
+.sec-hdr{display:flex;align-items:center;padding:11px 18px;cursor:pointer;border-bottom:1px solid var(--br);background:var(--s2);gap:10px;user-select:none}
+.sec-hdr:hover{background:var(--gd)}
+.sec-title{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--g);letter-spacing:.08em;flex:1}
+.sec-badge{background:var(--gd);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:10px;padding:2px 8px;border-radius:2px;border:1px solid var(--br2)}
+.sec-badge.warn{background:#1a1200;color:var(--am);border-color:#3a2800}
+.sec-tog{color:var(--txd);font-size:11px;transition:transform .2s}
+.section.coll .sec-tog{transform:rotate(-90deg)}
+.sec-body{padding:18px}
+.section.coll .sec-body{display:none}
+h3{font-size:14px;color:var(--g);margin-bottom:8px;margin-top:14px;font-family:'Share Tech Mono',monospace;letter-spacing:.05em}
+h3:first-child{margin-top:0}
+p{margin-bottom:10px}p:last-child{margin-bottom:0}
+ul{padding-left:18px}ul li{margin-bottom:3px}
+.formula{background:var(--bg);border:1px solid var(--br2);border-left:3px solid var(--g);padding:11px 14px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--gb);margin:10px 0;border-radius:0 3px 3px 0;line-height:1.9;white-space:pre-wrap}
+.note{background:#121000;border:1px solid #2a2500;border-left:3px solid var(--am);padding:9px 14px;font-size:13px;color:#ccaa55;margin:10px 0;border-radius:0 3px 3px 0}
+.warn{background:#120808;border:1px solid #2a1010;border-left:3px solid var(--rd);padding:9px 14px;font-size:13px;color:#cc5555;margin:10px 0;border-radius:0 3px 3px 0}
+.dtable{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}
+.dtable th{background:var(--gd);color:var(--g);font-family:'Share Tech Mono',monospace;padding:7px 10px;text-align:left;border:1px solid var(--br2);font-size:11px;letter-spacing:.04em}
+.dtable td{padding:6px 10px;border:1px solid var(--br);color:var(--tx);font-family:'Share Tech Mono',monospace;font-size:12px}
+.dtable tr:hover td{background:var(--s2)}
+.toolbox{background:var(--s1);border:1px solid var(--br2);border-radius:4px;padding:18px;margin-bottom:18px}
+.tool-title{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--am);letter-spacing:.1em;margin-bottom:14px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.tool-title::before{content:'▶';font-size:9px}
+.ctrl-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px;align-items:flex-end}
+.ctrl-g{display:flex;flex-direction:column;gap:4px}
+.ctrl-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--txd);letter-spacing:.05em}
+.inp{background:var(--bg);border:1px solid var(--br2);color:var(--gb);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:13px;border-radius:2px;width:110px;transition:border-color .15s}
+.inp:focus{outline:none;border-color:var(--g)}
+.sel{background:var(--bg);border:1px solid var(--br2);color:var(--gb);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;border-radius:2px;cursor:pointer}
+.osc-wrap{background:#000;border:2px solid #162a16;border-radius:3px;padding:6px;width:100%}
+canvas{display:block;width:100%;background:#010806}
+.out-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:10px 0}
+.out-card{background:var(--bg);border:1px solid var(--br2);border-radius:3px;padding:10px;text-align:center}
+.out-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--txd);margin-bottom:3px}
+.out-val{font-family:'Share Tech Mono',monospace;font-size:22px;color:var(--gb);font-weight:700}
+.out-bin{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--am);margin-top:3px;word-break:break-all;letter-spacing:.08em}
+.pcm-bits{display:flex;gap:3px;flex-wrap:wrap;margin:8px 0}
+.pcmb{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:13px;border-radius:2px;font-weight:700}
+.pcmb.one{background:var(--gd);color:var(--gb);border:1px solid var(--g)}
+.pcmb.zero{background:#080808;color:var(--txd);border:1px solid var(--br)}
+.qa-item{border:1px solid var(--br);border-radius:3px;margin-bottom:8px;overflow:hidden}
+.qa-q{padding:9px 14px;cursor:pointer;background:var(--s2);display:flex;align-items:flex-start;gap:8px;font-size:14px}
+.qa-q:hover{background:var(--gd)}
+.qa-num{font-family:'Share Tech Mono',monospace;color:var(--am);font-size:11px;min-width:22px;padding-top:2px}
+.qa-txt{flex:1}
+.qa-arr{color:var(--txd);font-size:10px;transition:transform .2s;padding-top:3px}
+.qa-item.open .qa-arr{transform:rotate(90deg)}
+.qa-a{display:none;padding:10px 14px 10px 44px;background:var(--bg);border-top:1px solid var(--br);font-size:13px;color:var(--tx)}
+.qa-item.open .qa-a{display:block}
+.hl{color:var(--gb);font-family:'Share Tech Mono',monospace;font-weight:700}
+.am{color:var(--am)}.rd{color:var(--rd)}.dim{color:var(--txd)}
+.ch-legend{display:flex;gap:18px;margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:11px}
+input[type=range]{accent-color:var(--g);cursor:pointer;width:140px}
+.slider-wrap{display:flex;align-items:center;gap:10px}
+@media(max-width:700px){.topbar{flex-wrap:wrap;padding:10px 14px}.tabs{margin-left:0}.page{padding:14px 10px}.ctrl-row{flex-direction:column}.out-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">DIJIKUM<span>_</span>LAB</div>
+  <div class="subtitle">KOÜ · Elektronik ve Telekomünikasyon · Lab Hazırlık Kılavuzu</div>
+  <div class="tabs">
+    <button class="tab active" onclick="goLab(1)">LAB&nbsp;1</button>
+    <button class="tab" onclick="goLab(2)">LAB&nbsp;2</button>
+    <button class="tab" onclick="goLab(3)">LAB&nbsp;3</button>
+    <button class="tab" onclick="goLab(4)">LAB&nbsp;4</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ LAB 1 ═══════════════════════ -->
+<div id="lab1" class="page active">
+  <div class="lab-title">Deney 1: Örnekleme ve Yeniden Yapılandırma</div>
+  <div class="lab-sub">Sampling & Reconstruction — ADC · ZOH · Nyquist · Aliasing</div>
+
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)">
+      <div class="sec-title">// TEORİ — BİLİNMESİ GEREKEN</div>
+      <div class="sec-badge">ÖNEMLİ</div>
+      <div class="sec-tog">▼</div>
+    </div>
+    <div class="sec-body">
+      <h3>Nyquist-Shannon Örnekleme Teoremi</h3>
+      <p>Bir sinyali bozulmadan örnekleyip geri almak için örnekleme frekansı (f_s), sinyalin maksimum frekansının en az iki katı olmalıdır.</p>
+      <div class="formula">f_s ≥ 2 × f_max        ← Nyquist kriteri
+f_Nyquist = 2 × f_max  ← minimum örnekleme frekansı</div>
+
+      <h3>ADC Kuantizasyonu (n-bit)</h3>
+      <p>n-bitlik ADC, giriş aralığını 2ⁿ seviyeye böler. STM32'de referans gerilimi 3.3V'dur.</p>
+      <div class="formula">digital_value = round( V_in / V_ref × (2ⁿ − 1) )
+
+STM32, V_ref = 3.3V:
+  12-bit → 0 … 4095    adım Δ ≈ 0.81 mV
+  10-bit → 0 … 1023    adım Δ ≈ 3.22 mV
+   8-bit → 0 … 255     adım Δ ≈ 12.9 mV
+   6-bit → 0 … 63      adım Δ ≈ 52.4 mV
+
+Örnek: V_in = 1.65V, 8-bit:
+  round(1.65/3.3 × 255) = round(127.5) = 128</div>
+
+      <h3>Aliasing (Örtüşme / Takma)</h3>
+      <p>Eğer f_s &lt; 2×f_signal ise, örneklenen sinyal yanlış bir frekansta görünür:</p>
+      <div class="formula">f_alias = | f_signal − round(f_signal / f_s) × f_s |
+
+Örnek: f_signal = 7 kHz, f_s = 8 kHz
+  f_alias = |7000 − 1×8000| = 1000 Hz   (1kHz gibi görünür!)</div>
+
+      <h3>ZOH (Zero-Order Hold) — DAC Çıkışı</h3>
+      <p>Her ADC örneği, bir sonraki örnek gelene kadar DAC çıkışında sabit tutulur. Bu "merdiven" (staircase) şeklinde görünür. f_s arttıkça basamaklar küçülür ve orijinal sinyale yaklaşır.</p>
+      <div class="note">💡 <b>Scopeda:</b> CH0 = ADC girişi (orijinal sinyal), CH1 = DAC/ZOH çıkışı (yeniden yapılandırılmış sinyal). CH1 dikey pozisyonu −3.3V offset ile gösterilir — bu sadece ekrandaki ayırım içindir.</div>
+    </div>
+  </div>
+
+  <!-- ADC Calculator -->
+  <div class="toolbox">
+    <div class="tool-title">ADC Değer Hesaplayıcı — Bölüm 1 Tablo Yardımcısı</div>
+    <div class="ctrl-row">
+      <div class="ctrl-g">
+        <div class="ctrl-lbl">GİRİŞ GERİLİMİ (0 – 3.3 V)</div>
+        <div class="slider-wrap">
+          <input type="range" id="v1s" min="0" max="3.3" step="0.01" value="3.3" oninput="syncV1s()">
+          <input type="number" class="inp" id="v1n" min="0" max="3.3" step="0.01" value="3.3" oninput="syncV1n()" style="width:75px">
+          <span class="dim" style="font-family:'Share Tech Mono',monospace;font-size:11px">V</span>
+        </div>
+      </div>
+    </div>
+    <div class="out-grid" id="adc-outs">
+      <div class="out-card"><div class="out-lbl">12-BIT</div><div class="out-val" id="a12">4095</div><div class="out-bin" id="a12b">111111111111</div></div>
+      <div class="out-card"><div class="out-lbl">10-BIT</div><div class="out-val" id="a10">1023</div><div class="out-bin" id="a10b">1111111111</div></div>
+      <div class="out-card"><div class="out-lbl">8-BIT</div><div class="out-val" id="a8">255</div><div class="out-bin" id="a8b">11111111</div></div>
+      <div class="out-card"><div class="out-lbl">6-BIT</div><div class="out-val" id="a6">63</div><div class="out-bin" id="a6b">111111</div></div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="ctrl-lbl" style="margin-bottom:6px">RAPOR TABLOSU — HAZIR DEĞERLER</div>
+      <table class="dtable"><thead><tr><th>Analog Gerilim</th><th>n=12 bit</th><th>n=10 bit</th><th>n=8 bit</th><th>n=6 bit</th></tr></thead>
+      <tbody><tr><td>3.3 V</td><td>4095</td><td>1023</td><td>255</td><td>63</td></tr><tr><td>0 V</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- Scope Visualizer Lab1 -->
+  <div class="toolbox">
+    <div class="tool-title">Scope Görselleştirici — Bölüm 2 (ZOH Örnekleme)</div>
+    <div class="ctrl-row">
+      <div class="ctrl-g"><div class="ctrl-lbl">ÖRNEKLEME f_s (Hz)</div><input type="number" class="inp" id="l1fs" value="8000" min="500" max="40000" oninput="drawL1()"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">SİNYAL f_m (Hz)</div><input type="number" class="inp" id="l1fm" value="1000" min="100" max="10000" oninput="drawL1()"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">X-AXIS (ms/div)</div><input type="number" class="inp" id="l1xd" value="0.5" min="0.05" max="5" step="0.05" oninput="drawL1()"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">Y-AXIS (V/div)</div><input type="number" class="inp" id="l1yd" value="1" min="0.5" max="2" step="0.5" oninput="drawL1()"></div>
+    </div>
+    <div class="osc-wrap"><canvas id="c1" height="300"></canvas></div>
+    <div class="ch-legend"><span style="color:var(--g)">▬ CH0: ADC girişi (2Vpp, 1.5V offset, f_m)</span><span style="color:var(--am)">▬ CH1: DAC/ZOH çıkışı (−3.3V offset)</span></div>
+    <div id="l1-warn" style="display:none" class="warn">⚠ ALİASING! f_s &lt; 2×f_m → Nyquist kriteri ihlal! Yeniden yapılandırılan sinyal bozuk.</div>
+    <div id="l1-ok" class="note">✓ Nyquist OK: f_s ≥ 2×f_m</div>
+  </div>
+
+  <!-- DSA Section -->
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)">
+      <div class="sec-title">// FREKANS DOMAİNİ — DSA (Bölüm 3)</div>
+      <div class="sec-badge warn">SORU GELEBİLİR</div>
+      <div class="sec-tog">▼</div>
+    </div>
+    <div class="sec-body">
+      <p>DSA'da ZOH çıkışının spektrumunda şu bileşenler görülür (örn. f_m=1kHz, f_s=8kHz):</p>
+      <table class="dtable"><thead><tr><th>Bileşen</th><th>Frekans</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td>Temel</td><td>f_m = 1 kHz</td><td>Orijinal sinyal</td></tr>
+        <tr><td>Görüntü (Image) 1</td><td>f_s − f_m = 7 kHz</td><td>Örnekleme spektrum yinelemesi</td></tr>
+        <tr><td>Görüntü 2</td><td>f_s + f_m = 9 kHz</td><td>DSA aralığı içindeyse görünür</td></tr>
+        <tr><td>Harmonikler</td><td>2×f_s ± f_m …</td><td>Genellikle −40dB altında</td></tr>
+      </tbody></table>
+      <div class="note">DSA'da −40dB üzerindeki <b>ilk üç bileşeni</b> not edin: f_m, f_s−f_m, f_s+f_m. Genlikler sinc(f×T_s) eğrisine göre azalır.</div>
+    </div>
+  </div>
+
+  <!-- Q&A Lab1 -->
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)"><div class="sec-title">// MUHTEMEL SORULAR VE CEVAPLAR</div><div class="sec-badge warn">HAZIRLIK</div><div class="sec-tog">▼</div></div>
+    <div class="sec-body">
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q1</div><div class="qa-txt">3.3V girişte 12-bit ADC ne okur? Binary nedir?</div><div class="qa-arr">▶</div></div><div class="qa-a"><span class="hl">4095</span> = 2¹²−1. Binary: 111111111111 (12 tane 1).</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q2</div><div class="qa-txt">0V girişte tüm bit derinliklerinde ADC değeri nedir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Tüm bit derinliklerinde <span class="hl">0</span>. Zaten round(0/3.3 × max) = 0.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q3</div><div class="qa-txt">1kHz sinyal için minimum f_s nedir? Bu lab'da neden daha yüksek kullanılır?</div><div class="qa-arr">▶</div></div><div class="qa-a">Nyquist: f_s_min = 2×1000 = <span class="hl">2000 Hz</span>. Uygulamada genellikle 8000 Hz (CD kalitesi) kullanılır — daha iyi yeniden yapılandırma ve anti-aliasing filtresi için yeterli boşluk bırakmak amacıyla.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q4</div><div class="qa-txt">Örnekleme frekansını artırırsan DAC çıkışı nasıl değişir?</div><div class="qa-arr">▶</div></div><div class="qa-a">ZOH basamakları daha küçük ve çok sayıda olur → çıkış orijinal sinüse yaklaşır. f_s ↑ → yeniden yapılandırma kalitesi ↑, staircase giderek daha pürüzsüz görünür.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q5</div><div class="qa-txt">Aliasing nedir, nasıl oluşur?</div><div class="qa-arr">▶</div></div><div class="qa-a">f_s &lt; 2×f_signal olduğunda, yüksek frekanslı bileşenler düşük frekansmış gibi yanlış yorumlanır (f_alias = |f_sig − round(f_sig/f_s)×f_s|). Çözüm: Nyquist kriterini sağlamak veya ADC öncesine anti-aliasing LPF koymak.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q6</div><div class="qa-txt">Bit derinliği arttırılırsa kuantizasyon hatasına etkisi nedir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Bit derinliği ↑ → seviye sayısı ↑ → adım büyüklüğü Δ ↓ → maks. kuantizasyon hatası (Δ/2) ↓. 8-bit: Δ≈12.9mV (hata &lt;6.5mV), 12-bit: Δ≈0.8mV (hata &lt;0.4mV).</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ LAB 2 ═══════════════════════ -->
+<div id="lab2" class="page">
+  <div class="lab-title">Deney 2: Pulse Code Modulation (PCM)</div>
+  <div class="lab-sub">Örnekleme → Kuantizasyon → Binary Kodlama → Seri İletim</div>
+
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)"><div class="sec-title">// TEORİ</div><div class="sec-badge">ÖNEMLİ</div><div class="sec-tog">▼</div></div>
+    <div class="sec-body">
+      <h3>ADC → PCM Akışı</h3>
+      <div class="formula">Analog Sinyal → Örnekleme → Kuantizasyon → PCM (binary) → Seri Bit Akışı</div>
+
+      <h3>8-bit ADC, V_ref = 3.3V</h3>
+      <div class="formula">value = round( V_in / 3.3 × 255 )
+
+3.3V → 255 = 11111111₂
+0.0V →   0 = 00000000₂
+2.5V → round(2.5/3.3 × 255) = round(193.2) = 193 = 11000001₂
+0.5V → round(0.5/3.3 × 255) = round( 38.6) =  39 = 00100111₂</div>
+
+      <h3>Frame Sync ve PCM Seri İletimi</h3>
+      <p>STM32 her örnekten önce kısa bir Frame Sync (çerçeve senkronizasyonu) darbesi gönderir. Ardından 8 bit PCM verisi clock sinyaliyle seri (MSB önce) iletilir.</p>
+      <div class="formula">İki Frame Sync arasındaki clock sayısı = bit sayısı = 8   (8-bit ADC)
+
+Scopeda:
+  CH0 = Frame Sync sinyali (tetikleyici)
+  CH1 = PCM bit dizisi (seri output)</div>
+
+      <h3>Veri Hızı Hesabı</h3>
+      <div class="formula">Veri hızı = n_bit × f_örnekleme
+
+Örnek: 8-bit, f_s = 8000 Hz → Veri hızı = 8 × 8000 = 64 000 bps = 64 kbps
+
+Örnekleme hızı ikiye katlanırsa veri hızı da ikiye katlanır.</div>
+
+      <h3>100 Hz Sinüs Sinyali (2Vpp, 1.5V offset)</h3>
+      <div class="formula">Maks. genlik örneği (tepe = 2.5V):
+  value = round(2.5/3.3 × 255) = 193 = 11000001₂
+
+Min. genlik örneği (çukur = 0.5V):
+  value = round(0.5/3.3 × 255) =  39 = 00100111₂</div>
+
+      <div class="note">💡 Frame Sync → iki çerçeve arasındaki clock darbelerini sayın = 8 (8-bit için). Scope'ta tetikleyici olarak CH0 (Frame Sync) kullanın.</div>
+    </div>
+  </div>
+
+  <!-- PCM Encoder -->
+  <div class="toolbox">
+    <div class="tool-title">PCM Encoder — Gerilim → 8-bit Binary</div>
+    <div class="ctrl-row">
+      <div class="ctrl-g">
+        <div class="ctrl-lbl">GERİLİM (0 – 3.3 V)</div>
+        <div class="slider-wrap">
+          <input type="range" id="v2s" min="0" max="3.3" step="0.01" value="2.5" oninput="syncV2s()">
+          <input type="number" class="inp" id="v2n" min="0" max="3.3" step="0.01" value="2.5" oninput="syncV2n()" style="width:75px">
+          <span class="dim" style="font-family:'Share Tech Mono',monospace;font-size:11px">V</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin:10px 0">
+      <div class="ctrl-lbl" style="margin-bottom:6px">8-BIT ADC DEĞERİ (DECIMAL)</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--gb)" id="pcm-dec">193</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--txd);margin-top:2px">MSB (D7) → LSB (D0)</div>
+      <div class="pcm-bits" id="pcm-bits"></div>
+    </div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--br)">
+      <div class="ctrl-lbl" style="margin-bottom:8px">VERİ HIZI HESAPLAYICI</div>
+      <div class="ctrl-row">
+        <div class="ctrl-g"><div class="ctrl-lbl">BIT SAYISI n</div><input type="number" class="inp" id="drn" value="8" min="4" max="16" oninput="calcDR()" style="width:70px"></div>
+        <div class="ctrl-g"><div class="ctrl-lbl">f_ÖRNEKLEME (Hz)</div><input type="number" class="inp" id="drfs" value="8000" oninput="calcDR()"></div>
+        <div class="ctrl-g" style="justify-content:flex-end"><div class="ctrl-lbl">VERİ HIZI</div><div style="font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--gb)" id="dr-res">64 000 bps</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scope Lab2 -->
+  <div class="toolbox">
+    <div class="tool-title">Scope — Frame Sync + PCM Çıkışı Görselleştirici</div>
+    <div class="ctrl-row">
+      <div class="ctrl-g"><div class="ctrl-lbl">ADC GERİLİMİ (V)</div><input type="number" class="inp" id="l2v" value="2.5" min="0" max="3.3" step="0.01" oninput="drawL2()"></div>
+    </div>
+    <div class="osc-wrap"><canvas id="c2" height="260"></canvas></div>
+    <div class="ch-legend"><span style="color:var(--g)">▬ CH0: Frame Sync</span><span style="color:var(--am)">▬ CH1: PCM Seri Çıkış (MSB önce)</span></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)"><div class="sec-title">// MUHTEMEL SORULAR</div><div class="sec-badge warn">HAZIRLIK</div><div class="sec-tog">▼</div></div>
+    <div class="sec-body">
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q1</div><div class="qa-txt">Frame Sync sinyalleri arasında kaç clock darbesi sayılır?</div><div class="qa-arr">▶</div></div><div class="qa-a">8-bit ADC kullandığı için her örnekte <span class="hl">8 bit</span> iletilir → Frame Sync arasında 8 clock darbesi görülür.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q2</div><div class="qa-txt">100 Hz sinüsün maksimum genlik PCM kodu nedir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Max = 2.5V: round(2.5/3.3×255) = <span class="hl">193 = 11000001₂</span>. Scopede: 11000001 bit dizisi.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q3</div><div class="qa-txt">Bu deneyde veri hızı nedir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Veri hızı = n × f_s. Eğer STM32'de f_s = 8000 Hz ise: 8 × 8000 = <span class="hl">64 000 bps = 64 kbps</span>.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q4</div><div class="qa-txt">Örnekleme hızı iki katına çıkarılırsa veri hızı nasıl değişir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Veri hızı = n×f_s. f_s ikiyle çarpılırsa veri hızı da ikiye katlanır. 8kHz → 16kHz → 64kbps → 128kbps.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q5</div><div class="qa-txt">PCM'de bit sayısını azaltırsan ne olur?</div><div class="qa-arr">▶</div></div><div class="qa-a">Seviye sayısı 2ⁿ azalır → adım büyür → kuantizasyon hatası artar → sinyal gürültü oranı (SQNR) düşer → ses/sinyal kalitesi bozulur. Aynı f_s ile veri hızı da azalır.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ LAB 3 ═══════════════════════ -->
+<div id="lab3" class="page">
+  <div class="lab-title">Deney 3: Hat Kodlama (Line Coding)</div>
+  <div class="lab-sub">NRZ · RZ · Unipolar · Polar · ISI · Bant Genişliği</div>
+
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)"><div class="sec-title">// TEORİ</div><div class="sec-badge">ÖNEMLİ</div><div class="sec-tog">▼</div></div>
+    <div class="sec-body">
+      <h3>Hat Kodlama Türleri</h3>
+      <table class="dtable"><thead><tr><th>Kod</th><th>bit=0</th><th>bit=1</th><th>DC Bileşen</th><th>Tahmini BW</th></tr></thead>
+      <tbody>
+        <tr><td>Unipolar NRZ</td><td>0 V</td><td>+Vp</td><td><b>Var</b> (Vp/2)</td><td>≈ r_b</td></tr>
+        <tr><td>Unipolar RZ (τ)</td><td>0 V</td><td>+Vp, süre τ</td><td><b>Var</b> (Vp×τ/T_b)</td><td>≈ 1/τ</td></tr>
+        <tr><td>Polar NRZ</td><td>−Vp</td><td>+Vp</td><td><b>Yok</b> (≈0)</td><td>≈ r_b</td></tr>
+        <tr><td>Polar RZ (τ)</td><td>−Vp, süre τ</td><td>+Vp, süre τ</td><td><b>Yok</b></td><td>≈ 1/τ</td></tr>
+      </tbody></table>
+
+      <div class="formula">T_b = 1 / r_b                     (bit süresi)
+τ   = duty_cycle × T_b          (darbe süresi, RZ)
+
+BW_NRZ ≈ r_b                    (ana lob, ilk sıfır)
+BW_RZ  ≈ 1/τ = r_b / duty_cycle (τ küçüldükçe BW genişler)
+
+%50 duty cycle RZ için: BW ≈ 2 × r_b</div>
+
+      <h3>DC Bileşen Neden Önemli?</h3>
+      <p><span class="hl">Unipolar:</span> ortalama ≠ 0 → DC bileşen var → transformatörden geçemez, uzun kablo DC kaymasına duyarlı, clock çıkarımı zor.</p>
+      <p><span class="hl">Polar:</span> P(1)=P(0)=0.5 varsayımıyla ortalama=0 → DC bileşen yok → daha iyi DC dengesi, hataya karşı daha dayanıklı.</p>
+
+      <h3>ISI ve Bandlimitli Kanal (LPF Etkisi)</h3>
+      <p>Düşük geçirgen bir kanal (veya RC devreksi), sinyal kenarlarını yumuşatır. Yüksek frekanslı bileşenler kesilince kare dalga biçimi bozulur → komşu bitler birbirine karışır → ISI.</p>
+      <div class="formula">RC LPF kesim frekansı: f_c = 1 / (2π × R × C)
+
+Deney devresinde C = 100 nF:
+  R = 0 Ω    → f_c = ∞    (filtreleme yok, temiz sinyal)
+  R = 5 kΩ   → f_c ≈ 318 Hz
+  R = 10 kΩ  → f_c ≈ 159 Hz
+
+Eğer r_b >> f_c → şiddetli ISI</div>
+
+      <div class="note">💡 RZ'nin NRZ'den daha geniş BW gerektirmesi dezavantaj gibi görünse de RZ'de her bitte geçiş olduğu için clock çıkarımı çok daha kolaydır. Bu avantaj bazen BW maliyetine değer.</div>
+    </div>
+  </div>
+
+  <!-- Line Code Visualizer -->
+  <div class="toolbox">
+    <div class="tool-title">Hat Kodu Görselleştirici</div>
+    <div class="ctrl-row">
+      <div class="ctrl-g"><div class="ctrl-lbl">VERİ (HEX, 1 BYTE)</div><input type="text" class="inp" id="lc-hex" value="A5" maxlength="2" oninput="drawLC()" style="width:80px;text-transform:uppercase"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">KOD TÜRÜ</div>
+        <select class="sel" id="lc-type" onchange="drawLC()">
+          <option value="uni_nrz">Unipolar NRZ</option>
+          <option value="uni_rz">Unipolar RZ</option>
+          <option value="pol_nrz">Polar NRZ</option>
+          <option value="pol_rz">Polar RZ</option>
+        </select>
+      </div>
+      <div class="ctrl-g"><div class="ctrl-lbl">DUTY CYCLE (%)</div><input type="number" class="inp" id="lc-dc" value="50" min="10" max="100" oninput="drawLC()" style="width:80px"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">Vp (V)</div><input type="number" class="inp" id="lc-vp" value="3.3" min="1" max="5" step="0.1" oninput="drawLC()" style="width:75px"></div>
+    </div>
+    <div class="osc-wrap"><canvas id="c3" height="200"></canvas></div>
+    <div id="lc-info" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--txd);margin-top:6px"></div>
+  </div>
+
+  <!-- LPF ISI Simulator -->
+  <div class="toolbox">
+    <div class="tool-title">ISI Simülatörü — RC LPF Etkisi (1kbps data, C=100nF)</div>
+    <div class="ctrl-row">
+      <div class="ctrl-g">
+        <div class="ctrl-lbl">R1 DİRENCİ (kΩ) — <span id="lc-r-val" style="color:var(--g)">0</span> kΩ</div>
+        <input type="range" id="lc-r" min="0" max="10" step="0.1" value="0" oninput="drawLPF()">
+      </div>
+      <div class="ctrl-g" style="justify-content:flex-end">
+        <div class="ctrl-lbl">KESİM FREKANSI f_c</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--gb)" id="lc-fc">∞</div>
+      </div>
+    </div>
+    <div class="osc-wrap"><canvas id="c3b" height="170"></canvas></div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--txd);margin-top:5px">Yeşil (parlak) = RC filtre çıkışı &nbsp;|&nbsp; Yeşil (sönük) = ideal kare sinyal</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)"><div class="sec-title">// MUHTEMEL SORULAR</div><div class="sec-badge warn">HAZIRLIK</div><div class="sec-tog">▼</div></div>
+    <div class="sec-body">
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q1</div><div class="qa-txt">RZ, NRZ'ye göre neden daha geniş bant genişliği kullanır?</div><div class="qa-arr">▶</div></div><div class="qa-a">RZ'de darbe süresi τ &lt; T_b (daha kısa). Kısa darbe → Fourier dönüşümde geniş spektrum. BW ≈ 1/τ. %50 duty cycle → τ = T_b/2 → BW ≈ 2r_b (NRZ'nin iki katı).</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q2</div><div class="qa-txt">Polar ve Unipolar NRZ arasındaki temel fark nedir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Unipolar: 0→0V, 1→+Vp (tek kutuplu). Polar: 0→-Vp, 1→+Vp (çift kutuplu). Polar'da eşit olasılıklı 1 ve 0 için ortalama=0 → DC bileşen yok. Polar ayrıca hata tespitine daha uygun.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q3</div><div class="qa-txt">R1=5kΩ ile R1=0Ω karşılaştırıldığında scope çıkışı nasıl farklılaşır?</div><div class="qa-arr">▶</div></div><div class="qa-a">R1=0: f_c=∞ → filtreleme yok → temiz kare dalga. R1=5kΩ: f_c≈318Hz. Veri hızı 1kbps ise r_b &gt; f_c → kenarlar yumuşar, bitler birbirine taşar (ISI). Ne kadar çok R, o kadar çok ISI.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q4</div><div class="qa-txt">Duty cycle azaltılırsa bant genişliği ve güç tüketimi nasıl değişir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Duty cycle ↓ → τ ↓ → BW ↑ (daha geniş spektrum). Ayrıca darbe süreleri kısaldığı için ortalama güç ↓. Ters ilişki: dar darbe = geniş BW, düşük güç.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q5</div><div class="qa-txt">DC bileşen pratikte neden sorun olabilir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Transformatörden ve kapasitif kuplajlı kanallardan geçemez. Uzun kablo veya optik fiber hatlarında DC'ye bağlı offset hatası birikir. Bu yüzden Ethernet (Manchester), PCIe (8b/10b) gibi standartlar DC-dengeli kodlar kullanır.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ LAB 4 ═══════════════════════ -->
+<div id="lab4" class="page">
+  <div class="lab-title">Deney 4: BASK Modülasyon ve Demodülasyon</div>
+  <div class="lab-sub">Binary ASK · Taşıyıcı · Senkron Demodülasyon · Zarf Detektörü</div>
+
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)"><div class="sec-title">// TEORİ</div><div class="sec-badge">ÖNEMLİ</div><div class="sec-tog">▼</div></div>
+    <div class="sec-body">
+      <h3>BASK Modülasyon</h3>
+      <p>Binary ASK (BASK): veri biti, taşıyıcı sinyalin genliğini seçer.</p>
+      <div class="formula">s(t) = A_i × cos(2π f_c t)
+
+bit = 1 → A_1 (büyük genlik)
+bit = 0 → A_0 (küçük genlik, ya da 0 — OOK = On-Off Keying)
+
+Bant genişliği: BW_BASK = 2 × r_b   (NRZ data ile, fc'nin ±r_b etrafı)</div>
+
+      <h3>Senkron Demodülasyon</h3>
+      <div class="formula">1. Alınan sinyal × cos(2π f_c t + θ_alıcı)
+2. LPF (yüksek frekans bileşeni sil)
+3. Eşik karşılaştırıcı → bit kararı
+
+⚠ Faz hatası: θ_alıcı = π/2 → çıkış ≈ 0 → demodülasyon tamamen çöker!
+Optimal eşik = (A_0 + A_1) / 2</div>
+
+      <h3>Asenkron Demodülasyon — Zarf (Envelope) Detektörü</h3>
+      <p>Faz bilgisi gerektirmez. Devrede: D1 (1N4148 diyot) + R1 + C1 → RC zarf süzgeci.</p>
+      <div class="formula">Zaman sabiti: τ = R × C
+
+Gerekli koşul:
+  τ >> T_c = 1/f_c    (taşıyıcı ripple'ını sil)
+  τ << T_b = 1/r_b    (bit geçişlerini takip et)
+
+Yani:   1/f_c  <<  τ  <<  1/r_b</div>
+
+      <table class="dtable"><thead><tr><th>Durum</th><th>Sonuç</th></tr></thead>
+      <tbody>
+        <tr><td>τ çok büyük (büyük RC)</td><td>Envelope bit geçişini takip edemez → bit kayması</td></tr>
+        <tr><td>τ çok küçük (küçük RC)</td><td>Taşıyıcı ripple süzülmez → bozuk çıkış</td></tr>
+        <tr><td>f_c yüksek</td><td>T_c küçük → aynı τ daha iyi ripple süzer → daha iyi demodülasyon</td></tr>
+        <tr><td>f_c düşük</td><td>T_c büyük → ripple süzmek için τ büyük gerekir → bit geçişi kaçabilir</td></tr>
+      </tbody></table>
+
+      <h3>Karşılaştırıcı Eşiği (Vref)</h3>
+      <div class="formula">Vref_opt = (A_0_env + A_1_env) / 2
+
+Deneyde A_0 ≈ 0V, A_1 ≈ 3.3V ise:
+  Vref_opt ≈ (0 + 3.3) / 2 = 1.65 V
+
+Potansiyometre (R3) ile 0…3.3V arası ayarlanır.
+Vref çok düşük → yanlış 1 tespiti, çok yüksek → yanlış 0 tespiti</div>
+
+      <div class="note">💡 Taşıyıcı frekansı (f_c) yükseldikçe zarf detektörü kalitesi artar: T_c küçülür → aynı RC değeri için ripple daha kolay süzülür → τ için daha geniş "uygun aralık" oluşur.</div>
+    </div>
+  </div>
+
+  <!-- BASK Visualizer -->
+  <div class="toolbox">
+    <div class="tool-title">BASK Sinyal Görselleştirici</div>
+    <div class="ctrl-row">
+      <div class="ctrl-g"><div class="ctrl-lbl">VERİ (HEX, 1 BYTE)</div><input type="text" class="inp" id="bk-hex" value="A5" maxlength="2" oninput="drawBK()" style="width:75px;text-transform:uppercase"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">f_c / r_b ORANI</div><input type="number" class="inp" id="bk-fc" value="8" min="2" max="20" oninput="drawBK()" style="width:75px"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">A_0 (V)</div><input type="number" class="inp" id="bk-a0" value="0" min="0" max="3" step="0.1" oninput="drawBK()" style="width:70px"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">A_1 (V)</div><input type="number" class="inp" id="bk-a1" value="3.3" min="0.5" max="5" step="0.1" oninput="drawBK()" style="width:70px"></div>
+    </div>
+    <div class="osc-wrap"><canvas id="c4" height="280"></canvas></div>
+    <div class="ch-legend"><span style="color:var(--g)">▬ CH0: Frame Sync</span><span style="color:var(--am)">▬ CH1: BASK Modüle Sinyal</span></div>
+    <div id="bk-bw" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--txd);margin-top:6px"></div>
+  </div>
+
+  <!-- Envelope Detector Calculator -->
+  <div class="toolbox">
+    <div class="tool-title">Zarf Detektörü Parametre Hesaplayıcı</div>
+    <div class="ctrl-row">
+      <div class="ctrl-g"><div class="ctrl-lbl">R1 DİRENCİ (kΩ)</div><input type="number" class="inp" id="ed-r" value="10" min="0.1" max="1000" step="0.1" oninput="calcED()"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">C1 KAPASİTÖR (nF)</div><input type="number" class="inp" id="ed-c" value="100" min="1" max="100000" oninput="calcED()"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">TAŞIYICI f_c (Hz)</div><input type="number" class="inp" id="ed-fc" value="5000" oninput="calcED()"></div>
+      <div class="ctrl-g"><div class="ctrl-lbl">BİT HIZI r_b (bps)</div><input type="number" class="inp" id="ed-rb" value="500" oninput="calcED()"></div>
+    </div>
+    <div class="out-grid">
+      <div class="out-card"><div class="out-lbl">τ = R×C</div><div class="out-val" id="ed-tau">1.00 ms</div></div>
+      <div class="out-card"><div class="out-lbl">T_c = 1/f_c</div><div class="out-val" id="ed-tc">0.20 ms</div></div>
+      <div class="out-card"><div class="out-lbl">T_b = 1/r_b</div><div class="out-val" id="ed-tb">2.00 ms</div></div>
+      <div class="out-card"><div class="out-lbl">DURUM</div><div class="out-val" id="ed-st" style="font-size:14px">✓ OK</div></div>
+    </div>
+    <div id="ed-msg"></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr" onclick="togSec(this)"><div class="sec-title">// MUHTEMEL SORULAR</div><div class="sec-badge warn">HAZIRLIK</div><div class="sec-tog">▼</div></div>
+    <div class="sec-body">
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q1</div><div class="qa-txt">BASK bant genişliği nasıl hesaplanır? f_c değiştirirse BW değişir mi?</div><div class="qa-arr">▶</div></div><div class="qa-a">BW = 2×r_b. Spektrum f_c etrafında ±r_b genişliğinde. f_c değişirse BW değişmez — sadece merkez frekans kayar.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q2</div><div class="qa-txt">Alıcı taşıyıcısının fazı π/2 olursa senkron demodülasyon neden başarısız olur?</div><div class="qa-arr">▶</div></div><div class="qa-a">A·cos(2πft) × cos(2πft + π/2) = A·cos·(-sin) = -(A/2)·sin(4πft) + 0. LPF sonrası DC bileşen = 0. <span class="hl">Sinyal tamamen kaybolur.</span> Senkron demodulatörde faz kilitli döngü (PLL) zorunludur.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q3</div><div class="qa-txt">Asenkron demodülasyon için τ nasıl seçilir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Kural: 1/f_c &lt;&lt; τ &lt;&lt; 1/r_b. Yani τ, taşıyıcı periyodundan çok büyük ama bit periyodundan çok küçük olmalı. Örnek: f_c=5kHz, r_b=500bps → T_c=0.2ms, T_b=2ms → τ≈0.5-1ms uygun.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q4</div><div class="qa-txt">Yüksek f_c neden asenkron demodülasyon kalitesini artırır?</div><div class="qa-arr">▶</div></div><div class="qa-a">f_c ↑ → T_c ↓. Aynı RC değeri için τ/T_c oranı büyür → taşıyıcı ripple'ı çok daha iyi süzülür. Üstelik bit periyoduna göre daha geniş τ aralığı oluşur.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q5</div><div class="qa-txt">Vref (karşılaştırıcı eşiği) nasıl belirlenir?</div><div class="qa-arr">▶</div></div><div class="qa-a">Envelope çıkışındaki A_0 ve A_1 genlik seviyeleri arasına ayarlanır. Teorik optimum: Vref = (A_0_env + A_1_env)/2. Deneyde A_0=0V, A_1≈3.3V → Vref≈1.65V. Potansiyometre ile denemeli ayarlanır.</div></div>
+      <div class="qa-item" onclick="togQA(this)"><div class="qa-q"><div class="qa-num">Q6</div><div class="qa-txt">A_0=0 (OOK) ve A_0=1V (BASK) durumları arasındaki fark nedir?</div><div class="qa-arr">▶</div></div><div class="qa-a">OOK'ta bit=0 için taşıyıcı tamamen kapatılır → güç tüketimi azalır. Ancak envelope dedektörü A_0'a kadar düşmesi gerektiğinden hata oranı artar. A_0≠0 ise envelope her zaman pozitif → eşik ayarı daha kolay, gürültüye daha dayanıklı.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ UTILS ═══
+function goLab(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('lab'+n).classList.add('active');
+  document.querySelectorAll('.tab')[n-1].classList.add('active');
+  setTimeout(()=>{
+    if(n===1){drawL1();}
+    if(n===2){calcPCM();drawL2();}
+    if(n===3){drawLC();drawLPF();}
+    if(n===4){drawBK();calcED();}
+  },60);
+}
+function togSec(h){h.parentElement.classList.toggle('coll');}
+function togQA(el){el.classList.toggle('open');}
+function fmtT(t){
+  if(t>=1)return t.toFixed(2)+' s';
+  if(t>=0.001)return (t*1e3).toFixed(2)+' ms';
+  if(t>=1e-6)return (t*1e6).toFixed(2)+' µs';
+  return (t*1e9).toFixed(2)+' ns';
+}
+function grid(ctx,W,H,cols,rows,col){
+  ctx.strokeStyle=col;ctx.lineWidth=0.5;
+  for(let i=0;i<=cols;i++){const x=i/cols*W;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let i=0;i<=rows;i++){const y=i/rows*H;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.strokeStyle='#1a3a1a';ctx.lineWidth=0.8;
+  ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+}
+function initCanvas(id,h){
+  const c=document.getElementById(id);
+  if(!c)return null;
+  const W=c.offsetWidth||700;c.width=W;if(h)c.height=h;
+  const ctx=c.getContext('2d');ctx.fillStyle='#010806';ctx.fillRect(0,0,W,c.height);
+  return ctx;
+}
+
+// ═══ LAB 1 ═══
+function calcADC(){
+  const v=parseFloat(document.getElementById('v1s').value)||0;
+  document.getElementById('v1n').value=v.toFixed(2);
+  [12,10,8,6].forEach(n=>{
+    const max=(1<<n)-1;const val=Math.max(0,Math.min(max,Math.round(v/3.3*max)));
+    document.getElementById('a'+n).textContent=val;
+    document.getElementById('a'+n+'b').textContent=val.toString(2).padStart(n,'0');
+  });
+}
+function syncV1s(){const v=parseFloat(document.getElementById('v1s').value);document.getElementById('v1n').value=v.toFixed(2);calcADC();}
+function syncV1n(){let v=parseFloat(document.getElementById('v1n').value);if(isNaN(v))return;v=Math.max(0,Math.min(3.3,v));document.getElementById('v1s').value=v;calcADC();}
+
+function drawL1(){
+  const c=document.getElementById('c1');if(!c||c.offsetWidth===0)return;
+  const W=c.offsetWidth;c.width=W;const H=c.height;
+  const ctx=c.getContext('2d');ctx.fillStyle='#010806';ctx.fillRect(0,0,W,H);
+  grid(ctx,W,H,10,8,'#0d2a0d');
+  const fs=parseFloat(document.getElementById('l1fs').value)||8000;
+  const fm=parseFloat(document.getElementById('l1fm').value)||1000;
+  const xd=parseFloat(document.getElementById('l1xd').value)||0.5;
+  const yd=parseFloat(document.getElementById('l1yd').value)||1;
+  const tTotal=xd*10e-3;
+  const vScale=H*0.22/yd;
+  const ch0C=H*0.27,ch1C=H*0.73;
+  // CH0 sine
+  ctx.strokeStyle='#3de63d';ctx.lineWidth=1.5;ctx.beginPath();
+  for(let px=0;px<W;px++){
+    const t=px/W*tTotal;
+    const v=Math.sin(2*Math.PI*fm*t);
+    const py=ch0C-v*vScale;
+    px===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }ctx.stroke();
+  // CH1 ZOH
+  ctx.strokeStyle='#ffaa00';ctx.lineWidth=1.5;ctx.beginPath();
+  const Ts=1/fs;let prevPy=ch1C;
+  for(let s=0;s*Ts<tTotal+Ts;s++){
+    const t=s*Ts;const tN=(s+1)*Ts;
+    const v=Math.sin(2*Math.PI*fm*t);
+    const py=ch1C-v*vScale;
+    const px1=Math.round(t/tTotal*W),px2=Math.min(W,Math.round(tN/tTotal*W));
+    if(s===0)ctx.moveTo(Math.max(0,px1),py);
+    else{ctx.lineTo(Math.max(0,px1),prevPy);ctx.lineTo(Math.max(0,px1),py);}
+    ctx.lineTo(px2,py);prevPy=py;if(px1>W)break;
+  }ctx.stroke();
+  // Labels
+  ctx.fillStyle='#3de63d';ctx.font='11px Share Tech Mono,monospace';ctx.fillText('CH0 — ADC入力 f_m='+fm+'Hz',8,13);
+  ctx.fillStyle='#ffaa00';ctx.fillText('CH1 — ZOH/DAC f_s='+fs+'Hz',8,H-5);
+  ctx.strokeStyle='#1a3a1a';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();ctx.setLineDash([]);
+  const alias=fs<2*fm;
+  document.getElementById('l1-warn').style.display=alias?'block':'none';
+  document.getElementById('l1-ok').style.display=alias?'none':'block';
+}
+
+// ═══ LAB 2 ═══
+function calcPCM(){
+  const v=parseFloat(document.getElementById('v2s').value)||0;
+  document.getElementById('v2n').value=v.toFixed(2);
+  const val=Math.max(0,Math.min(255,Math.round(v/3.3*255)));
+  document.getElementById('pcm-dec').textContent=val;
+  const b=val.toString(2).padStart(8,'0');
+  const cont=document.getElementById('pcm-bits');cont.innerHTML='';
+  for(const bit of b){const d=document.createElement('div');d.className='pcmb '+(bit==='1'?'one':'zero');d.textContent=bit;cont.appendChild(d);}
+  drawL2();
+}
+function syncV2s(){const v=parseFloat(document.getElementById('v2s').value);document.getElementById('v2n').value=v.toFixed(2);calcPCM();}
+function syncV2n(){let v=parseFloat(document.getElementById('v2n').value);if(isNaN(v))return;v=Math.max(0,Math.min(3.3,v));document.getElementById('v2s').value=v;calcPCM();}
+function calcDR(){
+  const n=parseInt(document.getElementById('drn').value)||8;
+  const fs=parseInt(document.getElementById('drfs').value)||8000;
+  const dr=n*fs;
+  document.getElementById('dr-res').textContent=dr.toLocaleString()+' bps';
+}
+function drawL2(){
+  const c=document.getElementById('c2');if(!c||c.offsetWidth===0)return;
+  const W=c.offsetWidth;c.width=W;const H=c.height;
+  const ctx=c.getContext('2d');ctx.fillStyle='#010806';ctx.fillRect(0,0,W,H);
+  grid(ctx,W,H,10,8,'#0d2a0d');
+  const v=parseFloat(document.getElementById('l2v').value)||2.5;
+  const val=Math.max(0,Math.min(255,Math.round(v/3.3*255)));
+  const bits=val.toString(2).padStart(8,'0');
+  // 2 frames of 9 slots (1 sync + 8 bits)
+  const slotW=W/18;
+  const ch0Hi=H*0.16,ch0Lo=H*0.34,ch1Hi=H*0.60,ch1Lo=H*0.78;
+  // CH0 frame sync
+  ctx.strokeStyle='#3de63d';ctx.lineWidth=1.5;
+  for(let f=0;f<2;f++){
+    const x0=f*9*slotW;
+    ctx.beginPath();ctx.moveTo(f===0?0:x0,ch0Lo);
+    ctx.lineTo(x0,ch0Lo);ctx.lineTo(x0,ch0Hi);ctx.lineTo(x0+slotW*0.5,ch0Hi);ctx.lineTo(x0+slotW*0.5,ch0Lo);ctx.lineTo(x0+9*slotW,ch0Lo);
+    ctx.stroke();
+  }
+  // CH1 PCM bits
+  ctx.strokeStyle='#ffaa00';ctx.lineWidth=1.5;
+  for(let f=0;f<2;f++){
+    const x0=f*9*slotW+slotW;
+    ctx.beginPath();let py=ch1Lo;ctx.moveTo(f===0?0:x0-slotW,ch1Lo);
+    for(let i=0;i<8;i++){
+      const b=parseInt(bits[i]);const ny=b?ch1Hi:ch1Lo;
+      const x=x0+i*slotW;
+      if(ny!==py){ctx.lineTo(x,py);ctx.lineTo(x,ny);}else ctx.lineTo(x,ny);
+      ctx.lineTo(x+slotW,ny);py=ny;
+    }ctx.stroke();
+  }
+  ctx.fillStyle='#3de63d';ctx.font='11px Share Tech Mono,monospace';ctx.fillText('CH0: Frame Sync',8,12);
+  ctx.fillStyle='#ffaa00';ctx.fillText('CH1: PCM = '+bits+'  ('+val+')',8,H-5);
+}
+
+// ═══ LAB 3 ═══
+function drawLC(){
+  const c=document.getElementById('c3');if(!c||c.offsetWidth===0)return;
+  const W=c.offsetWidth;c.width=W;const H=c.height;
+  const ctx=c.getContext('2d');ctx.fillStyle='#010806';ctx.fillRect(0,0,W,H);
+  grid(ctx,W,H,8,6,'#0d2a0d');
+  let hex=document.getElementById('lc-hex').value||'A5';
+  let bv=parseInt(hex,16);if(isNaN(bv))bv=0xA5;bv=bv&0xFF;
+  const bits=bv.toString(2).padStart(8,'0');
+  const type=document.getElementById('lc-type').value;
+  const dc=parseFloat(document.getElementById('lc-dc').value)/100||0.5;
+  const vp=parseFloat(document.getElementById('lc-vp').value)||3.3;
+  const isPol=type.includes('pol'),isRZ=type.includes('rz');
+  const bW=W/8,mid=H/2,vS=H*0.34/vp;
+  ctx.strokeStyle='#3de63d';ctx.lineWidth=2;ctx.beginPath();
+  let prevY=isPol?mid+vp*vS:mid;// start at 0 or -Vp default... let's start at neutral
+  for(let i=0;i<8;i++){
+    const b=parseInt(bits[i]);
+    const x0=i*bW,xd=x0+dc*bW,x1=(i+1)*bW;
+    const hiY=mid-(isPol?vp:vp)*vS;
+    const loY=mid+(isPol?vp:0)*vS;
+    const actY=b?hiY:loY;
+    const zeroY=mid;
+    if(i===0)ctx.moveTo(0,actY);
+    else{if(actY!==prevY){ctx.lineTo(x0,prevY);ctx.lineTo(x0,actY);}}
+    ctx.lineTo(isRZ&&dc<1?xd:x1,actY);
+    if(isRZ&&dc<1){ctx.lineTo(xd,actY);ctx.lineTo(xd,zeroY);ctx.lineTo(x1,zeroY);prevY=zeroY;}
+    else prevY=actY;
+  }ctx.stroke();
+  // 0V line
+  ctx.strokeStyle='#173a17';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(W,mid);ctx.stroke();ctx.setLineDash([]);
+  if(isPol){
+    ctx.fillStyle='#2a4a2a';ctx.fillText('',0,0);
+    // +Vp, -Vp labels
+    ctx.fillStyle='#3de63d';ctx.font='10px Share Tech Mono,monospace';
+    ctx.fillText('+'+vp+'V',2,mid-vp*vS+12);ctx.fillText('-'+vp+'V',2,mid+vp*vS+12);
+  }
+  ctx.fillStyle='#ffaa00';ctx.font='11px Share Tech Mono,monospace';
+  ctx.fillText('0x'+bv.toString(16).toUpperCase().padStart(2,'0')+' = '+bits,6,H-5);
+  const bwStr=isRZ?('≈ '+(1/dc).toFixed(1)+'×r_b'):'≈ r_b';
+  document.getElementById('lc-info').textContent=
+    type.replace('_',' ').toUpperCase()+'  |  DC bileşen: '+(isPol?'YOK':'VAR')+
+    '  |  BW '+bwStr+'  |  Duty='+Math.round(dc*100)+'%';
+}
+function drawLPF(){
+  const c=document.getElementById('c3b');if(!c||c.offsetWidth===0)return;
+  const W=c.offsetWidth;c.width=W;const H=c.height;
+  const ctx=c.getContext('2d');ctx.fillStyle='#010806';ctx.fillRect(0,0,W,H);
+  grid(ctx,W,H,8,4,'#0d2a0d');
+  const r=parseFloat(document.getElementById('lc-r').value)||0;
+  const C=100e-9;const R=r*1e3;
+  const Rc=R*C;
+  document.getElementById('lc-r-val').textContent=r.toFixed(1);
+  document.getElementById('lc-fc').textContent=r>0?(1/(2*Math.PI*Rc)>=1000?(1/(2*Math.PI*Rc)/1000).toFixed(1)+' kHz':(1/(2*Math.PI*Rc)).toFixed(0)+' Hz'):'∞';
+  const rb=1000,totalT=8/rb;const N=W*4;
+  const bits=[0,1,0,1,0,1,0,1];
+  const vi=new Float32Array(N),vf=new Float32Array(N);
+  const dt=totalT/N;
+  for(let i=0;i<N;i++){const t=i/N*totalT;vi[i]=bits[Math.min(7,Math.floor(t*rb))]?3.3:0;}
+  const alpha=Rc>0?Math.exp(-dt/Rc):0;vf[0]=vi[0];
+  for(let i=1;i<N;i++)vf[i]=alpha*vf[i-1]+(1-alpha)*vi[i];
+  const mid=H/2,vS=H*0.38/3.3;
+  // ideal (dim)
+  ctx.strokeStyle='#163616';ctx.lineWidth=1;ctx.beginPath();
+  for(let px=0;px<W;px++){const i=Math.floor(px/W*N);const y=mid-(vi[i]-1.65)*vS;px===0?ctx.moveTo(px,y):ctx.lineTo(px,y);}ctx.stroke();
+  // filtered
+  ctx.strokeStyle='#3de63d';ctx.lineWidth=2;ctx.beginPath();
+  for(let px=0;px<W;px++){const i=Math.floor(px/W*N);const y=mid-(vf[i]-1.65)*vS;px===0?ctx.moveTo(px,y):ctx.lineTo(px,y);}ctx.stroke();
+  ctx.fillStyle='#3de63d';ctx.font='11px Share Tech Mono,monospace';
+  ctx.fillText('R='+r+'kΩ  C=100nF  f_c='+(r>0?(1/(2*Math.PI*Rc)).toFixed(0)+' Hz':'∞'),8,13);
+}
+
+// ═══ LAB 4 ═══
+function drawBK(){
+  const c=document.getElementById('c4');if(!c||c.offsetWidth===0)return;
+  const W=c.offsetWidth;c.width=W;const H=c.height;
+  const ctx=c.getContext('2d');ctx.fillStyle='#010806';ctx.fillRect(0,0,W,H);
+  grid(ctx,W,H,8,8,'#0d2a0d');
+  let hex=document.getElementById('bk-hex').value||'A5';
+  let bv=parseInt(hex,16);if(isNaN(bv))bv=0xA5;bv=bv&0xFF;
+  const bits=bv.toString(2).padStart(8,'0');
+  const fcR=parseFloat(document.getElementById('bk-fc').value)||8;
+  const a0=parseFloat(document.getElementById('bk-a0').value)||0;
+  const a1=parseFloat(document.getElementById('bk-a1').value)||3.3;
+  const spb=Math.round(fcR*16),total=8*spb;
+  const ch0Hi=H*0.14,ch0Lo=H*0.28,ch1M=H*0.65,vS=H*0.25/Math.max(a1,1);
+  // CH0 frame sync
+  ctx.strokeStyle='#3de63d';ctx.lineWidth=1.5;ctx.beginPath();
+  ctx.moveTo(0,ch0Lo);ctx.lineTo(2,ch0Lo);ctx.lineTo(2,ch0Hi);ctx.lineTo(W*0.035,ch0Hi);ctx.lineTo(W*0.035,ch0Lo);ctx.lineTo(W,ch0Lo);
+  ctx.stroke();
+  // CH1 BASK
+  ctx.strokeStyle='#ffaa00';ctx.lineWidth=1.5;ctx.beginPath();
+  for(let s=0;s<total;s++){
+    const bi=Math.min(7,Math.floor(s/spb));const amp=parseInt(bits[bi])?a1:a0;
+    const phase=s/spb*fcR;const v=amp*Math.cos(2*Math.PI*phase);
+    const px=s/total*W,py=ch1M-v*vS;
+    s===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }ctx.stroke();
+  // 0V line for BASK
+  ctx.strokeStyle='#1a2a1a';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(0,ch1M);ctx.lineTo(W,ch1M);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#3de63d';ctx.font='11px Share Tech Mono,monospace';ctx.fillText('CH0: Frame Sync',8,11);
+  ctx.fillStyle='#ffaa00';ctx.fillText('CH1: BASK  '+bits+'  A0='+a0+'V A1='+a1+'V  fc='+fcR+'×rb',8,H-5);
+  document.getElementById('bk-bw').textContent='BW = 2×r_b (f_c bağımsız). Spektrumda f_c ±r_b etrafında iki yan bant görünür.';
+}
+function calcED(){
+  const r=parseFloat(document.getElementById('ed-r').value)||10;
+  const cn=parseFloat(document.getElementById('ed-c').value)||100;
+  const fc=parseFloat(document.getElementById('ed-fc').value)||5000;
+  const rb=parseFloat(document.getElementById('ed-rb').value)||500;
+  const tau=r*1e3*cn*1e-9,tc=1/fc,tb=1/rb;
+  document.getElementById('ed-tau').textContent=fmtT(tau);
+  document.getElementById('ed-tc').textContent=fmtT(tc);
+  document.getElementById('ed-tb').textContent=fmtT(tb);
+  const okH=tau>tc*4,okL=tau<tb*0.4;
+  const st=document.getElementById('ed-st'),msg=document.getElementById('ed-msg');
+  if(okH&&okL){st.textContent='✓ İYİ';st.style.color='#3de63d';msg.innerHTML='';}
+  else{
+    st.textContent='✗ SORUN';st.style.color='#ff5555';let m='';
+    if(!okH)m+='<div class="warn">τ='+fmtT(tau)+' ≥ 4×T_c='+fmtT(4*tc)+' değil → Ripple süzülemiyor!</div>';
+    if(!okL)m+='<div class="warn">τ='+fmtT(tau)+' ≤ 0.4×T_b='+fmtT(0.4*tb)+' değil → Bit geçişi kaçırılıyor!</div>';
+    msg.innerHTML=m;
+  }
+}
+
+// ═══ INIT ═══
+window.addEventListener('load',()=>{
+  calcADC();
+  setTimeout(()=>{drawL1();calcPCM();drawL2();drawLC();drawLPF();drawBK();calcED();calcDR();},300);
+});
+window.addEventListener('resize',()=>{
+  const a=document.querySelector('.page.active');if(!a)return;
+  const id=a.id;
+  if(id==='lab1')drawL1();
+  if(id==='lab2')drawL2();
+  if(id==='lab3'){drawLC();drawLPF();}
+  if(id==='lab4')drawBK();
+});
+</script>
+</body>
+</html>
