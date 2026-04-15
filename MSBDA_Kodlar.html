@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MSBDA — MATLAB/Octave Kod Rehberi</title>
+<style>
+:root{
+  --bg:#0e1117;
+  --sidebar:#131720;
+  --card:#161c2a;
+  --card2:#1a2235;
+  --border:#252f45;
+  --accent:#4a9eff;
+  --accent2:#64ffb4;
+  --accent3:#ff7b72;
+  --accent4:#ffa657;
+  --text:#cdd6f4;
+  --muted:#6e7fa3;
+  --keyword:#ff7b72;
+  --string:#a5d6ff;
+  --comment:#6a737d;
+  --number:#79c0ff;
+  --func:#d2a8ff;
+  --op:#ffa657;
+  --tag:#7ee787;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',system-ui,sans-serif;
+  font-size:14px;
+  line-height:1.6;
+  display:flex;
+}
+
+/* ── SIDEBAR ───────────────────────────────────────────── */
+#sidebar{
+  width:270px;min-width:270px;
+  background:var(--sidebar);
+  border-right:1px solid var(--border);
+  height:100vh;position:sticky;top:0;
+  overflow-y:auto;padding:0 0 40px 0;
+  flex-shrink:0;
+}
+#sidebar::-webkit-scrollbar{width:4px;}
+#sidebar::-webkit-scrollbar-thumb{background:#2a3450;border-radius:2px;}
+
+.sidebar-header{
+  padding:20px 18px 16px;
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;
+  background:var(--sidebar);
+  z-index:10;
+}
+.sidebar-header h2{
+  font-size:13px;font-weight:700;
+  color:var(--accent);letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.sidebar-header p{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.nav-group{margin-top:4px;}
+.nav-group-title{
+  font-size:10px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:.8px;
+  padding:14px 18px 4px;
+}
+.nav-item{
+  display:block;padding:6px 18px 6px 24px;
+  color:var(--text);text-decoration:none;
+  font-size:12.5px;border-left:2px solid transparent;
+  transition:.15s;
+}
+.nav-item:hover{color:var(--accent);background:rgba(74,158,255,.06);border-left-color:var(--accent);}
+.nav-item.active{color:var(--accent);background:rgba(74,158,255,.1);border-left-color:var(--accent);}
+
+/* ── MAIN ──────────────────────────────────────────────── */
+#main{flex:1;min-width:0;padding:0 0 80px;}
+
+/* hero */
+.hero{
+  background:linear-gradient(135deg,#0d1b35 0%,#0e1117 60%);
+  border-bottom:1px solid var(--border);
+  padding:48px 52px 40px;
+}
+.hero-chip{
+  display:inline-block;
+  background:rgba(74,158,255,.15);
+  color:var(--accent);
+  font-size:11px;font-weight:600;
+  letter-spacing:.6px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;
+  border:1px solid rgba(74,158,255,.3);
+  margin-bottom:14px;
+}
+.hero h1{font-size:28px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:10px;}
+.hero p{font-size:14px;color:var(--muted);max-width:620px;}
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+.tag{
+  font-size:11px;padding:3px 10px;border-radius:4px;
+  background:rgba(255,255,255,.05);
+  color:var(--muted);border:1px solid var(--border);
+}
+
+/* sections */
+.content{padding:0 52px;}
+.section{margin-top:48px;}
+.section:first-child{margin-top:36px;}
+
+.section-header{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.section-num{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),#2060c0);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.section-title{font-size:19px;font-weight:700;color:#fff;}
+.section-subtitle{font-size:12px;color:var(--muted);margin-top:1px;}
+
+/* info box */
+.info-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:0 8px 8px 0;
+  padding:14px 18px;
+  margin-bottom:14px;
+  font-size:13px;
+  line-height:1.65;
+}
+.info-box strong{color:var(--accent);}
+.info-box.warn{border-left-color:var(--accent4);}
+.info-box.warn strong{color:var(--accent4);}
+.info-box.tip{border-left-color:var(--accent2);}
+.info-box.tip strong{color:var(--accent2);}
+
+.info-title{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;
+  margin-bottom:6px;
+}
+.info-title.blue{color:var(--accent);}
+.info-title.green{color:var(--accent2);}
+.info-title.orange{color:var(--accent4);}
+.info-title.red{color:var(--accent3);}
+
+/* code block */
+.code-wrap{position:relative;margin:14px 0;}
+.code-label{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#0a0e18;
+  border:1px solid var(--border);border-bottom:none;
+  border-radius:8px 8px 0 0;
+  padding:7px 14px;
+}
+.code-label-left{display:flex;align-items:center;gap:8px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;} .dot.y{background:#febc2e;} .dot.g{background:#28c840;}
+.code-filename{font-size:11.5px;color:var(--muted);font-family:monospace;}
+.copy-btn{
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);font-size:11px;padding:3px 10px;
+  border-radius:4px;cursor:pointer;transition:.15s;
+}
+.copy-btn:hover{color:var(--accent);border-color:var(--accent);}
+.copy-btn.copied{color:var(--accent2);border-color:var(--accent2);}
+
+pre.code{
+  background:#0a0e18;
+  border:1px solid var(--border);
+  border-radius:0 0 8px 8px;
+  padding:18px 20px;
+  overflow-x:auto;
+  font-family:'Cascadia Code','Fira Code','Consolas',monospace;
+  font-size:13px;
+  line-height:1.65;
+  tab-size:2;
+}
+pre.code::-webkit-scrollbar{height:4px;}
+pre.code::-webkit-scrollbar-thumb{background:#2a3450;}
+
+/* syntax */
+.kw{color:var(--keyword);font-weight:600;}   /* keywords: for end if else while function */
+.fn{color:var(--func);}                       /* functions: plot, exp, zeros, etc. */
+.st{color:var(--string);}                     /* strings */
+.cm{color:var(--comment);font-style:italic;}  /* comments */
+.nm{color:var(--number);}                     /* numbers */
+.op{color:var(--op);}                         /* operators */
+.va{color:#e6edf3;}                           /* variables */
+
+/* param table */
+table.params{
+  width:100%;border-collapse:collapse;
+  margin:12px 0;font-size:12.5px;
+}
+table.params th{
+  background:#11172a;
+  padding:7px 12px;text-align:left;
+  border:1px solid var(--border);
+  color:var(--accent);font-size:11px;
+  text-transform:uppercase;letter-spacing:.4px;
+}
+table.params td{
+  padding:6px 12px;border:1px solid var(--border);
+  vertical-align:top;
+}
+table.params tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+table.params td:first-child{color:var(--accent4);font-family:monospace;white-space:nowrap;}
+table.params td:nth-child(2){color:var(--accent2);}
+
+/* output box */
+.output{
+  background:#080c14;border:1px solid var(--border);
+  border-left:3px solid var(--accent2);
+  border-radius:0 6px 6px 0;
+  padding:12px 16px;margin:12px 0;
+  font-family:monospace;font-size:12.5px;
+  color:var(--accent2);line-height:1.7;
+}
+.output-label{
+  font-size:10px;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--muted);margin-bottom:6px;
+}
+
+/* sub-section */
+.sub{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:18px 20px;margin:16px 0;
+}
+.sub-title{
+  font-size:13px;font-weight:700;color:var(--accent4);
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.sub-title::before{
+  content:'';display:inline-block;
+  width:4px;height:14px;background:var(--accent4);border-radius:2px;
+}
+
+/* divider */
+.divider{border:none;border-top:1px solid var(--border);margin:48px 0 0;}
+
+/* formula */
+.formula{
+  display:inline-block;
+  background:rgba(255,123,114,.08);
+  border:1px solid rgba(255,123,114,.25);
+  color:#ffb3ae;
+  font-family:monospace;font-size:13px;
+  padding:8px 16px;border-radius:6px;
+  margin:6px 0;
+}
+
+/* grid 2col */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0;}
+@media(max-width:900px){.grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <h2>MSBDA Kod Rehberi</h2>
+    <p>MATLAB / Octave — FDTD</p>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Temel Araçlar</div>
+    <a class="nav-item" href="#s1">1. Gauss Darbesi</a>
+    <a class="nav-item" href="#s2">2. Plot & Grafik Komutları</a>
+    <a class="nav-item" href="#s3">3. Dosya I/O (fopen/fprintf)</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">1D FDTD</div>
+    <a class="nav-item" href="#s4">4. Serbest Uzay — Temel</a>
+    <a class="nav-item" href="#s5">5. Sol Sınır Koşulu (ABC)</a>
+    <a class="nav-item" href="#s6">6. Çift Taraflı ABC (Tam Kod)</a>
+    <a class="nav-item" href="#s7">7. İki Kaynaklı 1D FDTD</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">1D FDTD — Ortamlar</div>
+    <a class="nav-item" href="#s8">8. Dielektrik Ortam</a>
+    <a class="nav-item" href="#s9">9. Sinüs Kaynak</a>
+    <a class="nav-item" href="#s10">10. Modüleli Gauss Kaynak</a>
+    <a class="nav-item" href="#s11">11. Kayıplı Dielektrik</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">2D FDTD</div>
+    <a class="nav-item" href="#s12">12. TM Modu</a>
+    <a class="nav-item" href="#s13">13. TE Modu</a>
+    <a class="nav-item" href="#s14">14. Düzlem Dalga (TF/SF)</a>
+  </div>
+</nav>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main id="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-chip">MSBDA · Octave/MATLAB Rehberi</div>
+  <h1>Mikrodalga Sistemleri<br>Bilgisayar Destekli Modelleme</h1>
+  <p>Ders slaytlarındaki tüm MATLAB/Octave kodları — açıklamalı, parametreli ve çalıştırmaya hazır. Her kodu Octave'a yapıştırıp direkt çalıştırabilirsin.</p>
+  <div class="hero-tags">
+    <span class="tag">FDTD</span>
+    <span class="tag">Maxwell Denklemleri</span>
+    <span class="tag">1D Dalga Yayılımı</span>
+    <span class="tag">2D TM/TE Modu</span>
+    <span class="tag">ABC / Mur</span>
+    <span class="tag">Dielektrik Ortam</span>
+    <span class="tag">Kayıplı Dielektrik</span>
+    <span class="tag">Düzlem Dalga TF/SF</span>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══ 1. GAUSS DARBESİ ═══ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <div class="section-title">Gauss Darbesi Fonksiyonu</div>
+      <div class="section-subtitle">Kaynak sinyali — geniş bantlı uyarım</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">Ne işe yarar?</div>
+    FDTD simülasyonlarında sisteme enerji vermek için kullanılan kaynak fonksiyonudur. Matematiksel formu:<br>
+    <div class="formula">gauss = exp( −0.5 × ((t − t₀) / spread)² )</div>
+    <strong>t₀</strong> darbenin zamansal merkezi (tepe noktası), <strong>spread</strong> ise genişliğidir. Spread büyüdükçe darbe genişler → frekans bandı daralır.
+  </div>
+
+  <table class="params">
+    <tr><th>Parametre</th><th>Tip</th><th>Açıklama</th></tr>
+    <tr><td>t</td><td>dizi</td><td>Zaman dizisi (örn. 1:200)</td></tr>
+    <tr><td>t0</td><td>sayı</td><td>Darbenin merkez zamanı (tepe noktası)</td></tr>
+    <tr><td>spread</td><td>sayı</td><td>Darbenin yarı genişliği — büyük → geniş, küçük → dar</td></tr>
+  </table>
+
+  <!-- Kod 1a -->
+  <div class="sub">
+    <div class="sub-title">Kod 1a — Temel Gauss Darbesi</div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">gauss_temel.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="cm">% Temel Gauss darbesi</span>
+<span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="nm">1</span><span class="op">:</span><span class="nm">200</span>;
+<span class="va">t0</span> <span class="op">=</span> <span class="nm">80</span>;         <span class="cm">% Darbenin merkezi (80. adımda tepe)</span>
+<span class="va">spread</span> <span class="op">=</span> <span class="nm">10</span>;     <span class="cm">% Darbenin genişliği</span>
+
+<span class="va">A</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>).<span class="op">^</span><span class="nm">2</span>);
+
+<span class="fn">plot</span>(<span class="va">t</span>, <span class="va">A</span>, <span class="st">'b'</span>);
+<span class="fn">grid</span> <span class="kw">on</span>
+<span class="fn">xlabel</span>(<span class="st">'Zaman'</span>, <span class="st">'fontsize'</span>, <span class="nm">14</span>)
+<span class="fn">ylabel</span>(<span class="st">'Genlik'</span>, <span class="st">'fontsize'</span>, <span class="nm">14</span>)
+<span class="fn">title</span>(<span class="st">'Gauss Darbesi'</span>, <span class="st">'fontsize'</span>, <span class="nm">16</span>)
+<span class="fn">set</span>(<span class="fn">gca</span>, <span class="st">'FontSize'</span>, <span class="nm">14</span>)</pre>
+    </div>
+  </div>
+
+  <!-- Kod 1b -->
+  <div class="sub">
+    <div class="sub-title">Kod 1b — Farklı Spread Değerleri (Bant Genişliği Karşılaştırması)</div>
+    <div class="info-box tip" style="margin-bottom:10px">
+      <div class="info-title green">Fiziksel yorum</div>
+      spread küçük → dar darbe → geniş frekans bandı (daha fazla frekans bileşeni içerir). spread büyük → geniş darbe → dar frekans bandı.
+    </div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">gauss_spread_kiyasla.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="cm">% Farklı spread değerleri karşılaştırması</span>
+<span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="nm">1</span><span class="op">:</span><span class="nm">200</span>;
+<span class="va">t0</span> <span class="op">=</span> <span class="nm">80</span>;
+
+<span class="va">spread1</span> <span class="op">=</span> <span class="nm">10</span>;   <span class="cm">% dar darbe</span>
+<span class="va">spread2</span> <span class="op">=</span> <span class="nm">20</span>;   <span class="cm">% orta darbe</span>
+<span class="va">spread3</span> <span class="op">=</span> <span class="nm">30</span>;   <span class="cm">% geniş darbe</span>
+
+<span class="va">A</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread1</span>).<span class="op">^</span><span class="nm">2</span>);
+<span class="va">B</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread2</span>).<span class="op">^</span><span class="nm">2</span>);
+<span class="va">C</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread3</span>).<span class="op">^</span><span class="nm">2</span>);
+
+<span class="fn">plot</span>(<span class="va">t</span>,<span class="va">A</span>,<span class="st">'b'</span>, <span class="va">t</span>,<span class="va">B</span>,<span class="st">'r'</span>, <span class="va">t</span>,<span class="va">C</span>,<span class="st">'k'</span>);
+<span class="fn">legend</span>(<span class="st">'spread=10'</span>, <span class="st">'spread=20'</span>, <span class="st">'spread=30'</span>)
+<span class="fn">grid</span> <span class="kw">on</span>
+<span class="fn">set</span>(<span class="fn">gca</span>,<span class="st">'FontSize'</span>,<span class="nm">14</span>)</pre>
+    </div>
+  </div>
+
+  <!-- Kod 1c -->
+  <div class="sub">
+    <div class="sub-title">Kod 1c — Farklı t₀ Değerleri (Darbenin Merkezi)</div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">gauss_t0_kiyasla.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="cm">% Farklı t0 değerleri — darbenin zaman eksenindeki konumu</span>
+<span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="nm">1</span><span class="op">:</span><span class="nm">200</span>;
+<span class="va">spread</span> <span class="op">=</span> <span class="nm">10</span>;
+
+<span class="va">t01</span> <span class="op">=</span> <span class="nm">80</span>;  <span class="cm">% geç darbe</span>
+<span class="va">t02</span> <span class="op">=</span> <span class="nm">60</span>;  <span class="cm">% orta darbe</span>
+<span class="va">t03</span> <span class="op">=</span> <span class="nm">40</span>;  <span class="cm">% erken darbe</span>
+
+<span class="va">A</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t01</span>)<span class="op">/</span><span class="va">spread</span>).<span class="op">^</span><span class="nm">2</span>);
+<span class="va">B</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t02</span>)<span class="op">/</span><span class="va">spread</span>).<span class="op">^</span><span class="nm">2</span>);
+<span class="va">C</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t03</span>)<span class="op">/</span><span class="va">spread</span>).<span class="op">^</span><span class="nm">2</span>);
+
+<span class="fn">plot</span>(<span class="va">t</span>,<span class="va">A</span>,<span class="st">'b'</span>, <span class="va">t</span>,<span class="va">B</span>,<span class="st">':r'</span>, <span class="va">t</span>,<span class="va">C</span>,<span class="st">'--k'</span>);
+<span class="fn">legend</span>(<span class="st">'t0=80'</span>, <span class="st">'t0=60'</span>, <span class="st">'t0=40'</span>)
+<span class="fn">grid</span> <span class="kw">on</span>
+<span class="fn">set</span>(<span class="fn">gca</span>,<span class="st">'FontSize'</span>,<span class="nm">14</span>)</pre>
+    </div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 2. PLOT KOMUTLARI ═══ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <div class="section-title">Plot &amp; Grafik Komutları</div>
+      <div class="section-subtitle">subplot · axis · xlabel · title · renk ve çizgi stilleri</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">Renk ve Çizgi Stili Kısaltmaları</div>
+    <strong>'b'</strong>=mavi &nbsp;·&nbsp; <strong>'r'</strong>=kırmızı &nbsp;·&nbsp; <strong>'k'</strong>=siyah &nbsp;·&nbsp; <strong>'g'</strong>=yeşil &nbsp;·&nbsp; <strong>'m'</strong>=mor<br>
+    <strong>'-'</strong>=düz &nbsp;·&nbsp; <strong>'--'</strong>=kesikli &nbsp;·&nbsp; <strong>':'</strong>=noktalı &nbsp;·&nbsp; <strong>'-.'</strong>=nokta-çizgi<br>
+    <strong>'o'</strong>=daire &nbsp;·&nbsp; <strong>'*'</strong>=yıldız &nbsp;·&nbsp; <strong>'+'</strong>=artı &nbsp;·&nbsp; <strong>'s'</strong>=kare
+  </div>
+
+  <div class="sub">
+    <div class="sub-title">Kod 2a — Tüm Grafik Komutları Bir Arada</div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">grafik_komutlari.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="cm">% --- subplot(satır, sütun, pozisyon) örneği ---</span>
+<span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="nm">200</span>;
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">sin</span>(<span class="nm">2</span><span class="op">*</span>pi<span class="op">*</span><span class="va">t</span><span class="op">/</span><span class="nm">50</span>);
+<span class="va">hy</span> <span class="op">=</span> <span class="fn">cos</span>(<span class="nm">2</span><span class="op">*</span>pi<span class="op">*</span><span class="va">t</span><span class="op">/</span><span class="nm">50</span>);
+
+<span class="cm">% 1 satır, 2 sütun — Ex solda, Hy sağda</span>
+<span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">1</span>)
+<span class="fn">plot</span>(<span class="va">ex</span>)
+<span class="fn">xlabel</span>(<span class="st">'Konum'</span>, <span class="st">'fontsize'</span>, <span class="nm">14</span>)
+<span class="fn">ylabel</span>(<span class="st">'Büyüklük'</span>, <span class="st">'fontsize'</span>, <span class="nm">14</span>)
+<span class="fn">title</span>(<span class="st">'Ex'</span>, <span class="st">'fontsize'</span>, <span class="nm">16</span>)
+<span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>])      <span class="cm">% [xmin xmax ymin ymax]</span>
+<span class="fn">grid</span> <span class="kw">on</span>
+<span class="fn">set</span>(<span class="fn">gca</span>, <span class="st">'FontSize'</span>, <span class="nm">14</span>)
+
+<span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">2</span>)
+<span class="fn">plot</span>(<span class="va">hy</span>)
+<span class="fn">xlabel</span>(<span class="st">'Konum'</span>, <span class="st">'fontsize'</span>, <span class="nm">14</span>)
+<span class="fn">ylabel</span>(<span class="st">'Büyüklük'</span>, <span class="st">'fontsize'</span>, <span class="nm">14</span>)
+<span class="fn">title</span>(<span class="st">'Hy'</span>, <span class="st">'fontsize'</span>, <span class="nm">16</span>)
+<span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>])
+<span class="fn">grid</span> <span class="kw">on</span>
+<span class="fn">set</span>(<span class="fn">gca</span>, <span class="st">'FontSize'</span>, <span class="nm">14</span>)
+
+<span class="cm">% --- 2x2 subplot örneği ---</span>
+<span class="kw">figure</span>;
+<span class="fn">subplot</span>(<span class="nm">2</span>,<span class="nm">2</span>,<span class="nm">1</span>)  <span class="cm">% sol üst</span>
+<span class="fn">plot</span>(<span class="va">ex</span>, <span class="st">'b'</span>); <span class="fn">title</span>(<span class="st">'Sol Üst'</span>)
+
+<span class="fn">subplot</span>(<span class="nm">2</span>,<span class="nm">2</span>,<span class="nm">4</span>)  <span class="cm">% sağ alt</span>
+<span class="fn">plot</span>(<span class="va">hy</span>, <span class="st">'r'</span>); <span class="fn">title</span>(<span class="st">'Sağ Alt'</span>)</pre>
+    </div>
+  </div>
+
+  <div class="sub">
+    <div class="sub-title">Kod 2b — Çizgi Stilleri Gösterimi</div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">cizgi_stilleri.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="nm">200</span>;
+<span class="va">A</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="nm">80</span>)<span class="op">/</span><span class="nm">10</span>).<span class="op">^</span><span class="nm">2</span>);
+<span class="va">B</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="nm">80</span>)<span class="op">/</span><span class="nm">20</span>).<span class="op">^</span><span class="nm">2</span>);
+<span class="va">C</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="nm">80</span>)<span class="op">/</span><span class="nm">30</span>).<span class="op">^</span><span class="nm">2</span>);
+
+<span class="cm">% 'b' = mavi düz, ':r' = kırmızı noktalı, '--k' = siyah kesikli</span>
+<span class="fn">plot</span>(<span class="va">t</span>,<span class="va">A</span>,<span class="st">'b'</span>, <span class="va">t</span>,<span class="va">B</span>,<span class="st">':r'</span>, <span class="va">t</span>,<span class="va">C</span>,<span class="st">'--k'</span>);
+<span class="fn">legend</span>(<span class="st">'Düz Mavi'</span>, <span class="st">'Noktalı Kırmızı'</span>, <span class="st">'Kesikli Siyah'</span>)
+<span class="fn">grid</span> <span class="kw">on</span>
+<span class="fn">set</span>(<span class="fn">gca</span>, <span class="st">'FontSize'</span>, <span class="nm">14</span>)</pre>
+    </div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 3. DOSYA I/O ═══ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div>
+      <div class="section-title">Dosya Açma ve Yazma (fopen / fprintf / fclose)</div>
+      <div class="section-subtitle">Simülasyon çıktılarını .txt dosyasına kaydetme</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">fprintf Format Karakterleri</div>
+    <strong>%d</strong> = tam sayı &nbsp;·&nbsp; <strong>%f</strong> = ondalıklı &nbsp;·&nbsp; <strong>%e</strong> = bilimsel &nbsp;·&nbsp; <strong>%s</strong> = metin &nbsp;·&nbsp; <strong>%c</strong> = karakter<br>
+    <strong>%6.2f</strong> = toplam 6 karakter, 2 ondalık &nbsp;·&nbsp; <strong>\n</strong> = yeni satır
+  </div>
+
+  <div class="sub">
+    <div class="sub-title">Kod 3a — Temel Dosya Yazma</div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">dosya_yazma.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="cm">% Dosya açma: 'wt' = write text (yeni oluştur veya üzerine yaz)</span>
+<span class="va">fid</span> <span class="op">=</span> <span class="fn">fopen</span>(<span class="st">'sonuclar.txt'</span>, <span class="st">'wt'</span>);
+
+<span class="cm">% fprintf ile dosyaya yazma — formatı dikkatli seç</span>
+<span class="fn">fprintf</span>(<span class="va">fid</span>, <span class="st">'ACABA %i\n'</span>, <span class="nm">4</span>);     <span class="cm">% tam sayı</span>
+
+<span class="cm">% Dosyayı kapat — kapatmazsan yazma tamamlanmaz!</span>
+<span class="fn">fclose</span>(<span class="va">fid</span>);
+
+<span class="cm">% Ekrana da yazdırmak istersen (fid olmadan)</span>
+<span class="fn">fprintf</span>(<span class="st">'ACABA %i\n'</span>, <span class="nm">4</span>);</pre>
+    </div>
+  </div>
+
+  <div class="sub">
+    <div class="sub-title">Kod 3b — Sayısal Dizi Yazma (exp fonksiyonu örneği)</div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">dizi_yazma.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="va">x</span> <span class="op">=</span> <span class="nm">0</span><span class="op">:</span>.<span class="nm">1</span><span class="op">:</span><span class="nm">1</span>;
+<span class="va">y</span> <span class="op">=</span> [<span class="va">x</span>; <span class="fn">exp</span>(<span class="va">x</span>)];   <span class="cm">% 2 satırlık matris: üstte x, altta exp(x)</span>
+
+<span class="va">fid</span> <span class="op">=</span> <span class="fn">fopen</span>(<span class="st">'exp.txt'</span>, <span class="st">'w'</span>);
+<span class="fn">fprintf</span>(<span class="va">fid</span>, <span class="st">'%6.2f  %12.8f\n'</span>, <span class="va">y</span>);
+<span class="cm">%  %6.2f  → 6 karakter genişlik, 2 ondalık basamak</span>
+<span class="cm">%  %12.8f → 12 karakter genişlik, 8 ondalık basamak</span>
+<span class="fn">fclose</span>(<span class="va">fid</span>);</pre>
+    </div>
+    <div class="output">
+      <div class="output-label">exp.txt içeriği (örnek)</div>
+0.00    1.00000000
+0.10    1.10517092
+0.20    1.22140276
+...
+    </div>
+  </div>
+
+  <div class="sub">
+    <div class="sub-title">Kod 3c — fprintf Tip Örnekleri</div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fprintf_tipler.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="va">X</span> <span class="op">=</span> <span class="nm">4</span>;
+<span class="va">Y</span> <span class="op">=</span> <span class="nm">56.23</span>;
+<span class="va">Z</span> <span class="op">=</span> <span class="st">'Merhaba Dünya'</span>;
+<span class="va">Q</span> <span class="op">=</span> <span class="st">'c'</span>;
+
+<span class="fn">fprintf</span>(<span class="st">'Tam sayı örneği ...     X = %d \n'</span>, <span class="va">X</span>);
+<span class="fn">fprintf</span>(<span class="st">'Ondalıklı sayı örneği... Y = %f \n'</span>, <span class="va">Y</span>);
+<span class="fn">fprintf</span>(<span class="st">'String örneği ...       Z = %s \n'</span>, <span class="va">Z</span>);
+<span class="fn">fprintf</span>(<span class="st">'Karakter örneği ...     Q = %c \n'</span>, <span class="va">Q</span>);</pre>
+    </div>
+    <div class="output">
+Tam sayı örneği ...     X = 4
+Ondalıklı sayı örneği... Y = 56.230000
+String örneği ...       Z = Merhaba Dünya
+Karakter örneği ...     Q = c
+    </div>
+  </div>
+
+  <div class="sub">
+    <div class="sub-title">Kod 3d — FDTD Simülasyonu Çıktısını Kaydetme (Ödev Formatı)</div>
+    <div class="info-box warn" style="margin-bottom:10px">
+      <div class="info-title orange">Ödev notu</div>
+      Slayttaki ödeve göre: nsteps=200 değerinde Ex.txt dosyasına 1. sütun zaman adımı, 2. sütun e(x) değeri yazılacak.
+    </div>
+    <div class="code-wrap">
+      <div class="code-label">
+        <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd_kaydet.m</span></div>
+        <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+      </div>
+      <pre class="code"><span class="cm">% nsteps=200, ks=100, çift taraflı ABC olan 1D FDTD koduna ekle</span>
+<span class="cm">% Döngü BAŞLAMADAN ÖNCE dosyayı aç:</span>
+<span class="va">fid</span> <span class="op">=</span> <span class="fn">fopen</span>(<span class="st">'Ex.txt'</span>, <span class="st">'wt'</span>);
+
+<span class="cm">% Döngü İÇİNDE, her adımda yaz:</span>
+<span class="kw">for</span> <span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="cm">% ... FDTD güncellemeleri ...</span>
+    <span class="fn">fprintf</span>(<span class="va">fid</span>, <span class="st">'%d  %12.8f\n'</span>, <span class="va">t</span>, <span class="va">ex</span>(<span class="va">ks</span>));
+    <span class="cm">%             ^             ^</span>
+    <span class="cm">%        nsteps değeri    e(x) değeri</span>
+<span class="kw">end</span>
+
+<span class="fn">fclose</span>(<span class="va">fid</span>);</pre>
+    </div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 4. 1D FDTD TEMEL ═══ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <div class="section-title">1D FDTD — Serbest Uzay (Temel, ABC Yok)</div>
+      <div class="section-subtitle">Hard kaynak · sınırlarda tam yansıma · dalga hareketi</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">Güncelleme Denklemleri</div>
+    <div class="formula">E[k] = E[k] + 0.5 × ( H[k-1] − H[k] )</div>
+    <div class="formula">H[k] = H[k] + 0.5 × ( E[k] − E[k+1] )</div>
+    Katsayı 0.5, Δt = Δz/(2c) seçiminden gelir (Courant sayısı = 0.5). Sınır koşulu yok → dalga duvara çarpıp geri yansır.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd1d_temel.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="cm">%--------------------------------------------------</span>
+<span class="cm">% 1D-FDTD — Serbest Uzay — Temel (ABC Yok)</span>
+<span class="cm">% Kaynak: Hard Gauss Darbesi</span>
+<span class="cm">%--------------------------------------------------</span>
+<span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="cm">% --- Problem uzayı ---</span>
+<span class="va">ke</span>     <span class="op">=</span> <span class="nm">200</span>;          <span class="cm">% Toplam hücre sayısı</span>
+<span class="va">ks</span>     <span class="op">=</span> <span class="va">ke</span><span class="op">/</span><span class="nm">2</span>;         <span class="cm">% Kaynak konumu (100. hücre)</span>
+<span class="va">nsteps</span> <span class="op">=</span> <span class="nm">250</span>;          <span class="cm">% Zaman adımı sayısı</span>
+
+<span class="cm">% --- Fiziksel sabitler ---</span>
+<span class="va">c0</span> <span class="op">=</span> <span class="nm">3e8</span>;             <span class="cm">% Işık hızı [m/s]</span>
+<span class="va">dz</span> <span class="op">=</span> <span class="nm">0.01</span>;            <span class="cm">% Hücre boyu [m]</span>
+<span class="va">dt</span> <span class="op">=</span> <span class="va">dz</span> <span class="op">/</span> (<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>);    <span class="cm">% Zaman adımı — Courant: dt = dz/(2c)</span>
+<span class="va">cc</span> <span class="op">=</span> <span class="va">c0</span><span class="op">*</span><span class="va">dt</span><span class="op">/</span><span class="va">dz</span>;       <span class="cm">% = 0.5 (normalize katsayı)</span>
+
+<span class="cm">% --- Alan dizileri (başlangıçta sıfır) ---</span>
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>, <span class="va">ke</span>);
+<span class="va">hy</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>, <span class="va">ke</span>);
+
+<span class="cm">% --- Gauss darbesi parametreleri ---</span>
+<span class="va">t0</span>     <span class="op">=</span> <span class="nm">20</span>;
+<span class="va">spread</span> <span class="op">=</span> <span class="nm">8</span>;
+
+<span class="cm">% ========== ANA ZAMAN DÖNGÜSÜ ==========</span>
+<span class="kw">for</span> <span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+
+    <span class="cm">% --- 1) Elektrik alan güncellemesi ---</span>
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">2</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">ex</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">hy</span>(<span class="va">k</span><span class="op">-</span><span class="nm">1</span>) <span class="op">-</span> <span class="va">hy</span>(<span class="va">k</span>));
+    <span class="kw">end</span>
+
+    <span class="cm">% --- 2) Kaynak ekleme (HARD kaynak) ---</span>
+    <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>)<span class="op">^</span><span class="nm">2</span>);
+
+    <span class="cm">% --- 3) Manyetik alan güncellemesi ---</span>
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hy</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">hy</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">ex</span>(<span class="va">k</span>) <span class="op">-</span> <span class="va">ex</span>(<span class="va">k</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+
+    <span class="cm">% --- Animasyon ---</span>
+    <span class="fn">drawnow</span>;
+    <span class="fn">plot</span>(<span class="va">ex</span>)
+    <span class="fn">xlabel</span>(<span class="st">'Konum'</span>, <span class="st">'fontsize'</span>, <span class="nm">12</span>)
+    <span class="fn">ylabel</span>(<span class="st">'Büyüklük'</span>, <span class="st">'fontsize'</span>, <span class="nm">12</span>)
+    <span class="fn">title</span>(<span class="st">'Ex'</span>, <span class="st">'fontsize'</span>, <span class="nm">20</span>)
+    <span class="fn">set</span>(<span class="fn">gca</span>, <span class="st">'FontSize'</span>, <span class="nm">20</span>)
+    <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 5. SOL SINIR ABC ═══ -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <div class="section-title">1D FDTD — Sol Sınır ABC</div>
+      <div class="section-subtitle">Dalga soldan geçer, sağdan yansır</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">ABC Prensibi</div>
+    Sol sınır koşulu: <strong>E[1] = E[2]</strong> (önceki adımdan saklanır). Bu E(2) değeri iki zaman adımı boyunca saklanıp E(1)'e atanır. <strong>ex_low_m1</strong> ve <strong>ex_low_m2</strong> bu belleği tutar.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd1d_sol_abc.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">ke</span> <span class="op">=</span> <span class="nm">200</span>; <span class="va">ks</span> <span class="op">=</span> <span class="va">ke</span><span class="op">/</span><span class="nm">2</span>; <span class="va">nsteps</span> <span class="op">=</span> <span class="nm">250</span>;
+<span class="va">c0</span> <span class="op">=</span> <span class="nm">3e8</span>; <span class="va">dz</span> <span class="op">=</span> <span class="nm">0.01</span>; <span class="va">dt</span> <span class="op">=</span> <span class="va">dz</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>); <span class="va">cc</span> <span class="op">=</span> <span class="va">c0</span><span class="op">*</span><span class="va">dt</span><span class="op">/</span><span class="va">dz</span>;
+
+<span class="cm">% --- Sol sınır ABC için bellek değişkenleri ---</span>
+<span class="va">ex_low_m1</span> <span class="op">=</span> <span class="nm">0</span>;   <span class="cm">% 1 adım önceki E(2)</span>
+<span class="va">ex_low_m2</span> <span class="op">=</span> <span class="nm">0</span>;   <span class="cm">% 2 adım önceki E(2)</span>
+
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>); <span class="va">hy</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>);
+<span class="va">t0</span> <span class="op">=</span> <span class="nm">20</span>; <span class="va">spread</span> <span class="op">=</span> <span class="nm">8</span>;
+
+<span class="kw">for</span> <span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">2</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">ex</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">hy</span>(<span class="va">k</span><span class="op">-</span><span class="nm">1</span>) <span class="op">-</span> <span class="va">hy</span>(<span class="va">k</span>));
+    <span class="kw">end</span>
+
+    <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>)<span class="op">^</span><span class="nm">2</span>);
+
+    <span class="cm">% ---- SOL SINIR ABC ----------------------------------------</span>
+    <span class="va">ex</span>(<span class="nm">1</span>)     <span class="op">=</span> <span class="va">ex_low_m2</span>;   <span class="cm">% E(1) ← 2 adım önceki E(2)</span>
+    <span class="va">ex_low_m2</span> <span class="op">=</span> <span class="va">ex_low_m1</span>;   <span class="cm">% belleği kaydır</span>
+    <span class="va">ex_low_m1</span> <span class="op">=</span> <span class="va">ex</span>(<span class="nm">2</span>);        <span class="cm">% mevcut E(2)'yi sakla</span>
+    <span class="cm">% -----------------------------------------------------------</span>
+
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hy</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">hy</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">ex</span>(<span class="va">k</span>) <span class="op">-</span> <span class="va">ex</span>(<span class="va">k</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+
+    <span class="fn">drawnow</span>; <span class="fn">plot</span>(<span class="va">ex</span>); <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 6. ÇİFT TARAFI ABC ═══ -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div>
+      <div class="section-title">1D FDTD — Çift Taraflı ABC (Tam Kod)</div>
+      <div class="section-subtitle">Serbest uzayda dalga sönümsüz ilerler — sınırlarda yansıma olmaz</div>
+    </div>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-title green">Bu sürümde ne eklendi?</div>
+    Sol sınır ABC'ye ek olarak <strong>sağ sınır ABC</strong> de eklendi: E[ke] = E[ke-1]. Dalga hem soldan hem sağdan serbest uzaya gidiyormuş gibi davranır.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd1d_cift_abc.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="cm">%--------------------------------------------------</span>
+<span class="cm">% 1D-FDTD — Serbest Uzay — Çift Taraflı ABC</span>
+<span class="cm">%--------------------------------------------------</span>
+<span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">ke</span>     <span class="op">=</span> <span class="nm">200</span>;
+<span class="va">ks</span>     <span class="op">=</span> <span class="va">ke</span><span class="op">/</span><span class="nm">2</span>;
+<span class="va">nsteps</span> <span class="op">=</span> <span class="nm">250</span>;
+<span class="va">c0</span>     <span class="op">=</span> <span class="nm">3e8</span>;
+<span class="va">dx</span>     <span class="op">=</span> <span class="nm">0.01</span>;
+<span class="va">dt</span>     <span class="op">=</span> <span class="va">dx</span> <span class="op">/</span> (<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>);
+<span class="va">cc</span>     <span class="op">=</span> <span class="va">c0</span><span class="op">*</span><span class="va">dt</span><span class="op">/</span><span class="va">dx</span>;
+
+<span class="cm">% --- ABC bellek değişkenleri (başlangıçta sıfır) ---</span>
+<span class="va">ex_low_m1</span>  <span class="op">=</span> <span class="nm">0</span>;  <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="nm">0</span>;
+<span class="va">ex_high_m1</span> <span class="op">=</span> <span class="nm">0</span>;  <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="nm">0</span>;
+
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>, <span class="va">ke</span>);
+<span class="va">hy</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>, <span class="va">ke</span>);
+
+<span class="va">t0</span>     <span class="op">=</span> <span class="nm">20</span>;
+<span class="va">spread</span> <span class="op">=</span> <span class="nm">8</span>;
+
+<span class="kw">for</span> <span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+
+    <span class="cm">% 1) E güncellemesi</span>
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">2</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">ex</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">hy</span>(<span class="va">k</span><span class="op">-</span><span class="nm">1</span>) <span class="op">-</span> <span class="va">hy</span>(<span class="va">k</span>));
+    <span class="kw">end</span>
+
+    <span class="cm">% 2) Kaynak (hard)</span>
+    <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>)<span class="op">^</span><span class="nm">2</span>);
+
+    <span class="cm">% 3) SOL sınır ABC</span>
+    <span class="va">ex</span>(<span class="nm">1</span>)      <span class="op">=</span> <span class="va">ex_low_m2</span>;
+    <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="va">ex_low_m1</span>;
+    <span class="va">ex_low_m1</span>  <span class="op">=</span> <span class="va">ex</span>(<span class="nm">2</span>);
+
+    <span class="cm">% 4) SAĞ sınır ABC</span>
+    <span class="va">ex</span>(<span class="va">ke</span>)     <span class="op">=</span> <span class="va">ex_high_m2</span>;
+    <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="va">ex_high_m1</span>;
+    <span class="va">ex_high_m1</span> <span class="op">=</span> <span class="va">ex</span>(<span class="va">ke</span><span class="op">-</span><span class="nm">1</span>);
+
+    <span class="cm">% 5) H güncellemesi</span>
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hy</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">hy</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">ex</span>(<span class="va">k</span>) <span class="op">-</span> <span class="va">ex</span>(<span class="va">k</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+
+    <span class="fn">drawnow</span>;
+    <span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">1</span>); <span class="fn">plot</span>(<span class="va">ex</span>); <span class="fn">title</span>(<span class="st">'Ex'</span>); <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+    <span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">2</span>); <span class="fn">plot</span>(<span class="va">hy</span>); <span class="fn">title</span>(<span class="st">'Hy'</span>); <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 7. İKİ KAYNAK ═══ -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div>
+      <div class="section-title">1D FDTD — İki Kaynaklı (Girişim)</div>
+      <div class="section-subtitle">ks1=80 ve ks2=120 konumuna aynı anda Gauss darbesi</div>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd1d_iki_kaynak.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">ke</span>     <span class="op">=</span> <span class="nm">200</span>;
+<span class="va">ks1</span>    <span class="op">=</span> <span class="va">ke</span><span class="op">/</span><span class="nm">2</span> <span class="op">-</span> <span class="nm">20</span>;    <span class="cm">% 1. kaynak: 80. hücre</span>
+<span class="va">ks2</span>    <span class="op">=</span> <span class="va">ke</span><span class="op">/</span><span class="nm">2</span> <span class="op">+</span> <span class="nm">20</span>;    <span class="cm">% 2. kaynak: 120. hücre</span>
+<span class="va">nsteps</span> <span class="op">=</span> <span class="nm">200</span>;
+<span class="va">c0</span>     <span class="op">=</span> <span class="nm">3e8</span>;
+<span class="va">dz</span>     <span class="op">=</span> <span class="nm">0.01</span>;
+<span class="va">dt</span>     <span class="op">=</span> <span class="va">dz</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>);
+<span class="va">cc</span>     <span class="op">=</span> <span class="va">c0</span><span class="op">*</span><span class="va">dt</span><span class="op">/</span><span class="va">dz</span>;
+
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>); <span class="va">hy</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>);
+<span class="va">t0</span> <span class="op">=</span> <span class="nm">20</span>; <span class="va">spread</span> <span class="op">=</span> <span class="nm">8</span>;
+
+<span class="kw">for</span> <span class="va">t</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">2</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">ex</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">hy</span>(<span class="va">k</span><span class="op">-</span><span class="nm">1</span>) <span class="op">-</span> <span class="va">hy</span>(<span class="va">k</span>));
+    <span class="kw">end</span>
+
+    <span class="cm">% İki ayrı konuma aynı anda kaynak ekleniyor</span>
+    <span class="va">ex</span>(<span class="va">ks1</span>) <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>)<span class="op">^</span><span class="nm">2</span>);
+    <span class="va">ex</span>(<span class="va">ks2</span>) <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>)<span class="op">^</span><span class="nm">2</span>);
+
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hy</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">hy</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">ex</span>(<span class="va">k</span>) <span class="op">-</span> <span class="va">ex</span>(<span class="va">k</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="fn">plot</span>(<span class="va">ex</span>); <span class="fn">grid</span> <span class="kw">on</span>; <span class="fn">title</span>(<span class="st">'İki Kaynaklı FDTD — Girişim'</span>)</pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 8. DİELEKTRİK ═══ -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div>
+      <div class="section-title">1D FDTD — Dielektrik Ortam (εᵣ ≠ 1)</div>
+      <div class="section-subtitle">cb katsayısı → 0.5/εᵣ · yansıma ve kırılma gözlenir</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">Temel fark</div>
+    Serbest uzay: <strong>cb(k) = 0.5</strong> · Dielektrik bölge: <strong>cb(k) = 0.5 / εᵣ</strong><br>
+    E güncellemesi: <code>ex(k) = ex(k) + cb(k) * (hy(k-1) - hy(k))</code>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd1d_dielektrik.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">ke</span>      <span class="op">=</span> <span class="nm">200</span>;
+<span class="va">ks</span>      <span class="op">=</span> <span class="nm">5</span>;         <span class="cm">% Kaynak sol tarafa yakın</span>
+<span class="va">nsteps</span>  <span class="op">=</span> <span class="nm">320</span>;
+<span class="va">kstart</span>  <span class="op">=</span> <span class="nm">100</span>;       <span class="cm">% Dielektrik başlangıç hücresi</span>
+<span class="va">kstop</span>   <span class="op">=</span> <span class="nm">130</span>;       <span class="cm">% Dielektrik bitiş hücresi</span>
+<span class="va">epsilon</span> <span class="op">=</span> <span class="nm">5</span>;         <span class="cm">% Bağıl dielektrik sabiti εᵣ</span>
+
+<span class="va">c0</span>  <span class="op">=</span> <span class="nm">3e8</span>; <span class="va">dz</span> <span class="op">=</span> <span class="nm">0.01</span>;
+<span class="va">dt</span>  <span class="op">=</span> <span class="va">dz</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>); <span class="va">cc</span> <span class="op">=</span> <span class="va">c0</span><span class="op">*</span><span class="va">dt</span><span class="op">/</span><span class="va">dz</span>;
+
+<span class="va">ex_low_m1</span> <span class="op">=</span> <span class="nm">0</span>; <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="nm">0</span>;
+<span class="va">ex_high_m1</span><span class="op">=</span> <span class="nm">0</span>; <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="nm">0</span>;
+
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>); <span class="va">hy</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>);
+<span class="va">t0</span> <span class="op">=</span> <span class="nm">40</span>; <span class="va">spread</span> <span class="op">=</span> <span class="nm">12</span>;
+
+<span class="cm">% --- cb katsayı dizisi ---</span>
+<span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">ke</span>
+    <span class="va">cb</span>(<span class="va">k</span>) <span class="op">=</span> <span class="nm">0.5</span>;             <span class="cm">% Serbest uzay katsayısı</span>
+<span class="kw">end</span>
+<span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="va">kstart</span><span class="op">:</span><span class="va">kstop</span>
+    <span class="va">cb</span>(<span class="va">k</span>) <span class="op">=</span> <span class="nm">0.5</span> <span class="op">/</span> <span class="va">epsilon</span>;   <span class="cm">% Dielektrik katsayısı: 0.5/εᵣ</span>
+<span class="kw">end</span>
+
+<span class="kw">for</span> <span class="va">n</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">2</span><span class="op">:</span><span class="va">ke</span>
+        <span class="va">ex</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cb</span>(<span class="va">k</span>)<span class="op">.*</span>(<span class="va">hy</span>(<span class="va">k</span><span class="op">-</span><span class="nm">1</span>) <span class="op">-</span> <span class="va">hy</span>(<span class="va">k</span>));   <span class="cm">% cb burada εᵣ'yi içerir</span>
+    <span class="kw">end</span>
+
+    <span class="va">pulse1</span>    <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">n</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>)<span class="op">^</span><span class="nm">2</span>);
+    <span class="va">ex</span>(<span class="va">ks</span>)     <span class="op">=</span> <span class="va">pulse1</span>;     <span class="cm">% Hard kaynak</span>
+
+    <span class="va">ex</span>(<span class="nm">1</span>)      <span class="op">=</span> <span class="va">ex_low_m2</span>;  <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="va">ex_low_m1</span>;  <span class="va">ex_low_m1</span>  <span class="op">=</span> <span class="va">ex</span>(<span class="nm">2</span>);
+    <span class="va">ex</span>(<span class="va">ke</span>)     <span class="op">=</span> <span class="va">ex_high_m2</span>; <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="va">ex_high_m1</span>; <span class="va">ex_high_m1</span> <span class="op">=</span> <span class="va">ex</span>(<span class="va">ke</span><span class="op">-</span><span class="nm">1</span>);
+
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hy</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">hy</span>(<span class="va">k</span>) <span class="op">+</span> <span class="nm">0.5</span><span class="op">*</span>(<span class="va">ex</span>(<span class="va">k</span>) <span class="op">-</span> <span class="va">ex</span>(<span class="va">k</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+
+    <span class="fn">drawnow</span>;
+    <span class="fn">plot</span>(<span class="va">ex</span>); <span class="fn">xlabel</span>(<span class="st">'Konum'</span>); <span class="fn">title</span>(<span class="st">'Ex — Dielektrik Ortam'</span>);
+    <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 9. SİNÜS KAYNAK ═══ -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div>
+      <div class="section-title">1D FDTD — Sinüs Kaynak (Tek Frekans)</div>
+      <div class="section-subtitle">Kararlı hal analizi — f=700 MHz dielektrik ortam</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">Sinüs kaynağı formülü</div>
+    <div class="formula">pulse2 = sin(2π · f · Δt · n)</div>
+    Soft kaynak olarak eklenir: <code>ex(ks) = ex(ks) + pulse2</code><br>
+    Dalga boyunun dielektrik içinde kısaldığını gözlemleyebilirsin.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd1d_sinus_kaynak.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">ke</span>      <span class="op">=</span> <span class="nm">200</span>; <span class="va">ks</span> <span class="op">=</span> <span class="nm">5</span>; <span class="va">nsteps</span> <span class="op">=</span> <span class="nm">500</span>;
+<span class="va">kstart</span>  <span class="op">=</span> <span class="nm">100</span>; <span class="va">kstop</span> <span class="op">=</span> <span class="nm">180</span>; <span class="va">epsilon</span> <span class="op">=</span> <span class="nm">4</span>;
+
+<span class="va">c0</span>   <span class="op">=</span> <span class="nm">3e8</span>; <span class="va">dz</span> <span class="op">=</span> <span class="nm">0.01</span>;
+<span class="va">dt</span>   <span class="op">=</span> <span class="va">dz</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>); <span class="va">cc</span> <span class="op">=</span> <span class="va">c0</span><span class="op">*</span><span class="va">dt</span><span class="op">/</span><span class="va">dz</span>;
+<span class="va">freq</span> <span class="op">=</span> <span class="nm">700e6</span>;  <span class="cm">% 700 MHz</span>
+
+<span class="va">ex_low_m1</span> <span class="op">=</span> <span class="nm">0</span>; <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="nm">0</span>;
+<span class="va">ex_high_m1</span><span class="op">=</span> <span class="nm">0</span>; <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>); <span class="va">hy</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>);
+
+<span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">ke</span>;  <span class="va">cb</span>(<span class="va">k</span>) <span class="op">=</span> <span class="nm">0.5</span>; <span class="kw">end</span>
+<span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="va">kstart</span><span class="op">:</span><span class="va">kstop</span>; <span class="va">cb</span>(<span class="va">k</span>) <span class="op">=</span> <span class="nm">0.5</span><span class="op">/</span><span class="va">epsilon</span>; <span class="kw">end</span>
+
+<span class="kw">for</span> <span class="va">n</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">2</span><span class="op">:</span><span class="va">ke</span>
+        <span class="va">ex</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cb</span>(<span class="va">k</span>)<span class="op">.*</span>(<span class="va">hy</span>(<span class="va">k</span><span class="op">-</span><span class="nm">1</span>) <span class="op">-</span> <span class="va">hy</span>(<span class="va">k</span>));
+    <span class="kw">end</span>
+
+    <span class="cm">% SİNÜS KAYNAK — soft olarak ekleniyor</span>
+    <span class="va">pulse2</span>   <span class="op">=</span> <span class="fn">sin</span>(<span class="nm">2</span><span class="op">*</span>pi<span class="op">*</span><span class="va">freq</span><span class="op">*</span><span class="va">dt</span><span class="op">*</span><span class="va">n</span>);
+    <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">+</span> <span class="va">pulse2</span>;    <span class="cm">% Soft kaynak!</span>
+
+    <span class="va">ex</span>(<span class="nm">1</span>)  <span class="op">=</span> <span class="va">ex_low_m2</span>;  <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="va">ex_low_m1</span>;  <span class="va">ex_low_m1</span>  <span class="op">=</span> <span class="va">ex</span>(<span class="nm">2</span>);
+    <span class="va">ex</span>(<span class="va">ke</span>)<span class="op">=</span> <span class="va">ex_high_m2</span>; <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="va">ex_high_m1</span>; <span class="va">ex_high_m1</span> <span class="op">=</span> <span class="va">ex</span>(<span class="va">ke</span><span class="op">-</span><span class="nm">1</span>);
+
+    <span class="kw">for</span> <span class="va">k</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hy</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">hy</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cc</span><span class="op">*</span>(<span class="va">ex</span>(<span class="va">k</span>) <span class="op">-</span> <span class="va">ex</span>(<span class="va">k</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+
+    <span class="fn">drawnow</span>; <span class="fn">plot</span>(<span class="va">ex</span>); <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+    <span class="fn">title</span>(<span class="st">['Sinüs Kaynak — f=700 MHz — n='</span> <span class="fn">num2str</span>(<span class="va">n</span>)])
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 10. MODÜLELI GAUSS ═══ -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div>
+      <div class="section-title">1D FDTD — Modüleli Gauss Kaynak</div>
+      <div class="section-subtitle">Merkez frekans etrafında bant analizi — f_c = 5 GHz</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">Modüleli Gauss formülü</div>
+    <div class="formula">Modüleli Gauss = Gauss(t) × sin(2π·f_c·Δt·n)</div>
+    DC bileşeni yok, enerji doğrudan f_c etrafında. <strong>pulse3 = pulse1 * pulse2</strong>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd1d_moduleli_gauss.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">ke</span>      <span class="op">=</span> <span class="nm">200</span>; <span class="va">ks</span> <span class="op">=</span> <span class="nm">5</span>; <span class="va">nsteps</span> <span class="op">=</span> <span class="nm">400</span>;
+<span class="va">kstart</span>  <span class="op">=</span> <span class="nm">100</span>; <span class="va">kstop</span> <span class="op">=</span> <span class="nm">180</span>; <span class="va">epsilon</span> <span class="op">=</span> <span class="nm">4</span>;
+
+<span class="va">c0</span>   <span class="op">=</span> <span class="nm">3e8</span>; <span class="va">dz</span> <span class="op">=</span> <span class="nm">0.01</span>;
+<span class="va">dt</span>   <span class="op">=</span> <span class="va">dz</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>); <span class="va">cc</span> <span class="op">=</span> <span class="va">c0</span><span class="op">*</span><span class="va">dt</span><span class="op">/</span><span class="va">dz</span>;
+<span class="va">freq</span> <span class="op">=</span> <span class="nm">5e9</span>;       <span class="cm">% 5 GHz merkez frekansı</span>
+<span class="va">t0</span>   <span class="op">=</span> <span class="nm">40</span>;
+<span class="va">spread</span><span class="op">=</span> <span class="nm">12</span>;
+
+<span class="va">ex_low_m1</span> <span class="op">=</span> <span class="nm">0</span>; <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="nm">0</span>;
+<span class="va">ex_high_m1</span><span class="op">=</span> <span class="nm">0</span>; <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>); <span class="va">hy</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>);
+
+<span class="kw">for</span> <span class="va">k</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">ke</span>;        <span class="va">cb</span>(<span class="va">k</span>)<span class="op">=</span><span class="nm">0.5</span>;           <span class="kw">end</span>
+<span class="kw">for</span> <span class="va">k</span><span class="op">=</span><span class="va">kstart</span><span class="op">:</span><span class="va">kstop</span>; <span class="va">cb</span>(<span class="va">k</span>)<span class="op">=</span><span class="nm">0.5</span><span class="op">/</span><span class="va">epsilon</span>; <span class="kw">end</span>
+
+<span class="kw">for</span> <span class="va">n</span> <span class="op">=</span> <span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="kw">for</span> <span class="va">k</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">ke</span>
+        <span class="va">ex</span>(<span class="va">k</span>)<span class="op">=</span><span class="va">ex</span>(<span class="va">k</span>)<span class="op">+</span><span class="va">cb</span>(<span class="va">k</span>)<span class="op">.*</span>(<span class="va">hy</span>(<span class="va">k</span><span class="op">-</span><span class="nm">1</span>)<span class="op">-</span><span class="va">hy</span>(<span class="va">k</span>));
+    <span class="kw">end</span>
+
+    <span class="cm">% MODÜLELI GAUSS = Gauss zarf × sinüs taşıyıcı</span>
+    <span class="va">pulse1</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">n</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>)<span class="op">^</span><span class="nm">2</span>);       <span class="cm">% Gauss zarf</span>
+    <span class="va">pulse2</span> <span class="op">=</span> <span class="fn">sin</span>(<span class="nm">2</span><span class="op">*</span>pi<span class="op">*</span><span class="va">freq</span><span class="op">*</span><span class="va">dt</span><span class="op">*</span><span class="va">n</span>);              <span class="cm">% Sinüs taşıyıcı</span>
+    <span class="va">pulse3</span> <span class="op">=</span> <span class="va">pulse1</span> <span class="op">*</span> <span class="va">pulse2</span>;                  <span class="cm">% Modüleli Gauss</span>
+    <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">+</span> <span class="va">pulse3</span>;
+
+    <span class="va">ex</span>(<span class="nm">1</span>)  <span class="op">=</span> <span class="va">ex_low_m2</span>;  <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="va">ex_low_m1</span>;  <span class="va">ex_low_m1</span>  <span class="op">=</span> <span class="va">ex</span>(<span class="nm">2</span>);
+    <span class="va">ex</span>(<span class="va">ke</span>)<span class="op">=</span> <span class="va">ex_high_m2</span>; <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="va">ex_high_m1</span>; <span class="va">ex_high_m1</span> <span class="op">=</span> <span class="va">ex</span>(<span class="va">ke</span><span class="op">-</span><span class="nm">1</span>);
+
+    <span class="kw">for</span> <span class="va">k</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hy</span>(<span class="va">k</span>)<span class="op">=</span><span class="va">hy</span>(<span class="va">k</span>)<span class="op">+</span><span class="va">cc</span><span class="op">*</span>(<span class="va">ex</span>(<span class="va">k</span>)<span class="op">-</span><span class="va">ex</span>(<span class="va">k</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+
+    <span class="fn">drawnow</span>; <span class="fn">plot</span>(<span class="va">ex</span>); <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+    <span class="fn">title</span>(<span class="st">['Modüleli Gauss — fc=5 GHz — n='</span> <span class="fn">num2str</span>(<span class="va">n</span>)])
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 11. KAYIPLI DİELEKTRİK ═══ -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div>
+      <div class="section-title">1D FDTD — Kayıplı Dielektrik Ortam (σ ≠ 0)</div>
+      <div class="section-subtitle">ca ve cb katsayıları · genlik sönümlenmesi · σ→∞ metallik duvar</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">Güncelleme denklemi ve katsayılar</div>
+    <div class="formula">E[k] = ca(k) · E[k] + cb(k) · (H[k-1] - H[k])</div>
+    <div class="formula">eaf   = dt·σ / (2·ε₀·εᵣ)</div>
+    <div class="formula">ca(k) = (1 - eaf) / (1 + eaf)</div>
+    <div class="formula">cb(k) = 0.5 / (εᵣ · (1 + eaf))</div>
+    σ=0 → ca=1, cb=0.5/εᵣ → kayıpsız dielektrik denklemine döner.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd1d_kayipli.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">epsz</span>    <span class="op">=</span> <span class="nm">8.85419e-12</span>;  <span class="cm">% ε₀ [F/m]</span>
+<span class="va">ke</span>      <span class="op">=</span> <span class="nm">200</span>; <span class="va">ks</span> <span class="op">=</span> <span class="nm">5</span>; <span class="va">nsteps</span> <span class="op">=</span> <span class="nm">450</span>;
+<span class="va">kstart</span>  <span class="op">=</span> <span class="nm">100</span>; <span class="va">kstop</span> <span class="op">=</span> <span class="nm">200</span>;
+<span class="va">epsilon</span> <span class="op">=</span> <span class="nm">4</span>;      <span class="cm">% εᵣ</span>
+<span class="va">sigma</span>   <span class="op">=</span> <span class="nm">0.04</span>;   <span class="cm">% σ [S/m]  — σ=0 → kayıpsız, σ→1e6 → metallik</span>
+
+<span class="va">c0</span> <span class="op">=</span> <span class="nm">3e8</span>; <span class="va">dx</span> <span class="op">=</span> <span class="nm">0.01</span>;
+<span class="va">dt</span> <span class="op">=</span> <span class="va">dx</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>); <span class="va">cc</span> <span class="op">=</span> <span class="va">c0</span><span class="op">*</span><span class="va">dt</span><span class="op">/</span><span class="va">dx</span>;
+
+<span class="va">ex_low_m1</span> <span class="op">=</span><span class="nm">0</span>; <span class="va">ex_low_m2</span>  <span class="op">=</span><span class="nm">0</span>;
+<span class="va">ex_high_m1</span><span class="op">=</span><span class="nm">0</span>; <span class="va">ex_high_m2</span> <span class="op">=</span><span class="nm">0</span>;
+<span class="va">ex</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>); <span class="va">hy</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">ke</span>);
+<span class="va">t0</span> <span class="op">=</span> <span class="nm">40</span>; <span class="va">spread</span> <span class="op">=</span> <span class="nm">12</span>;
+
+<span class="cm">% --- ca ve cb katsayıları ---</span>
+<span class="kw">for</span> <span class="va">k</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">ke</span>
+    <span class="va">ca</span>(<span class="va">k</span>) <span class="op">=</span> <span class="nm">1</span>;     <span class="cm">% Serbest uzay: ca=1</span>
+    <span class="va">cb</span>(<span class="va">k</span>) <span class="op">=</span> <span class="nm">0.5</span>;   <span class="cm">% Serbest uzay: cb=0.5</span>
+<span class="kw">end</span>
+
+<span class="cm">% Kayıplı dielektrik katsayıları (sigma dahil)</span>
+<span class="va">eaf</span> <span class="op">=</span> <span class="va">dt</span><span class="op">*</span><span class="va">sigma</span> <span class="op">/</span> (<span class="nm">2</span><span class="op">*</span><span class="va">epsz</span><span class="op">*</span><span class="va">epsilon</span>);
+<span class="kw">for</span> <span class="va">k</span><span class="op">=</span><span class="va">kstart</span><span class="op">:</span><span class="va">kstop</span>
+    <span class="va">ca</span>(<span class="va">k</span>) <span class="op">=</span> (<span class="nm">1</span> <span class="op">-</span> <span class="va">eaf</span>) <span class="op">/</span> (<span class="nm">1</span> <span class="op">+</span> <span class="va">eaf</span>);
+    <span class="va">cb</span>(<span class="va">k</span>) <span class="op">=</span> <span class="nm">0.5</span> <span class="op">/</span> (<span class="va">epsilon</span> <span class="op">*</span> (<span class="nm">1</span> <span class="op">+</span> <span class="va">eaf</span>));
+<span class="kw">end</span>
+
+<span class="kw">for</span> <span class="va">t</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="kw">for</span> <span class="va">k</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">ke</span>
+        <span class="va">ex</span>(<span class="va">k</span>) <span class="op">=</span> <span class="va">ca</span>(<span class="va">k</span>)<span class="op">*</span><span class="va">ex</span>(<span class="va">k</span>) <span class="op">+</span> <span class="va">cb</span>(<span class="va">k</span>)<span class="op">.*</span>(<span class="va">hy</span>(<span class="va">k</span><span class="op">-</span><span class="nm">1</span>)<span class="op">-</span><span class="va">hy</span>(<span class="va">k</span>));   <span class="cm">% ca artık 1 değil!</span>
+    <span class="kw">end</span>
+
+    <span class="va">pulse1</span>   <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span>.<span class="nm">5</span><span class="op">*</span>((<span class="va">t</span><span class="op">-</span><span class="va">t0</span>)<span class="op">/</span><span class="va">spread</span>)<span class="op">^</span><span class="nm">2</span>);
+    <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">=</span> <span class="va">ex</span>(<span class="va">ks</span>) <span class="op">+</span> <span class="va">pulse1</span>;   <span class="cm">% Soft Gauss</span>
+
+    <span class="va">ex</span>(<span class="nm">1</span>)  <span class="op">=</span> <span class="va">ex_low_m2</span>;  <span class="va">ex_low_m2</span>  <span class="op">=</span> <span class="va">ex_low_m1</span>;  <span class="va">ex_low_m1</span>  <span class="op">=</span> <span class="va">ex</span>(<span class="nm">2</span>);
+    <span class="va">ex</span>(<span class="va">ke</span>)<span class="op">=</span> <span class="va">ex_high_m2</span>; <span class="va">ex_high_m2</span> <span class="op">=</span> <span class="va">ex_high_m1</span>; <span class="va">ex_high_m1</span> <span class="op">=</span> <span class="va">ex</span>(<span class="va">ke</span><span class="op">-</span><span class="nm">1</span>);
+
+    <span class="kw">for</span> <span class="va">k</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">ke</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hy</span>(<span class="va">k</span>)<span class="op">=</span><span class="va">hy</span>(<span class="va">k</span>)<span class="op">+</span><span class="va">cc</span><span class="op">*</span>(<span class="va">ex</span>(<span class="va">k</span>)<span class="op">-</span><span class="va">ex</span>(<span class="va">k</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+
+    <span class="fn">drawnow</span>; <span class="fn">plot</span>(<span class="va">ex</span>); <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">200</span> <span class="op">-</span><span class="nm">2</span> <span class="nm">2</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+    <span class="fn">title</span>(<span class="st">['Kayıplı Dielektrik (σ=0.04) — n='</span> <span class="fn">num2str</span>(<span class="va">t</span>)])
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 12. 2D TM ═══ -->
+<div class="section" id="s12">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div>
+      <div class="section-title">2D FDTD — TM Modu (Ez, Hx, Hy)</div>
+      <div class="section-subtitle">60×60 ızgara · Hz=0 · merkeze Gauss darbesi · mesh + imagesc görselleştirme</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">TM Modu Güncelleme Denklemleri</div>
+    <div class="formula">Ez(i,j) = Ez(i,j) + 0.5·[Hy(i,j)−Hy(i−1,j)−Hx(i,j)+Hx(i,j−1)]</div>
+    <div class="formula">Hx(i,j) = Hx(i,j) − 0.5·[Ez(i,j+1) − Ez(i,j)]</div>
+    <div class="formula">Hy(i,j) = Hy(i,j) + 0.5·[Ez(i+1,j) − Ez(i,j)]</div>
+    Kaynak Ez alanına ekleniyor. İç içe for döngüsü (i, j) her hücreyi günceller.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd2d_TM.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">IE</span> <span class="op">=</span> <span class="nm">60</span>; <span class="va">JE</span> <span class="op">=</span> <span class="nm">60</span>;    <span class="cm">% 2D problem uzayı boyutları</span>
+<span class="va">is</span> <span class="op">=</span> <span class="va">IE</span><span class="op">/</span><span class="nm">2</span>; <span class="va">js</span> <span class="op">=</span> <span class="va">JE</span><span class="op">/</span><span class="nm">2</span>; <span class="cm">% Kaynak merkez (30,30)</span>
+<span class="va">nsteps</span> <span class="op">=</span> <span class="nm">100</span>;
+<span class="va">epsz</span>   <span class="op">=</span> <span class="nm">8.8e-12</span>;
+<span class="va">c0</span>     <span class="op">=</span> <span class="nm">3e8</span>; <span class="va">dx</span> <span class="op">=</span> <span class="nm">0.01</span>;
+<span class="va">dt</span>     <span class="op">=</span> <span class="va">dx</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>);
+
+<span class="cm">% --- Alan dizilerini sıfırla (2D matrisler) ---</span>
+<span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">JE</span>
+    <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">IE</span>
+        <span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">Hy</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>;
+    <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="va">to</span><span class="op">=</span><span class="nm">20</span>; <span class="va">w</span><span class="op">=</span><span class="nm">6</span>; <span class="va">T</span><span class="op">=</span><span class="nm">0</span>;
+
+<span class="kw">for</span> <span class="va">n</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="va">T</span><span class="op">=</span><span class="va">T</span><span class="op">+</span><span class="nm">1</span>;
+
+    <span class="cm">% --- Ez güncellemesi ---</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span>
+            <span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>[<span class="va">Hy</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Hy</span>(<span class="va">i</span><span class="op">-</span><span class="nm">1</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span><span class="op">-</span><span class="nm">1</span>)];
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="cm">% --- Gauss darbesi — Ez alanına ekleniyor ---</span>
+    <span class="va">pulse</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span><span class="nm">0.5</span><span class="op">*</span>((<span class="va">to</span><span class="op">-</span><span class="va">T</span>)<span class="op">/</span><span class="va">w</span>)<span class="op">^</span><span class="nm">2</span>);
+    <span class="va">Ez</span>(<span class="va">is</span>,<span class="va">js</span>) <span class="op">=</span> <span class="va">Ez</span>(<span class="va">is</span>,<span class="va">js</span>) <span class="op">+</span> <span class="va">pulse</span>;   <span class="cm">% Soft kaynak</span>
+
+    <span class="cm">% --- Hx güncellemesi ---</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span><span class="op">-</span><span class="nm">1</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span>
+            <span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>(<span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span><span class="op">+</span><span class="nm">1</span>));
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="cm">% --- Hy güncellemesi ---</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span><span class="op">-</span><span class="nm">1</span>
+            <span class="va">Hy</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Hy</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>(<span class="va">Ez</span>(<span class="va">i</span><span class="op">+</span><span class="nm">1</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>));
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="cm">% --- Görselleştirme ---</span>
+    <span class="fn">drawnow</span>;
+    [<span class="va">X</span>,<span class="va">Y</span>] <span class="op">=</span> <span class="fn">meshgrid</span>(<span class="nm">1</span><span class="op">:</span><span class="nm">1</span><span class="op">:</span><span class="nm">60</span>);
+    <span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">1</span>)
+    <span class="fn">mesh</span>(<span class="va">X</span>,<span class="va">Y</span>,<span class="va">Ez</span>);
+    <span class="fn">xlabel</span>(<span class="st">'X'</span>); <span class="fn">ylabel</span>(<span class="st">'Y'</span>); <span class="fn">zlabel</span>(<span class="st">'Ez'</span>);
+    <span class="fn">set</span>(<span class="fn">gca</span>,<span class="st">'FontSize'</span>,<span class="nm">14</span>)
+    <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">60</span> <span class="nm">1</span> <span class="nm">60</span> <span class="op">-</span>.<span class="nm">25</span> .<span class="nm">25</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+
+    <span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">2</span>)
+    <span class="fn">imagesc</span>(<span class="va">Ez</span>);       <span class="cm">% Üstten görünüş (renk haritası)</span>
+    <span class="fn">shading</span> flat;
+    <span class="fn">xlabel</span>(<span class="st">'X'</span>); <span class="fn">ylabel</span>(<span class="st">'Y'</span>);
+    <span class="fn">set</span>(<span class="fn">gca</span>,<span class="st">'FontSize'</span>,<span class="nm">14</span>)
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 13. 2D TE ═══ -->
+<div class="section" id="s13">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <div>
+      <div class="section-title">2D FDTD — TE Modu (Hz, Ex, Ey)</div>
+      <div class="section-subtitle">Ez=0 · Hz alanına Gauss darbesi · ga normalizasyon matrisi</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-title blue">TE Modu Güncelleme Denklemleri</div>
+    <div class="formula">Ex(i,j) = Ex(i,j) + 0.5·[Hz(i,j) − Hz(i,j−1)]</div>
+    <div class="formula">Ey(i,j) = Ey(i,j) − 0.5·[Hz(i,j) − Hz(i−1,j)]</div>
+    <div class="formula">Hz(i,j) = ga(i,j)·Hz(i,j) + 0.5·[Ex(i,j+1)−Ex(i,j)−Ey(i+1,j)+Ey(i,j)]</div>
+    TM'den farkı: kaynak Hz manyetik alana ekleniyor; ga matrisi normalizasyon için.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd2d_TE.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">IE</span><span class="op">=</span><span class="nm">60</span>; <span class="va">JE</span><span class="op">=</span><span class="nm">60</span>;
+<span class="va">is</span><span class="op">=</span><span class="va">IE</span><span class="op">/</span><span class="nm">2</span>; <span class="va">js</span><span class="op">=</span><span class="va">JE</span><span class="op">/</span><span class="nm">2</span>;
+<span class="va">nsteps</span><span class="op">=</span><span class="nm">300</span>;
+<span class="va">c0</span><span class="op">=</span><span class="nm">3e8</span>; <span class="va">dx</span><span class="op">=</span><span class="nm">0.01</span>; <span class="va">dt</span><span class="op">=</span><span class="va">dx</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>);
+
+<span class="cm">% --- Başlangıç koşulları ---</span>
+<span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">JE</span>
+    <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">IE</span>
+        <span class="va">Hz</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">Ex</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">Ey</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>;
+        <span class="va">ga</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">1.0</span>;   <span class="cm">% Normalizasyon matrisi (serbest uzay = 1)</span>
+    <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="va">to</span><span class="op">=</span><span class="nm">20</span>; <span class="va">w</span><span class="op">=</span><span class="nm">6</span>; <span class="va">T</span><span class="op">=</span><span class="nm">0</span>;
+
+<span class="kw">for</span> <span class="va">n</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="va">T</span><span class="op">=</span><span class="va">T</span><span class="op">+</span><span class="nm">1</span>;
+
+    <span class="cm">% --- Ex güncellemesi ---</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span>
+            <span class="va">Ex</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Ex</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>(<span class="va">Hz</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Hz</span>(<span class="va">i</span>,<span class="va">j</span><span class="op">-</span><span class="nm">1</span>));
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="cm">% --- Ey güncellemesi ---</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span>
+            <span class="va">Ey</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Ey</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">-</span><span class="nm">0.5</span><span class="op">*</span>(<span class="va">Hz</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Hz</span>(<span class="va">i</span><span class="op">-</span><span class="nm">1</span>,<span class="va">j</span>));
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="cm">% --- Hz güncellemesi ---</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span><span class="op">-</span><span class="nm">1</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span><span class="op">-</span><span class="nm">1</span>
+            <span class="va">Hz</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Hz</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>[<span class="va">Ex</span>(<span class="va">i</span>,<span class="va">j</span><span class="op">+</span><span class="nm">1</span>)<span class="op">-</span><span class="va">Ex</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Ey</span>(<span class="va">i</span><span class="op">+</span><span class="nm">1</span>,<span class="va">j</span>)<span class="op">+</span><span class="va">Ey</span>(<span class="va">i</span>,<span class="va">j</span>)];
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="cm">% Hz normalizasyonu (ga matrisi)</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span>
+            <span class="va">Hz</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">ga</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">*</span><span class="va">Hz</span>(<span class="va">i</span>,<span class="va">j</span>);
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="cm">% --- Kaynak — Hz alanına ekleniyor (TM'den fark!) ---</span>
+    <span class="va">pulse</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span><span class="nm">0.5</span><span class="op">*</span>((<span class="va">to</span><span class="op">-</span><span class="va">T</span>)<span class="op">/</span><span class="va">w</span>)<span class="op">^</span><span class="nm">2</span>);
+    <span class="va">Hz</span>(<span class="va">is</span>,<span class="va">js</span>) <span class="op">=</span> <span class="va">Hz</span>(<span class="va">is</span>,<span class="va">js</span>) <span class="op">+</span> <span class="va">pulse</span>;
+
+    <span class="fn">drawnow</span>;
+    [<span class="va">X</span>,<span class="va">Y</span>] <span class="op">=</span> <span class="fn">meshgrid</span>(<span class="nm">1</span><span class="op">:</span><span class="nm">1</span><span class="op">:</span><span class="nm">60</span>);
+    <span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">1</span>); <span class="fn">mesh</span>(<span class="va">X</span>,<span class="va">Y</span>,<span class="va">Hz</span>);
+    <span class="fn">xlabel</span>(<span class="st">'X'</span>); <span class="fn">ylabel</span>(<span class="st">'Y'</span>); <span class="fn">zlabel</span>(<span class="st">'Hz'</span>);
+    <span class="fn">set</span>(<span class="fn">gca</span>,<span class="st">'FontSize'</span>,<span class="nm">14</span>)
+    <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">60</span> <span class="nm">1</span> <span class="nm">60</span> <span class="op">-</span>.<span class="nm">25</span> .<span class="nm">25</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+
+    <span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">2</span>); <span class="fn">imagesc</span>(<span class="va">Hz</span>); <span class="fn">shading</span> flat;
+    <span class="fn">xlabel</span>(<span class="st">'X'</span>); <span class="fn">ylabel</span>(<span class="st">'Y'</span>);
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ 14. TF/SF DÜZLEM DALGA ═══ -->
+<div class="section" id="s14">
+  <div class="section-header">
+    <div class="section-num">14</div>
+    <div>
+      <div class="section-title">2D FDTD — Düzlem Dalga TF/SF Yöntemi</div>
+      <div class="section-subtitle">Toplam Alan / Saçılan Alan · 1D yardımcı ızgara · ia, ib, ja, jb sınırları</div>
+    </div>
+  </div>
+
+  <div class="info-box warn">
+    <div class="info-title orange">TF/SF prensibi</div>
+    1D'de bir Gauss darbesi tanımlanır, ardından bu 1D dalga 2D uzaya enjekte edilir. Uzay iki bölgeye ayrılır: <strong>Toplam Alan</strong> (ia:ib, ja:jb içi) ve <strong>Saçılan Alan</strong> (dışı). Sınır denklemleri alanda hem çıkarma hem ekleme yapar.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">
+      <div class="code-label-left"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-filename">fdtd2d_duzlem_dalga_TFSF.m</span></div>
+      <button class="copy-btn" onclick="copyCode(this)">Kopyala</button>
+    </div>
+    <pre class="code"><span class="fn">clc</span>; <span class="fn">clear</span> <span class="kw">all</span>; <span class="fn">close</span> <span class="kw">all</span>;
+
+<span class="va">IE</span><span class="op">=</span><span class="nm">60</span>; <span class="va">JE</span><span class="op">=</span><span class="nm">60</span>;
+<span class="va">nsteps</span><span class="op">=</span><span class="nm">200</span>;
+<span class="va">c0</span><span class="op">=</span><span class="nm">3e8</span>; <span class="va">dx</span><span class="op">=</span><span class="nm">0.01</span>; <span class="va">dt</span><span class="op">=</span><span class="va">dx</span><span class="op">/</span>(<span class="nm">2</span><span class="op">*</span><span class="va">c0</span>);
+
+<span class="cm">% --- TF/SF sınır indeksleri ---</span>
+<span class="va">ia</span><span class="op">=</span><span class="nm">7</span>;  <span class="va">ib</span><span class="op">=</span><span class="va">IE</span><span class="op">-</span><span class="va">ia</span><span class="op">-</span><span class="nm">1</span>;   <span class="cm">% x yönü sınırları</span>
+<span class="va">ja</span><span class="op">=</span><span class="nm">7</span>;  <span class="va">jb</span><span class="op">=</span><span class="va">JE</span><span class="op">-</span><span class="va">ja</span><span class="op">-</span><span class="nm">1</span>;   <span class="cm">% y yönü sınırları</span>
+
+<span class="cm">% --- 1D yardımcı ızgara dizileri (ABC'li) ---</span>
+<span class="va">ez_inc</span>       <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">JE</span>);
+<span class="va">hx_inc</span>       <span class="op">=</span> <span class="fn">zeros</span>(<span class="nm">1</span>,<span class="va">JE</span>);
+<span class="va">ez_inc_low_m1</span><span class="op">=</span><span class="nm">0</span>; <span class="va">ez_inc_low_m2</span><span class="op">=</span><span class="nm">0</span>;
+<span class="va">ez_inc_high_m1</span><span class="op">=</span><span class="nm">0</span>; <span class="va">ez_inc_high_m2</span><span class="op">=</span><span class="nm">0</span>;
+
+<span class="cm">% --- 2D alan dizileri ---</span>
+<span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">JE</span>
+    <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">IE</span>
+        <span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">Hy</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">ga</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">1</span>;
+    <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="va">to</span><span class="op">=</span><span class="nm">20</span>; <span class="va">w</span><span class="op">=</span><span class="nm">6</span>; <span class="va">T</span><span class="op">=</span><span class="nm">0</span>;
+
+<span class="kw">for</span> <span class="va">n</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">nsteps</span>
+    <span class="va">T</span><span class="op">=</span><span class="va">T</span><span class="op">+</span><span class="nm">1</span>;
+
+    <span class="cm">% ===== 1D YARDIMCI IZGARA GÜNCELLEMESİ =====</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span>
+        <span class="va">ez_inc</span>(<span class="va">j</span>)<span class="op">=</span><span class="va">ez_inc</span>(<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>(<span class="va">hx_inc</span>(<span class="va">j</span><span class="op">-</span><span class="nm">1</span>)<span class="op">-</span><span class="va">hx_inc</span>(<span class="va">j</span>));
+    <span class="kw">end</span>
+    <span class="va">ez_inc</span>(<span class="nm">1</span>)        <span class="op">=</span><span class="va">ez_inc_low_m2</span>; <span class="va">ez_inc_low_m2</span> <span class="op">=</span><span class="va">ez_inc_low_m1</span>; <span class="va">ez_inc_low_m1</span> <span class="op">=</span><span class="va">ez_inc</span>(<span class="nm">2</span>);
+    <span class="va">ez_inc</span>(<span class="va">JE</span>)       <span class="op">=</span><span class="va">ez_inc_high_m2</span>; <span class="va">ez_inc_high_m2</span><span class="op">=</span><span class="va">ez_inc_high_m1</span>; <span class="va">ez_inc_high_m1</span><span class="op">=</span><span class="va">ez_inc</span>(<span class="va">JE</span><span class="op">-</span><span class="nm">1</span>);
+
+    <span class="cm">% ===== 2D Ez GÜNCELLEMESİ =====</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span>
+            <span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>[<span class="va">Hy</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Hy</span>(<span class="va">i</span><span class="op">-</span><span class="nm">1</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span><span class="op">-</span><span class="nm">1</span>)];
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="cm">% 1D kaynak noktası</span>
+    <span class="va">pulse</span> <span class="op">=</span> <span class="fn">exp</span>(<span class="op">-</span><span class="nm">0.5</span><span class="op">*</span>((<span class="va">to</span><span class="op">-</span><span class="va">T</span>)<span class="op">/</span><span class="va">w</span>)<span class="op">^</span><span class="nm">2</span>);
+    <span class="va">ez_inc</span>(<span class="nm">3</span>) <span class="op">=</span> <span class="va">pulse</span>;
+
+    <span class="cm">% TF/SF Ez modifikasyonu — alt ve üst sınırlar</span>
+    <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="va">ia</span><span class="op">:</span><span class="va">ib</span>
+        <span class="va">Ez</span>(<span class="va">i</span>,<span class="va">ja</span>)<span class="op">=</span><span class="va">Ez</span>(<span class="va">i</span>,<span class="va">ja</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">.*</span><span class="va">hx_inc</span>(<span class="va">ja</span><span class="op">-</span><span class="nm">1</span>);
+        <span class="va">Ez</span>(<span class="va">i</span>,<span class="va">jb</span>)<span class="op">=</span><span class="va">Ez</span>(<span class="va">i</span>,<span class="va">jb</span>)<span class="op">-</span><span class="nm">0.5</span><span class="op">.*</span><span class="va">hx_inc</span>(<span class="va">jb</span>);
+    <span class="kw">end</span>
+
+    <span class="cm">% Basit sınır koşulu (köşeler ve kenarlar sıfırla)</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">JE</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">Ez</span>(<span class="nm">1</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">Ez</span>(<span class="va">IE</span><span class="op">-</span><span class="nm">1</span>,<span class="va">j</span>)<span class="op">=</span><span class="nm">0</span>;
+    <span class="kw">end</span>
+    <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">IE</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">Ez</span>(<span class="va">i</span>,<span class="nm">1</span>)<span class="op">=</span><span class="nm">0</span>; <span class="va">Ez</span>(<span class="va">i</span>,<span class="va">JE</span><span class="op">-</span><span class="nm">1</span>)<span class="op">=</span><span class="nm">0</span>;
+    <span class="kw">end</span>
+
+    <span class="cm">% ===== 1D Hx güncelleme =====</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">1</span><span class="op">:</span><span class="va">JE</span><span class="op">-</span><span class="nm">1</span>
+        <span class="va">hx_inc</span>(<span class="va">j</span>)<span class="op">=</span><span class="va">hx_inc</span>(<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">.*</span>(<span class="va">ez_inc</span>(<span class="va">j</span>)<span class="op">-</span><span class="va">ez_inc</span>(<span class="va">j</span><span class="op">+</span><span class="nm">1</span>));
+    <span class="kw">end</span>
+
+    <span class="cm">% ===== 2D Hx güncelleme =====</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span><span class="op">-</span><span class="nm">1</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span><span class="op">-</span><span class="nm">1</span>
+            <span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Hx</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>(<span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span><span class="op">+</span><span class="nm">1</span>));
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+    <span class="cm">% TF/SF Hx modifikasyonu</span>
+    <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="va">ia</span><span class="op">:</span><span class="va">ib</span>
+        <span class="va">Hx</span>(<span class="va">i</span>,<span class="va">ja</span><span class="op">-</span><span class="nm">1</span>)<span class="op">=</span><span class="va">Hx</span>(<span class="va">i</span>,<span class="va">ja</span><span class="op">-</span><span class="nm">1</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">.*</span><span class="va">ez_inc</span>(<span class="va">ja</span>);
+        <span class="va">Hx</span>(<span class="va">i</span>,<span class="va">jb</span>)  <span class="op">=</span><span class="va">Hx</span>(<span class="va">i</span>,<span class="va">jb</span>)  <span class="op">-</span><span class="nm">0.5</span><span class="op">.*</span><span class="va">ez_inc</span>(<span class="va">jb</span>);
+    <span class="kw">end</span>
+
+    <span class="cm">% ===== 2D Hy güncelleme =====</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">JE</span><span class="op">-</span><span class="nm">1</span>
+        <span class="kw">for</span> <span class="va">i</span><span class="op">=</span><span class="nm">2</span><span class="op">:</span><span class="va">IE</span><span class="op">-</span><span class="nm">1</span>
+            <span class="va">Hy</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Hy</span>(<span class="va">i</span>,<span class="va">j</span>)<span class="op">+</span><span class="nm">0.5</span><span class="op">*</span>(<span class="va">Ez</span>(<span class="va">i</span><span class="op">+</span><span class="nm">1</span>,<span class="va">j</span>)<span class="op">-</span><span class="va">Ez</span>(<span class="va">i</span>,<span class="va">j</span>));
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+    <span class="cm">% TF/SF Hy modifikasyonu</span>
+    <span class="kw">for</span> <span class="va">j</span><span class="op">=</span><span class="va">ja</span><span class="op">:</span><span class="va">jb</span>
+        <span class="va">Hy</span>(<span class="va">ia</span><span class="op">-</span><span class="nm">1</span>,<span class="va">j</span>)<span class="op">=</span><span class="va">Hy</span>(<span class="va">ia</span><span class="op">-</span><span class="nm">1</span>,<span class="va">j</span>)<span class="op">-</span><span class="nm">0.5</span><span class="op">.*</span><span class="va">ez_inc</span>(<span class="va">j</span>);
+        <span class="va">Hy</span>(<span class="va">ib</span>,<span class="va">j</span>)  <span class="op">=</span><span class="va">Hy</span>(<span class="va">ib</span>,<span class="va">j</span>)  <span class="op">+</span><span class="nm">0.5</span><span class="op">.*</span><span class="va">ez_inc</span>(<span class="va">j</span>);
+    <span class="kw">end</span>
+
+    <span class="fn">drawnow</span>;
+    [<span class="va">X</span>,<span class="va">Y</span>]<span class="op">=</span><span class="fn">meshgrid</span>(<span class="nm">1</span><span class="op">:</span><span class="nm">1</span><span class="op">:</span><span class="nm">60</span>);
+    <span class="fn">subplot</span>(<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">1</span>); <span class="fn">mesh</span>(<span class="va">X</span>,<span class="va">Y</span>,<span class="va">Ez</span>);
+    <span class="fn">xlabel</span>(<span class="st">'X'</span>); <span class="fn">ylabel</span>(<span class="st">'Y'</span>); <span class="fn">zlabel</span>(<span class="st">'Ez'</span>);
+    <span class="fn">set</span>(<span class="fn">gca</span>,<span class="st">'FontSize'</span>,<span class="nm">14</span>)
+    <span class="fn">axis</span>([<span class="nm">1</span> <span class="nm">60</span> <span class="nm">1</span> <span class="nm">60</span> <span class="op">-</span><span class="nm">1.5</span> <span class="nm">1.5</span>]); <span class="fn">grid</span> <span class="kw">on</span>
+<span class="kw">end</span></pre>
+  </div>
+</div>
+
+</div><!-- /content -->
+</main>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script>
+function copyCode(btn){
+  const pre = btn.closest('.code-wrap').querySelector('pre.code');
+  // extract plain text (strip span tags)
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = 'Kopyalandı ✓';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Kopyala'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// Sidebar active highlight on scroll
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navItems.forEach(a=>a.classList.remove('active'));
+      const active = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if(active) active.classList.add('active');
+    }
+  });
+}, {rootMargin:'-30% 0px -60% 0px'});
+
+sections.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
